@@ -36,6 +36,9 @@
 | 是否需要建立新的階段版本 | 待確認 |
 | 舊版本 tag 是否保留未覆蓋 | 待確認 |
 | 是否已新增對應 release note | 待確認 |
+| 是否已進入 GitHub Releases 網頁建立版本 | 待確認 |
+| GitHub Release 是否貼上對應 release note | 待確認 |
+| 是否已回報 GitHub Release 網址 | 待確認 |
 
 ## D. Codex 每次應執行的 Git 指令
 

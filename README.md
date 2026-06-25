@@ -18,8 +18,8 @@ Repository：`m365-car-booking-automation`
 
 ## 目前版本
 
-- 目前版本：`v0.1.1`
-- 目前狀態：已建立專案版控規則、資料夾結構、功能完成檢查清單，以及階段版本保留規則
+- 目前版本：`v0.1.2`
+- 目前狀態：已建立專案版控規則、資料夾結構、功能完成檢查清單、階段版本保留規則，以及 GitHub 網頁建立 Release 規則
 - 下一階段：整理 SharePoint List、Adaptive Card、Power Automate 測試版流程文件
 
 ## 階段版本原則
@@ -30,6 +30,7 @@ Repository：`m365-car-booking-automation`
 - 舊版本不覆蓋、不刪除。
 - 每個版本都有對應 release note。
 - `CHANGELOG.md` 集中記錄每個版本完成內容。
+- 每個階段完成後，Codex 需自動進入 GitHub Releases 網頁建立版本頁。
 
 例如：
 
@@ -38,7 +39,7 @@ Repository：`m365-car-booking-automation`
 - `v0.4`：完成 Power Automate 主流程階段
 - `v1.0`：完成正式驗收版本
 
-詳細規則請見 [docs/version-control-workflow.md](docs/version-control-workflow.md) 與 [docs/stage-versioning-policy.md](docs/stage-versioning-policy.md)。
+詳細規則請見 [docs/version-control-workflow.md](docs/version-control-workflow.md)、[docs/stage-versioning-policy.md](docs/stage-versioning-policy.md) 與 [docs/github-release-web-workflow.md](docs/github-release-web-workflow.md)。
 
 ## 功能完成後的標準動作
 
@@ -51,3 +52,4 @@ Repository：`m365-car-booking-automation`
 5. 建立清楚的 Git commit
 6. 推送到 GitHub 對應 branch
 7. 若達到階段完成條件，建立 tag 與 release note
+8. 自動進入 GitHub Releases 網頁建立版本頁

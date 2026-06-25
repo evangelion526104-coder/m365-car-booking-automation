@@ -144,6 +144,16 @@ Codex 每次在功能完成後，應依序做以下事情：
 .\tools\Git\cmd\git.exe push origin v0.3
 ```
 
+8. 自動進入 GitHub Releases 網頁建立版本：
+
+- 開啟 `https://github.com/evangelion526104-coder/m365-car-booking-automation/releases/new`
+- 選擇剛建立的 tag
+- 填入版本標題
+- 貼上 `release-notes/vX.X.md` 內容
+- 發布 GitHub Release
+
+這一步是正式版本控管流程的一部分，不可只建立 tag 而沒有 GitHub Release。
+
 ## 六、GitHub Repository 結構
 
 ```text
@@ -153,6 +163,7 @@ Codex 每次在功能完成後，應依序做以下事情：
 ├─ docs/
 │  ├─ version-control-workflow.md
 │  ├─ stage-versioning-policy.md
+│  ├─ github-release-web-workflow.md
 │  └─ codex-feature-done-checklist.md
 ├─ adaptive-cards/
 │  └─ README.md

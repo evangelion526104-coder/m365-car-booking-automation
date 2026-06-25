@@ -44,6 +44,12 @@
 5. 建立 commit。
 6. 推送到 GitHub。
 7. 建立並推送 tag。
+8. 自動開啟 GitHub Releases 網頁。
+9. 依照 tag 建立 GitHub Release。
+10. 將對應 release note 貼到 Release description。
+11. 發布 Release，並回報版本網址。
+
+GitHub 網頁建版細節請見 [github-release-web-workflow.md](github-release-web-workflow.md)。
 
 ## 指令範例
 
