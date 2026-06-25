@@ -1,0 +1,19 @@
+tools/
+MinGit-*.zip
+PortableGit-*.7z.exe
+
+# Windows / Office temporary files
+Thumbs.db
+Desktop.ini
+~$*
+*.tmp
+
+# Local editor files
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Existing local note outside this project scope
+AI_CoE_training_notes.md
