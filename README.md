@@ -1,5 +1,7 @@
 # M365 公務車借用自動通知與後台管理流程
 
+Repository：`m365-car-booking-automation`
+
 本專案用來管理「Outlook 資源行事曆 + Power Automate + Teams Adaptive Card + SharePoint List」的設計、測試、操作與版本紀錄。
 
 目標是讓行政／總務同仁可以追蹤每一階段完成內容，並在功能完成後由 Codex 協助整理異動、建立 Git commit、推送到 GitHub。
