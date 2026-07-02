@@ -29,6 +29,9 @@
 - [x] 建立 Power Automate 功能測試流程。
 - [x] 完成 SharePoint 標準連接器測試。
 - [x] 完成 Office 365 Outlook 標準連接器基本測試。
+- [x] 建立並執行資源信箱讀取測試流程。
+- [x] 確認資源信箱 Email 不能直接作為 `取得事件的行事曆檢視 (V3)` Calendar ID。
+- [x] 關閉資源信箱讀取測試流程，避免排程持續失敗。
 - [x] 完成 Teams Adaptive Card 設計。
 - [x] 完成 Adaptive Card JSON 範例。
 - [x] 完成通知時間規則設計。
@@ -41,7 +44,8 @@
 
 ## 尚未完成
 
-- [ ] 確認 `ad.general@alp.global` 對三台資源信箱的讀取權限。
+- [ ] 由 Exchange 管理員授予 `ad.general@alp.global` 三台資源行事曆 Calendar 資料夾 `Reviewer` 權限。
+- [ ] 確認三台資源行事曆出現在 Power Automate Calendar ID 選單並完成讀取測試。
 - [ ] 建立正式 Outlook 行事曆同步流程。
 - [ ] 實作 Asia/Taipei 統一時區轉換。
 - [ ] 實作 Event ID / iCalUId 唯一識別與重複資料防止。

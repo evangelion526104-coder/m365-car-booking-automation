@@ -2,6 +2,16 @@
 
 本檔案記錄本專案的主要異動。最新 Master 狀態以 `docs/project-master-record.md` 為準。
 
+## v0.2.4 - Outlook 資源行事曆存取閘門實測
+
+* 建立 `公務車功能測試-資源信箱讀取`，Flow ID：`7aff726f-0f9d-4b7e-a128-baeb368ab1ce`
+* 確認 Office 365 Outlook 連接器登入正常，但 Calendar ID 選單只有個人 `Calendar`
+* 實測直接使用 `room_nhb4_car@alp.global` 作為 Calendar ID，流程回傳「ID 格式不正確」
+* 將測試流程關閉，避免排程持續產生失敗執行
+* 新增 Exchange 資源行事曆 Reviewer 權限設定與驗證文件
+* 更新 Master、里程碑、完成清單、待辦、Power Automate 說明與測試紀錄
+* M5 尚未完成；待三台資源行事曆出現在 Calendar ID 選單後重測
+
 ## v0.2.3 - SharePoint 防呆欄位建置完成
 
 * 已在 SharePoint `公務車借用管理` 清單實際新增並驗證系統防呆欄位

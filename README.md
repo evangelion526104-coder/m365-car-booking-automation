@@ -17,13 +17,14 @@
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
-| 目前版本 | `v0.2.3` |
-| 目前開發階段 | 後台清單與防呆欄位已完成，功能測試流程已建立，正式自動化串接前 |
-| 專案完成度 | 68% |
+| 目前版本 | `v0.2.4` |
+| 目前開發階段 | 資源行事曆讀取已實測，待 Exchange 管理員補齊共享權限與可用 Calendar ID |
+| 專案完成度 | 69% |
 | 最新更新日期 | 2026-07-02 |
 | Master 紀錄 | [docs/project-master-record.md](docs/project-master-record.md) |
 | SharePoint 清單 | [公務車借用管理](https://alpglobal.sharepoint.com/sites/ALP_TW_AD/Lists/List6/AllItems.aspx) |
 | Power Automate 測試流程 | 公務車功能測試-SharePoint清單連線 |
+| 資源行事曆測試流程 | 公務車功能測試-資源信箱讀取（已關閉） |
 
 ## 已確認環境
 
@@ -34,7 +35,7 @@
 | 流程帳號 | `ad.general@alp.global` |
 | 承辦人 | AD總機 / `ad.general@alp.global` |
 | 已確認權限 | 流程帳號可讀取 `ALP_TW_AD` 清單 |
-| 已確認連線 | SharePoint 標準連接器、Office 365 Outlook 標準連接器 |
+| 已確認連線 | SharePoint 標準連接器、Office 365 Outlook 標準連接器驗證成功；資源行事曆讀取尚未通過 |
 
 ## 公務車資源
 
@@ -62,6 +63,7 @@ Teams Adaptive Card 通知規則已更新為：
 | [docs/completion-checklist.md](docs/completion-checklist.md) | 完成清單 |
 | [docs/todo.md](docs/todo.md) | 待辦事項 |
 | [docs/system-safeguards.md](docs/system-safeguards.md) | 系統防呆設計，上線前必須完成 |
+| [docs/Exchange_Resource_Mailbox_Permission.md](docs/Exchange_Resource_Mailbox_Permission.md) | Exchange 資源行事曆權限修復與驗證步驟 |
 | [sharepoint/list-schema.md](sharepoint/list-schema.md) | SharePoint List 欄位設計 |
 | [power-automate/README.md](power-automate/README.md) | Power Automate 流程設計與現況 |
 | [adaptive-cards/README.md](adaptive-cards/README.md) | Teams Adaptive Card 設計 |
@@ -72,7 +74,7 @@ Teams Adaptive Card 通知規則已更新為：
 
 下一階段目標是完成正式自動化串接：
 
-1. 確認 `ad.general@alp.global` 可讀取三台公務車資源行事曆內容。
+1. 由 Exchange 管理員授予 `ad.general@alp.global` 三台車 Calendar 資料夾 `Reviewer` 權限，並讓行事曆出現在 Power Automate Calendar ID 選單。
 2. 建立 `公務車行事曆同步至 SharePoint` 流程。
 3. 建立 `公務車借用前 Teams 通知與回覆` 流程。
 4. 串接 Teams Adaptive Card 回覆寫回 SharePoint。
