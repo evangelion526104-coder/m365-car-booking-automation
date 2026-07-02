@@ -18,7 +18,7 @@
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
 | 目前版本 | `v0.2.5` |
-| 目前開發階段 | 已確認 Calendar Reviewer 權限足夠，待以 `取得行事曆 (V2)` 取得三台車 Calendar ID 並逐台讀取測試 |
+| 目前開發階段 | `取得行事曆 (V2)` 已成功執行但只回傳個人 Calendar；待在 Outlook 明確加入三台共用行事曆後重測 |
 | 專案完成度 | 69% |
 | 最新更新日期 | 2026-07-02 |
 | Master 紀錄 | [docs/project-master-record.md](docs/project-master-record.md) |

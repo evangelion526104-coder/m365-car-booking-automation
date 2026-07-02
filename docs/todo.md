@@ -4,16 +4,17 @@
 
 ## P0 必須先完成
 
-1. 不再要求 Exchange Administrator；使用現有 `ad.general@alp.global` Calendar Reviewer 權限與 Office 365 Outlook 標準連線。
-2. 在測試流程加入 `取得行事曆 (V2)`，列出可用行事曆與執行時 Calendar ID。
-3. 依 owner Email／顯示名稱找出 Altis、Camry、Cross 的真正 Calendar ID；不得直接把資源信箱 Email 當 Calendar ID。
-4. 將三個 Calendar ID 分別套用到 `取得事件的行事曆檢視 (V3)`，讀取未來 7 天事件。
-5. 驗證主旨、起始時間、結束時間、是否全天、建立者／借用人、Event ID 與 iCalUId；完成後再次關閉測試流程。
-6. 確認資源信箱取消與時間異動是否能被 Power Automate 偵測。
-7. 確認所有流程日期時間均轉為 `Asia/Taipei`。
-8. 確認 Event ID / iCalUId 唯一識別邏輯可用。
-9. 確認舊 Teams Adaptive Card 回覆前防呆檢查可用。
-10. 確認 Flow Concurrency Control 與重複資料防止規則可用。
+1. 不再要求以 Exchange Administrator 登入流程；使用 `ad.general@alp.global` 與 Office 365 Outlook 標準連線。
+2. 在 `ad.general@alp.global` 的 Outlook 明確加入 Altis、Camry、Cross 三台共用行事曆，再重跑 `取得行事曆 (V2)`。
+3. 若 Reviewer 權限下重測仍只回傳個人 Calendar，評估將三台行事曆資料夾權限調整為 Editor；流程日常執行仍不需要 Exchange Administrator。
+4. 依 owner Email／顯示名稱找出 Altis、Camry、Cross 的真正 Calendar ID；不得直接把資源信箱 Email 當 Calendar ID。
+5. 將三個 Calendar ID 分別套用到 `取得事件的行事曆檢視 (V3)`，讀取未來 7 天事件。
+6. 驗證主旨、起始時間、結束時間、是否全天、建立者／借用人、Event ID 與 iCalUId；完成後再次關閉測試流程。
+7. 確認資源信箱取消與時間異動是否能被 Power Automate 偵測。
+8. 確認所有流程日期時間均轉為 `Asia/Taipei`。
+9. 確認 Event ID / iCalUId 唯一識別邏輯可用。
+10. 確認舊 Teams Adaptive Card 回覆前防呆檢查可用。
+11. 確認 Flow Concurrency Control 與重複資料防止規則可用。
 
 ## P1 正式流程開發
 
