@@ -18,7 +18,7 @@
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
 | 目前版本 | `v0.2.5` |
-| 目前開發階段 | 已確認流程帳號沒有 Exchange 收件者管理權限，待 Exchange 管理員登入並補齊 Calendar 權限 |
+| 目前開發階段 | 已確認 Calendar Reviewer 權限足夠，待以 `取得行事曆 (V2)` 取得三台車 Calendar ID 並逐台讀取測試 |
 | 專案完成度 | 69% |
 | 最新更新日期 | 2026-07-02 |
 | Master 紀錄 | [docs/project-master-record.md](docs/project-master-record.md) |
@@ -64,6 +64,7 @@ Teams Adaptive Card 通知規則已更新為：
 | [docs/todo.md](docs/todo.md) | 待辦事項 |
 | [docs/system-safeguards.md](docs/system-safeguards.md) | 系統防呆設計，上線前必須完成 |
 | [docs/Exchange_Resource_Mailbox_Permission.md](docs/Exchange_Resource_Mailbox_Permission.md) | Exchange 資源行事曆權限修復與驗證步驟 |
+| [docs/calendar-access-test.md](docs/calendar-access-test.md) | 三台公務車 Calendar ID 與事件欄位實測紀錄 |
 | [sharepoint/list-schema.md](sharepoint/list-schema.md) | SharePoint List 欄位設計 |
 | [power-automate/README.md](power-automate/README.md) | Power Automate 流程設計與現況 |
 | [adaptive-cards/README.md](adaptive-cards/README.md) | Teams Adaptive Card 設計 |
@@ -74,7 +75,7 @@ Teams Adaptive Card 通知規則已更新為：
 
 下一階段目標是完成正式自動化串接：
 
-1. 由具備 Exchange 管理角色的帳號登入 Exchange 管理中心，授予 `ad.general@alp.global` 三台車 Calendar 資料夾 `Reviewer` 權限。
+1. 使用 `ad.general@alp.global` 的 Office 365 Outlook 標準連線執行 `取得行事曆 (V2)`，取得三台車真正的 Calendar ID。
 2. 建立 `公務車行事曆同步至 SharePoint` 流程。
 3. 建立 `公務車借用前 Teams 通知與回覆` 流程。
 4. 串接 Teams Adaptive Card 回覆寫回 SharePoint。

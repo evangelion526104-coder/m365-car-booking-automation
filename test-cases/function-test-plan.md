@@ -23,7 +23,7 @@
 | FT-006 | 資源行事曆 Calendar ID 可見性 | 未通過 | 2026-07-02 選單只有個人 `Calendar`，未列出三台公務車 |
 | FT-007 | 以資源信箱 Email 讀取 Altis 行事曆 | 未通過 | `取得事件的行事曆檢視 (V3)` 回傳「ID 格式不正確」；Email 不是 Calendar ID |
 | FT-008 | 測試流程停用 | 通過 | `公務車功能測試-資源信箱讀取` 已關閉，不再排程執行 |
-| FT-009 | Exchange 收件者管理頁存取 | 未通過 | `ad.general@alp.global` 只有帳戶自助功能，無法管理資源信箱權限 |
+| FT-009 | Calendar Reviewer 前置條件 | 已確認 | `ad.general@alp.global` 已有三台車 Calendar Reviewer；不需要 Exchange Administrator |
 
 ## 待執行測試案例
 
@@ -42,7 +42,7 @@
 | FT-111 | 借用人未勾選規範 | SharePoint 維持或更新為 `未完成填寫` | 待測 |
 | FT-112 | 承辦人查看後台 | 可依 `領鑰狀態` 判斷是否發放鑰匙 | 待測 |
 | FT-113 | 同一台車重複預約 | Outlook 資源信箱阻擋或避免雙重預約 | 待確認 |
-| FT-114 | Exchange 權限修復後逐台讀取 | Altis、Camry、Cross 都能由 Calendar ID 選取並讀到事件內容 | 受 FT-006 阻擋 |
+| FT-114 | 以 `取得行事曆 (V2)` 取得 ID 後逐台讀取 | Altis、Camry、Cross 均以真正 Calendar ID 讀到未來 7 天事件內容 | 待測；本輪網頁編輯器自動控制逾時 |
 
 ## 系統防呆測試案例（正式上線前必測）
 

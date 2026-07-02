@@ -40,7 +40,7 @@
 | 結果 | 失敗：`ID 格式不正確`（BadRequest） |
 | 流程狀態 | 已關閉，保留執行紀錄供追蹤 |
 
-本次結果代表 Outlook 連接器驗證成功，但目前連線尚未取得三台資源行事曆的可用 Calendar ID。需先完成 [Exchange 資源行事曆權限設定](../docs/Exchange_Resource_Mailbox_Permission.md)，再依序重測 Altis、Camry、Cross。
+本次結果代表 Outlook 連接器驗證成功，但資源信箱 Email 不能直接作為 Calendar ID。`ad.general@alp.global` 已具有三台車 Calendar Reviewer 權限，不需要 Exchange Administrator；下一步改用 `取得行事曆 (V2)` 取得真正 Calendar ID，再依序重測 Altis、Camry、Cross。
 
 ## 尚未完成正式流程
 
@@ -152,7 +152,7 @@
 
 | 項目 | 狀態 | 說明 |
 |---|---|---|
-| 三台資源信箱讀取權限 | 阻擋中 | 已實測：資源行事曆未出現在 Calendar ID 選單，需 Exchange 管理員補齊 Calendar 資料夾權限 |
+| 三台資源信箱讀取權限 | 已具備 | `ad.general@alp.global` 已有 Calendar Reviewer；待 `取得行事曆 (V2)` 回傳真正 Calendar ID |
 | 取消預約同步 | 待實作 | 預約取消後需更新 SharePoint 狀態 |
 | 時間異動同步 | 待實作 | 預約時間異動後需重算 `預計通知時間` |
 | Teams 回覆寫回 | 待實作 | 需完成 Adaptive Card 回覆與 SharePoint 更新 |

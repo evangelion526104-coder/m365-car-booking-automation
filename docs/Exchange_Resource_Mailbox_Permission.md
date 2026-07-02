@@ -2,6 +2,8 @@
 
 更新日期：2026-07-02
 
+> 狀態更正：`ad.general@alp.global` 已確認具有三台 Resource Mailbox 的 Calendar Reviewer 權限。本專案僅讀取事件，不修改 Resource Mailbox、Calendar Processing 或 Exchange 組態，因此後續不需要 Exchange Administrator。本文件中的管理員命令僅保留為歷史與未來權限遺失時的修復參考，不是目前前置條件。
+
 ## 目的
 
 讓 Power Automate 流程帳號 `ad.general@alp.global` 可用 Office 365 Outlook 標準連接器讀取三台公務車資源行事曆。正式流程只需讀取事件，建議採最小權限 `Reviewer`，不需 Premium 連接器。
@@ -13,8 +15,8 @@
 - Calendar ID 選單只有個人 `Calendar`，未列出三台公務車。
 - 直接輸入 `room_nhb4_car@alp.global` 會回傳：`ID 格式不正確`。
 - 測試流程已關閉，待權限完成後再開啟重測。
-- `ad.general@alp.global` 已於 2026-07-02 驗證 Exchange 管理中心存取；只能看到「我的帳戶」自助功能，沒有收件者／信箱管理功能。
-- 直接開啟收件者信箱管理網址仍不會顯示管理內容，因此必須由具備 Exchange 管理角色的帳號執行下列設定。
+- `ad.general@alp.global` 不具 Exchange 管理功能，但本流程不需要該功能。
+- 先前「ID 格式不正確」表示資源信箱 Email 不是 Calendar ID，不能據此判定 Reviewer 權限不足。
 
 ## 需設定的資源信箱
 
@@ -24,7 +26,7 @@
 | Camry BKX-2370 | `room_nhb4_car_camry@alp.global` |
 | Cross BKY-0762 | `room_nhb4_car_cross@alp.global` |
 
-## Exchange 管理員操作
+## 權限遺失時的管理員修復參考（目前不需執行）
 
 先確認各信箱的行事曆資料夾實際名稱；部分環境可能顯示為 `Calendar` 或 `行事曆`：
 
