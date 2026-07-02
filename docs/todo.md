@@ -4,7 +4,7 @@
 
 ## P0 必須先完成
 
-1. 請 Exchange 管理員依 `docs/Exchange_Resource_Mailbox_Permission.md`，授予流程帳號三台車 Calendar 資料夾 `Reviewer` 權限。
+1. 請具備 Exchange 管理角色的帳號登入目前 Exchange 管理中心分頁，或依 `docs/Exchange_Resource_Mailbox_Permission.md` 代為授予三台車 Calendar 資料夾 `Reviewer` 權限；`ad.general@alp.global` 已確認無法執行此操作。
 2. 以 `ad.general@alp.global` 開啟三台共享行事曆，重新整理或重建 Office 365 Outlook 連線。
 3. 確認三台資源行事曆出現在 Power Automate Calendar ID 選單；不得直接把資源信箱 Email 當 Calendar ID。
 4. 重新開啟測試流程，逐台確認可讀取借用人、主旨、起訖時間、是否整天、Event ID 與 iCalUId；完成後再次關閉。

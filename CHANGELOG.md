@@ -2,6 +2,14 @@
 
 本檔案記錄本專案的主要異動。最新 Master 狀態以 `docs/project-master-record.md` 為準。
 
+## v0.2.5 - Exchange 管理角色存取驗證
+
+* 以 `ad.general@alp.global` 開啟 Exchange 管理中心並直接驗證收件者信箱管理頁
+* 確認目前帳號只具備「我的帳戶」自助管理介面，沒有收件者／信箱管理功能
+* 確認無法由目前帳號變更三台資源行事曆權限
+* 將 M5 阻擋條件明確更新為「需 Exchange 管理員登入或代為執行權限設定」
+* 更新 Master、里程碑、待辦、權限操作單與測試紀錄
+
 ## v0.2.4 - Outlook 資源行事曆存取閘門實測
 
 * 建立 `公務車功能測試-資源信箱讀取`，Flow ID：`7aff726f-0f9d-4b7e-a128-baeb368ab1ce`

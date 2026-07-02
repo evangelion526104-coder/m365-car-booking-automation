@@ -17,8 +17,8 @@
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
-| 目前版本 | `v0.2.4` |
-| 目前開發階段 | 資源行事曆讀取已實測，待 Exchange 管理員補齊共享權限與可用 Calendar ID |
+| 目前版本 | `v0.2.5` |
+| 目前開發階段 | 已確認流程帳號沒有 Exchange 收件者管理權限，待 Exchange 管理員登入並補齊 Calendar 權限 |
 | 專案完成度 | 69% |
 | 最新更新日期 | 2026-07-02 |
 | Master 紀錄 | [docs/project-master-record.md](docs/project-master-record.md) |
@@ -74,7 +74,7 @@ Teams Adaptive Card 通知規則已更新為：
 
 下一階段目標是完成正式自動化串接：
 
-1. 由 Exchange 管理員授予 `ad.general@alp.global` 三台車 Calendar 資料夾 `Reviewer` 權限，並讓行事曆出現在 Power Automate Calendar ID 選單。
+1. 由具備 Exchange 管理角色的帳號登入 Exchange 管理中心，授予 `ad.general@alp.global` 三台車 Calendar 資料夾 `Reviewer` 權限。
 2. 建立 `公務車行事曆同步至 SharePoint` 流程。
 3. 建立 `公務車借用前 Teams 通知與回覆` 流程。
 4. 串接 Teams Adaptive Card 回覆寫回 SharePoint。
