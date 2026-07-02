@@ -331,3 +331,15 @@ Master 專案永遠保持最新狀態。
 ## 十一、行政與總務人員可讀摘要
 
 這套治理規則的意思是：每做完一件可驗收的事，都要留下紀錄、更新文件、提交版本並推送到 GitHub。這樣未來交接、查問題、回復舊版本或確認某個流程何時被調整，都有清楚依據。
+
+## 十二、System Safeguards 檢查規則
+
+後續只要異動 Power Automate、Teams Adaptive Card、SharePoint List、Outlook 同步、測試案例或操作文件，都必須同步檢查是否納入五項系統防呆設計：
+
+- 統一時區為 `Asia/Taipei`。
+- 以 Outlook Event ID / iCalUId 作為唯一識別碼。
+- Outlook 取消與異動需同步 SharePoint。
+- 舊 Teams Adaptive Card 回覆前需重新檢查並可失效。
+- Flow 必須避免重複建立、重複通知與同時執行造成的資料衝突。
+
+若本次異動會影響上述任一項，必須同步更新 [system-safeguards.md](system-safeguards.md)、測試案例與相關設計文件。

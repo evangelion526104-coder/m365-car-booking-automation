@@ -2,6 +2,17 @@
 
 本檔案記錄本專案的主要異動。最新 Master 狀態以 `docs/project-master-record.md` 為準。
 
+## System Safeguards
+
+* 新增系統防呆設計正式文件
+* 新增 Asia/Taipei 統一時區規則
+* 新增 Event ID / iCalUId 唯一識別規則
+* 新增 Outlook 取消與異動同步 SharePoint 規則
+* 新增舊 Teams Adaptive Card 回覆前失效檢查
+* 新增 Flow Concurrency Control 與重複資料防止規則
+* 新增防呆欄位設計與測試案例
+* 明確標示五項防呆機制為正式上線前必須完成
+
 ## Project Governance
 
 * 新增 New Work Startup Rule

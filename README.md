@@ -17,8 +17,8 @@
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
-| 目前開發階段 | 後台清單已完成，功能測試流程已建立，正式自動化串接前 |
-| 專案完成度 | 58% |
+| 目前開發階段 | 後台清單已完成，功能測試流程已建立，系統防呆設計已納入，正式自動化串接前 |
+| 專案完成度 | 62% |
 | 最新更新日期 | 2026-07-02 |
 | Master 紀錄 | [docs/project-master-record.md](docs/project-master-record.md) |
 | SharePoint 清單 | [公務車借用管理](https://alpglobal.sharepoint.com/sites/ALP_TW_AD/Lists/List6/AllItems.aspx) |
@@ -60,6 +60,7 @@ Teams Adaptive Card 通知規則已更新為：
 | [docs/project-milestones.md](docs/project-milestones.md) | 專案里程碑 |
 | [docs/completion-checklist.md](docs/completion-checklist.md) | 完成清單 |
 | [docs/todo.md](docs/todo.md) | 待辦事項 |
+| [docs/system-safeguards.md](docs/system-safeguards.md) | 系統防呆設計，上線前必須完成 |
 | [sharepoint/list-schema.md](sharepoint/list-schema.md) | SharePoint List 欄位設計 |
 | [power-automate/README.md](power-automate/README.md) | Power Automate 流程設計與現況 |
 | [adaptive-cards/README.md](adaptive-cards/README.md) | Teams Adaptive Card 設計 |
@@ -98,3 +99,17 @@ Teams Adaptive Card 通知規則已更新為：
 - Workflow 完成後，必須確認目前分支是否與 Master 專案同步。
 
 完整治理規則請參考：[docs/Project_Workflow.md](docs/Project_Workflow.md#project-governance永久生效)。
+
+## 系統防呆設計（正式上線前必須完成）
+
+本專案已將五項系統防呆設計列為正式上線前必須完成的門檻，後續 Power Automate、Teams Adaptive Card、SharePoint 欄位、測試案例與文件都必須納入。
+
+| 防呆項目 | 要求 |
+|---|---|
+| 統一時區 | 所有日期時間統一轉為 `Asia/Taipei`，不得直接使用未轉換 UTC |
+| 唯一識別碼 | 每筆預約以 Outlook `Event ID` 或 `iCalUId` 作為唯一識別 |
+| 取消／異動同步 | Outlook 修改或取消時，SharePoint 必須同步更新 |
+| 舊卡片失效 | Adaptive Card 回覆前需重新檢查最新狀態，避免舊卡覆蓋新資料 |
+| Flow 防重複 | 啟用 Concurrency Control，避免重複建立與重複通知 |
+
+完整防呆設計請參考：[docs/system-safeguards.md](docs/system-safeguards.md)。

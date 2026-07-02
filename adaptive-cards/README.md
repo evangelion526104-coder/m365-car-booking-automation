@@ -38,6 +38,29 @@
 | 共乘人數未填 | SharePoint `領鑰狀態` 維持或更新為 `未完成填寫` |
 | 規範確認未勾選 | SharePoint `領鑰狀態` 維持或更新為 `未完成填寫` |
 
+## 回覆前防呆檢查邏輯
+
+Teams Adaptive Card 送出前看起來是借用人的回覆，但系統不能直接寫回 SharePoint。正式流程必須先重新讀取 SharePoint 最新資料，確認這張卡片仍然有效。
+
+回覆前必須檢查：
+
+| 檢查項目 | 必須符合 |
+|---|---|
+| SharePoint 項目 | `sharePointItemId` 找得到同一筆資料 |
+| Event ID | 卡片送回的 `eventId` 等於 SharePoint 最新 `行事曆事件 ID` |
+| iCalUId | 若有使用，卡片送回的 `iCalUId` 必須一致 |
+| 卡片版本 | 卡片送回的 `cardVersion` 等於 SharePoint 最新 `卡片版本` |
+| 領鑰狀態 | 不可為 `已取消`、`已完成確認`、`已領鑰`、`已失效` |
+| 事件同步狀態 | 必須仍為 `有效` |
+
+若任一檢查不通過，不得更新 SharePoint，並回覆借用人：
+
+```text
+此借用已取消或已變更，請重新確認最新借用資訊。
+```
+
+此機制可避免借用人送出舊卡片後，覆蓋最新預約資料或重新啟用已取消案件。
+
 ## Adaptive Card JSON 範例
 
 以下為設計範例，正式流程中車輛、日期、時間、借用人與事由會由 Power Automate 帶入。
@@ -105,7 +128,10 @@
       "data": {
         "action": "submitCarBookingConfirmation",
         "sharePointItemId": "${SharePointItemId}",
-        "eventId": "${行事曆事件ID}"
+        "eventId": "${行事曆事件ID}",
+        "iCalUId": "${iCalUId}",
+        "cardVersion": "${卡片版本}",
+        "eventLastModifiedTime": "${事件最後修改時間}"
       }
     }
   ]
@@ -121,3 +147,4 @@
 | JSON 範例 | 已完成 |
 | Teams 正式發送 | 待實作 |
 | 回覆寫回 SharePoint | 待實作 |
+| 舊卡片失效檢查 | 待實作，上線前必須完成 |
