@@ -2,6 +2,14 @@
 
 本檔案記錄本專案的主要異動。最新 Master 狀態以 `docs/project-master-record.md` 為準。
 
+## v0.2.3 - SharePoint 防呆欄位建置完成
+
+* 已在 SharePoint `公務車借用管理` 清單實際新增並驗證系統防呆欄位
+* 新增 Event ID / iCalUId、事件同步、卡片狀態、通知狀態、Flow 執行鎖與重複資料檢查相關欄位
+* 新增 `已取消`、`已失效` 防呆旗標欄位
+* 更新 Master 專案紀錄、SharePoint 欄位設計、完成清單、待辦事項、里程碑與 release note
+* 目前仍待完成正式 Power Automate 同步、Teams 通知回覆與 SG-T01 至 SG-T10 實測
+
 ## System Safeguards
 
 * 新增系統防呆設計正式文件

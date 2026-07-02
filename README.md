@@ -17,8 +17,9 @@
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
-| 目前開發階段 | 後台清單已完成，功能測試流程已建立，系統防呆設計已納入，正式自動化串接前 |
-| 專案完成度 | 62% |
+| 目前版本 | `v0.2.3` |
+| 目前開發階段 | 後台清單與防呆欄位已完成，功能測試流程已建立，正式自動化串接前 |
+| 專案完成度 | 68% |
 | 最新更新日期 | 2026-07-02 |
 | Master 紀錄 | [docs/project-master-record.md](docs/project-master-record.md) |
 | SharePoint 清單 | [公務車借用管理](https://alpglobal.sharepoint.com/sites/ALP_TW_AD/Lists/List6/AllItems.aspx) |
@@ -103,6 +104,8 @@ Teams Adaptive Card 通知規則已更新為：
 ## 系統防呆設計（正式上線前必須完成）
 
 本專案已將五項系統防呆設計列為正式上線前必須完成的門檻，後續 Power Automate、Teams Adaptive Card、SharePoint 欄位、測試案例與文件都必須納入。
+
+目前 SharePoint `公務車借用管理` 清單已實際新增並驗證防呆欄位，包含 `iCalUId`、`唯一識別來源`、`事件同步狀態`、`卡片版本`、`卡片狀態`、`通知狀態`、`Flow 執行 ID`、`處理鎖定狀態`、`重複資料檢查結果`、`防呆檢查結果`、`已取消`、`已失效` 與相關 UTC / 鎖定時間欄位。
 
 | 防呆項目 | 要求 |
 |---|---|
