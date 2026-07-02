@@ -1,47 +1,73 @@
 # CHANGELOG
 
-所有重要異動都記錄在此檔案，方便日後追蹤每個版本完成了什麼。
+本檔案記錄本專案的主要異動。最新 Master 狀態以 `docs/project-master-record.md` 為準。
+
+## v0.1 - 專案版本控管規則建立
+
+* 建立專案開發與版本控管規則
+* 新增功能完成後標準流程
+* 新增 Branch / Commit / Tag 規則
+* 新增舊版本保留規則
+* 新增 Codex 功能完成檢查清單
+
+## [v0.2.0-master] - 2026-07-02
+
+### 新增
+
+- 建立 SharePoint List：`公務車借用管理`。
+- 將正式建立位置調整為 `ALP_TW_AD` 站台。
+- 新增完整 SharePoint 欄位設計，包含車輛、資源信箱、借用資訊、Teams 回覆、領鑰狀態、測試欄位。
+- 新增 `是否整天` 欄位，用於判斷 Outlook 整天預約。
+- 新增 `預計通知時間` 欄位，用於記錄 Power Automate 計算後的 Teams 預定通知時間。
+- 建立 Power Automate 功能測試流程：`公務車功能測試-SharePoint清單連線`。
+- 確認 SharePoint 標準連接器可讀取 `ALP_TW_AD` 清單。
+- 確認 Office 365 Outlook 標準連接器可執行基本連線測試。
+- 新增 Teams 通知時間規則：借用前 1 小時通知，但不得早於借用當天 08:00；整天借用一律 08:00 通知。
+- 新增 Master 專案紀錄：`docs/project-master-record.md`。
+- 新增專案里程碑：`docs/project-milestones.md`。
+- 新增完成清單：`docs/completion-checklist.md`。
+- 新增待辦事項：`docs/todo.md`。
+- 新增 v0.2.0 release note：`release-notes/v0.2.0.md`。
+
+### 修改
+
+- 重寫 `README.md`，改為唯一最新專案總覽。
+- 重寫 `sharepoint/list-schema.md`，更新為實際已建立欄位。
+- 重寫 `power-automate/README.md`，補上目前已完成測試與待完成正式流程。
+- 重寫 `adaptive-cards/README.md`，補上 Teams Adaptive Card 內容與 JSON 範例。
+- 重寫 `test-cases/function-test-plan.md`，補上目前測試狀態與後續測試案例。
+
+### 修正
+
+- 修正原專案文件部分文字亂碼問題。
+- 修正專案建立位置紀錄，從 `ALP_TW_AD-AD` 改為 `ALP_TW_AD`。
+- 明確標示正式自動化尚未啟用，避免誤判為已完成上線。
+
+### 尚未完成
+
+- 尚未完成三台資源行事曆的正式讀取驗證。
+- 尚未完成正式 Outlook 行事曆同步流程。
+- 尚未完成 Teams Adaptive Card 正式發送與回覆寫回流程。
+- 尚未完成端到端測試。
 
 ## [v0.1.2] - 2026-06-25
 
 ### 新增
 
-- 新增「階段完成後自動進入 GitHub Releases 網頁建立版本」規則。
-- 新增 `docs/github-release-web-workflow.md`。
-- 明確規定每個階段完成後需同時保留 Git tag 與 GitHub Release。
-- 更新 Codex 功能完成檢查清單，加入 GitHub Release 建立與網址回報項目。
-- 更新 README 目前版本與版本建立流程。
-
-### 保留
-
-- `v0.1` 與 `v0.1.1` 保留不覆蓋。
-- 本次建立新版本 `v0.1.2`。
+- 建立初版版本控管與 GitHub Release 流程文件。
+- 建立階段版本策略。
+- 建立 Codex 功能完成檢查清單。
 
 ## [v0.1.1] - 2026-06-25
 
 ### 新增
 
-- 補充「每個流程階段完成後都建立新版本」的規則。
-- 明確規定舊版本需用 Git tag、release note、CHANGELOG 保留。
-- 新增階段版本對照表。
-- 新增小版號規則，例如 `v0.2.1` 用於同一階段內的補強。
-- 更新 README 的目前版本與階段版本原則。
-
-### 保留
-
-- `v0.1` 保留為專案初始化版本。
-- 本次不覆蓋既有 tag，另建 `v0.1.1`。
+- 補充版本命名與階段交付規則。
+- 補充 README 內的開發階段說明。
 
 ## [v0.1] - 2026-06-25
 
 ### 新增
 
-- 建立 GitHub 版本控管規則。
-- 建立專案資料夾結構建議。
-- 建立 Codex 功能完成後檢查清單。
-- 建立功能測試納入正式上線前關卡的規則。
-- 建立初版 release note。
-
-### 尚未完成
-
-- 尚待補入 Power Automate、SharePoint List、Adaptive Card 的正式匯出或設定紀錄。
+- 建立初始專案資料夾。
+- 建立初版 SharePoint、Power Automate、Adaptive Card、測試文件骨架。

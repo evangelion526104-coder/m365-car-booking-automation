@@ -1,55 +1,85 @@
 # M365 公務車借用自動通知與後台管理流程
 
-Repository：`m365-car-booking-automation`
+本專案以 Microsoft 365 標準功能建置公務車借用後台與自動通知流程，主要架構為：
 
-本專案用來管理「Outlook 資源行事曆 + Power Automate + Teams Adaptive Card + SharePoint List」的設計、測試、操作與版本紀錄。
+`Outlook 資源行事曆 + Power Automate + Teams Adaptive Card + SharePoint List`
 
-目標是讓行政／總務同仁可以追蹤每一階段完成內容，並在功能完成後由 Codex 協助整理異動、建立 Git commit、推送到 GitHub。
+設計原則：
 
-## 專案內容
+- 使用 O365 E1 可行的標準連接器。
+- 不使用 Power Automate Premium 連接器。
+- 以 SharePoint List 作為後台管理資料來源。
+- 以 Teams Adaptive Card 作為借用人回覆介面。
+- 保留測試階段，確認功能符合需求後再啟用正式自動化。
 
-- `docs/`：流程設計、版控規則、操作與維護文件
-- `sharepoint/`：SharePoint List 欄位設計與設定紀錄
-- `adaptive-cards/`：Teams Adaptive Card JSON 與說明
-- `power-automate/`：Power Automate 流程設計與設定紀錄
-- `test-cases/`：功能測試案例與驗收清單
-- `release-notes/`：每個版本的發行紀錄
-- `CHANGELOG.md`：所有版本與異動摘要
+## 目前 Master 狀態
 
-## 目前版本
+| 項目 | 內容 |
+|---|---|
+| 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
+| 目前開發階段 | 後台清單已完成，功能測試流程已建立，正式自動化串接前 |
+| 專案完成度 | 58% |
+| 最新更新日期 | 2026-07-02 |
+| Master 紀錄 | [docs/project-master-record.md](docs/project-master-record.md) |
+| SharePoint 清單 | [公務車借用管理](https://alpglobal.sharepoint.com/sites/ALP_TW_AD/Lists/List6/AllItems.aspx) |
+| Power Automate 測試流程 | 公務車功能測試-SharePoint清單連線 |
 
-- 目前版本：`v0.1.2`
-- 目前狀態：已建立專案版控規則、資料夾結構、功能完成檢查清單、階段版本保留規則，以及 GitHub 網頁建立 Release 規則
-- 下一階段：整理 SharePoint List、Adaptive Card、Power Automate 測試版流程文件
+## 已確認環境
 
-## 階段版本原則
+| 類別 | 內容 |
+|---|---|
+| SharePoint 站台 | `https://alpglobal.sharepoint.com/sites/ALP_TW_AD` |
+| SharePoint List | `公務車借用管理` |
+| 流程帳號 | `ad.general@alp.global` |
+| 承辦人 | AD總機 / `ad.general@alp.global` |
+| 已確認權限 | 流程帳號可讀取 `ALP_TW_AD` 清單 |
+| 已確認連線 | SharePoint 標準連接器、Office 365 Outlook 標準連接器 |
 
-本專案採用「每個流程階段完成後都建立新版本」的方式：
+## 公務車資源
 
-- 每完成一個階段，建立新的 Git tag。
-- 舊版本不覆蓋、不刪除。
-- 每個版本都有對應 release note。
-- `CHANGELOG.md` 集中記錄每個版本完成內容。
-- 每個階段完成後，Codex 需自動進入 GitHub Releases 網頁建立版本頁。
+| 車輛 | 資源信箱 |
+|---|---|
+| 公務車Altis ATA-9627 B4-16-永聯內湖辦公室 | `room_nhb4_car@alp.global` |
+| 公務車Camry BKX-2370 B4-17-永聯內湖辦公室 | `room_nhb4_car_camry@alp.global` |
+| 公務車Cross BKY-0762 B4-44-永聯內湖辦公室 | `room_nhb4_car_cross@alp.global` |
 
-例如：
+## 最新通知規則
 
-- `v0.2`：完成 SharePoint List 階段
-- `v0.3`：完成 Teams Adaptive Card 階段
-- `v0.4`：完成 Power Automate 主流程階段
-- `v1.0`：完成正式驗收版本
+Teams Adaptive Card 通知規則已更新為：
 
-詳細規則請見 [docs/version-control-workflow.md](docs/version-control-workflow.md)、[docs/stage-versioning-policy.md](docs/stage-versioning-policy.md) 與 [docs/github-release-web-workflow.md](docs/github-release-web-workflow.md)。
+- 一般借用：借用起始時間前 1 小時通知。
+- 最早通知時間：不得早於借用當天早上 08:00。
+- 整天借用：一律於借用當天早上 08:00 通知。
+- SharePoint 後台新增 `是否整天` 與 `預計通知時間` 欄位，用來支援此規則。
 
-## 功能完成後的標準動作
+## 專案文件
 
-每完成一個功能或階段成果後，Codex 應協助執行：
+| 文件 | 用途 |
+|---|---|
+| [docs/project-master-record.md](docs/project-master-record.md) | 唯一最新 Master 專案紀錄 |
+| [docs/project-milestones.md](docs/project-milestones.md) | 專案里程碑 |
+| [docs/completion-checklist.md](docs/completion-checklist.md) | 完成清單 |
+| [docs/todo.md](docs/todo.md) | 待辦事項 |
+| [sharepoint/list-schema.md](sharepoint/list-schema.md) | SharePoint List 欄位設計 |
+| [power-automate/README.md](power-automate/README.md) | Power Automate 流程設計與現況 |
+| [adaptive-cards/README.md](adaptive-cards/README.md) | Teams Adaptive Card 設計 |
+| [test-cases/function-test-plan.md](test-cases/function-test-plan.md) | 功能測試計畫 |
+| [CHANGELOG.md](CHANGELOG.md) | 版本異動紀錄 |
 
-1. 檢查本次異動內容
-2. 整理完成項目與測試結果
-3. 更新 `CHANGELOG.md`
-4. 必要時更新 `README.md` 或 `docs/`
-5. 建立清楚的 Git commit
-6. 推送到 GitHub 對應 branch
-7. 若達到階段完成條件，建立 tag 與 release note
-8. 自動進入 GitHub Releases 網頁建立版本頁
+## 下一階段
+
+下一階段目標是完成正式自動化串接：
+
+1. 確認 `ad.general@alp.global` 可讀取三台公務車資源行事曆內容。
+2. 建立 `公務車行事曆同步至 SharePoint` 流程。
+3. 建立 `公務車借用前 Teams 通知與回覆` 流程。
+4. 串接 Teams Adaptive Card 回覆寫回 SharePoint。
+5. 完成端到端功能測試後，再啟用正式流程。
+
+## 專案版本控管規則
+
+本專案已建立永久性的開發與版本控管規則，後續所有功能分支、修正分支與文件更新都必須遵循。
+
+每完成一個功能或階段成果後，必須確認功能完成、完成必要測試、更新文件、檢查異動、建立清楚的 Git commit，並視需要 push 到對應分支、建立 tag 或 release note。
+
+完整規則請參考：[docs/Project_Workflow.md](docs/Project_Workflow.md)。
