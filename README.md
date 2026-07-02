@@ -83,3 +83,18 @@ Teams Adaptive Card 通知規則已更新為：
 每完成一個功能或階段成果後，必須確認功能完成、完成必要測試、更新文件、檢查異動、建立清楚的 Git commit，並視需要 push 到對應分支、建立 tag 或 release note。
 
 完整規則請參考：[docs/Project_Workflow.md](docs/Project_Workflow.md)。
+
+## Project Governance（專案治理規則）
+
+本專案採用「Completion-driven Versioning（完成即版本化）」管理模式。除非專案負責人明確要求停止或跳過，否則每次開始新工作前，都必須先確認目前專案狀態；每完成一項功能、流程、文件、修正、測試或里程碑，都必須更新相關文件、建立 Git commit，並推送到 GitHub。
+
+治理規則重點：
+
+- 新工作開始前，必須先讀取 `README.md`、`CHANGELOG.md`、`docs/Project_Workflow.md`。
+- 完成功能後，必須自動更新 README、CHANGELOG、docs、測試紀錄與下一步工作。
+- 可驗收成果必須建立 commit，必要時建立 tag 或 release note。
+- 所有 commit、tag、release、CHANGELOG 必須可追溯。
+- 不得覆蓋或刪除舊版本。
+- Workflow 完成後，必須確認目前分支是否與 Master 專案同步。
+
+完整治理規則請參考：[docs/Project_Workflow.md](docs/Project_Workflow.md#project-governance永久生效)。

@@ -2,6 +2,16 @@
 
 本檔案記錄本專案的主要異動。最新 Master 狀態以 `docs/project-master-record.md` 為準。
 
+## Project Governance
+
+* 新增 New Work Startup Rule
+* 新增 Completion-driven Versioning
+* 新增自動 Workflow
+* 新增 Master 同步規則
+* 新增 Branch 同步檢查
+* 新增 GitHub 自動同步規則
+* 新增固定回覆格式
+
 ## v0.1 - 專案版本控管規則建立
 
 * 建立專案開發與版本控管規則
