@@ -6,20 +6,21 @@
 
 1. 不再要求以 Exchange Administrator 登入流程；使用 `ad.general@alp.global` 與 Office 365 Outlook 標準連線。
 2. 已完成 Outlook 明確顯示 Altis、Camry、Cross 三台共用行事曆後重測；`取得行事曆 (V2)` 仍只回傳個人 Calendar。
-3. 評估將三台行事曆資料夾權限調整為 Editor，或改採其他不使用 Premium 連接器的標準讀取方案；流程日常執行仍不需要 Exchange Administrator。
-4. 權限或方案調整後，再依 owner Email／顯示名稱找出 Altis、Camry、Cross 的真正 Calendar ID；不得直接把資源信箱 Email 當 Calendar ID。
-5. 將三個 Calendar ID 分別套用到 `取得事件的行事曆檢視 (V3)`，讀取未來 7 天事件。
-6. 驗證主旨、起始時間、結束時間、是否全天、建立者／借用人、Event ID 與 iCalUId；完成後再次關閉測試流程。
-7. 確認資源信箱取消與時間異動是否能被 Power Automate 偵測。
-8. 確認所有流程日期時間均轉為 `Asia/Taipei`。
-9. 確認 Event ID / iCalUId 唯一識別邏輯可用。
-10. 確認舊 Teams Adaptive Card 回覆前防呆檢查可用。
-11. 確認 Flow Concurrency Control 與重複資料防止規則可用。
+3. 先採用「邀請流程信箱模式」：員工預約公務車時必須同步邀請 `ad.general@alp.global`。
+4. 建立或調整測試流程，改讀取 `ad.general@alp.global` 自己的個人 `Calendar`。
+5. 以事件參與者或地點是否包含三台 Resource Mailbox Email 判斷是否為公務車借用。
+6. 驗證可取得主旨、起始時間、結束時間、是否全天、建立者／借用人、Event ID 與 iCalUId。
+7. 驗證三台車皆可依 Resource Mailbox Email 正確對應車輛名稱。
+8. 確認邀請流程信箱模式下，取消與時間異動是否能被 Power Automate 偵測。
+9. 確認所有流程日期時間均轉為 `Asia/Taipei`。
+10. 確認 Event ID / iCalUId 唯一識別邏輯可用。
+11. 確認舊 Teams Adaptive Card 回覆前防呆檢查可用。
+12. 確認 Flow Concurrency Control 與重複資料防止規則可用。
 
 ## P1 正式流程開發
 
-1. 建立 `公務車行事曆同步至 SharePoint` 流程。
-2. 設定三台資源信箱同步邏輯。
+1. 建立 `流程信箱行事曆同步至 SharePoint` 流程。
+2. 設定三台 Resource Mailbox Email 判斷邏輯。
 3. 以 `預約唯一鍵` 避免重複建立項目。
 4. 建立 `是否整天` 判斷。
 5. 建立 `預計通知時間` 計算。

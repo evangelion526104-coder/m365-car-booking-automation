@@ -27,6 +27,7 @@
 | FT-010 | `取得行事曆 (V2)` 實際執行 | 部分通過 | 2026-07-02 15:34 成功執行，但輸出只有 `ad.general@alp.global` 的個人 `Calendar` |
 | FT-011 | 測試排程安全關閉 | 通過 | V2 測試後已關閉流程，避免每分鐘重複執行 |
 | FT-012 | Outlook 加入共用行事曆後重測 V2 | 未通過 | 2026-07-04 Outlook 已顯示三台公務車共用行事曆，但 `取得行事曆 (V2)` 仍只回傳一個個人 Calendar |
+| FT-013 | 替代方案設計確認 | 通過 | 決定採用邀請流程信箱模式，不再以 Resource Mailbox Calendar ID 作為唯一前置條件 |
 
 ## 待執行測試案例
 
@@ -46,6 +47,10 @@
 | FT-112 | 承辦人查看後台 | 可依 `領鑰狀態` 判斷是否發放鑰匙 | 待測 |
 | FT-113 | 同一台車重複預約 | Outlook 資源信箱阻擋或避免雙重預約 | 待確認 |
 | FT-114 | 以 `取得行事曆 (V2)` 取得 ID 後逐台讀取 | Altis、Camry、Cross 均以真正 Calendar ID 讀到未來 7 天事件內容 | 受阻；Outlook 已顯示三台共用行事曆後，V2 仍只回傳個人 Calendar |
+| FT-115 | 邀請流程信箱模式：Altis | 預約 Altis 並同步邀請 `ad.general@alp.global` 後，SharePoint 可建立 Altis 借用紀錄 | 待測 |
+| FT-116 | 邀請流程信箱模式：Camry | 預約 Camry 並同步邀請 `ad.general@alp.global` 後，SharePoint 可建立 Camry 借用紀錄 | 待測 |
+| FT-117 | 邀請流程信箱模式：Cross | 預約 Cross 並同步邀請 `ad.general@alp.global` 後，SharePoint 可建立 Cross 借用紀錄 | 待測 |
+| FT-118 | 未邀請流程信箱 | Power Automate 不會自動建立 SharePoint 紀錄，列為操作缺漏 | 待測 |
 
 ## 系統防呆測試案例（正式上線前必測）
 

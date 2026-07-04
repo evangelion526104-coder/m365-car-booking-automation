@@ -12,6 +12,7 @@
 | M4.5 系統防呆設計 | 納入時區、唯一鍵、取消異動、舊卡失效、Flow 防重複設計 | 已完成 | 2026-07-02 |
 | M4.6 SharePoint 防呆欄位建置 | 在正式 SharePoint 清單新增並驗證防呆欄位 | 已完成 | 2026-07-02 |
 | M5 資源信箱讀取確認 | 取得三台 Calendar ID 並讀取未來 7 天事件 | 受阻，待權限或方案調整 | 2026-07-04 已確認 Outlook 看得到三台車，但 V2 仍只回傳個人 Calendar |
+| M5.1 替代方案確認 | 採用邀請流程信箱模式，避免等待 Resource Mailbox Calendar ID | 已完成 | 2026-07-04 |
 | M6 正式同步流程 | 建立 Outlook 行事曆同步至 SharePoint 流程，並納入防呆欄位與取消異動邏輯 | 待開始 | 待排程 |
 | M7 Teams 通知與回覆 | 建立 Adaptive Card 發送、回覆寫回與舊卡失效機制 | 待開始 | 待排程 |
 | M8 端到端與防呆測試 | 完成 Outlook 預約、Teams 回覆、SharePoint 後台與 SG-T01 至 SG-T10 測試 | 待開始 | 待排程 |
@@ -19,4 +20,4 @@
 
 ## 目前所在里程碑
 
-目前位於 M5。已確認 `ad.general@alp.global` 具有三台車 Calendar Reviewer 權限，本專案不需要 Exchange Administrator。直接以資源信箱 Email 測試回傳「ID 格式不正確」。2026-07-04 已確認 Outlook 網頁可顯示三台公務車共用行事曆，但 `取得行事曆 (V2)` 仍只回傳個人 Calendar，實際 ID 與事件欄位尚未取得。下一步需評估 Editor 權限或其他 O365 E1 標準讀取方案。
+目前位於 M5.1。已確認 `ad.general@alp.global` 具有三台車 Calendar Reviewer 權限，本專案不需要 Exchange Administrator。直接以資源信箱 Email 測試回傳「ID 格式不正確」。2026-07-04 已確認 Outlook 網頁可顯示三台公務車共用行事曆，但 `取得行事曆 (V2)` 仍只回傳個人 Calendar。專案先採用邀請流程信箱模式，下一步建立測試流程讀取 `ad.general@alp.global` 個人 Calendar，並依事件參與者中的 Resource Mailbox Email 判斷車輛。

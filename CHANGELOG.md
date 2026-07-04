@@ -2,6 +2,15 @@
 
 本檔案記錄本專案的主要異動。最新 Master 狀態以 `docs/project-master-record.md` 為準。
 
+## v0.2.7 - 採用邀請流程信箱替代方案
+
+* 決定先採用「邀請流程信箱模式」作為 Resource Mailbox Calendar ID 無法列舉時的替代方案
+* 新增 `docs/alternative-calendar-capture.md`
+* 調整下一階段架構：Power Automate 改讀 `ad.general@alp.global` 自己的個人 Calendar
+* 新增使用者預約規則：預約公務車時必須同步邀請 `ad.general@alp.global`
+* 保留 O365 E1、標準連接器、不使用 Premium 的限制
+* 更新 README、待辦事項、Power Automate 說明與測試案例
+
 ## v0.2.6 - Outlook 共用行事曆加入後重測
 
 * 確認 `ad.general@alp.global` 的 Outlook 網頁可顯示三台公務車共用行事曆
