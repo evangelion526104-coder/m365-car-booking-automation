@@ -2,6 +2,15 @@
 
 本檔案記錄本專案的主要異動。最新 Master 狀態以 `docs/project-master-record.md` 為準。
 
+## v0.2.6 - Outlook 共用行事曆加入後重測
+
+* 確認 `ad.general@alp.global` 的 Outlook 網頁可顯示三台公務車共用行事曆
+* 使用正常瀏覽器排除 Codex 側邊欄登入快取問題，Power Automate 詳細資料、連線與 28 天執行歷程均可正常載入
+* 重新執行 `取得行事曆 (V2)`，輸出仍只回傳一個個人 `Calendar`
+* 確認三台 Resource Mailbox 尚未出現在 Power Automate Calendar 清單，仍無法取得 Calendar ID
+* 將下一步調整為評估 Editor 權限或其他不使用 Premium 連接器的標準讀取方案
+* 更新 README、Master、里程碑、待辦、Power Automate 說明與測試紀錄
+
 ## v0.2.5 - Exchange 管理角色存取驗證
 
 * 以 `ad.general@alp.global` 開啟 Exchange 管理中心並直接驗證收件者信箱管理頁

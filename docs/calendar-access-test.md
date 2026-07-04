@@ -1,6 +1,6 @@
 # 公務車資源行事曆存取測試紀錄
 
-測試日期：2026-07-02  
+測試日期：2026-07-04  
 時區：Asia/Taipei  
 分支：`feature/calendar-access-test`
 
@@ -39,33 +39,34 @@
 ## 本輪實際執行情況
 
 1. 已建立功能分支 `feature/calendar-access-test`。
-2. 已嘗試開啟既有測試流程 `公務車功能測試-資源信箱讀取`（Flow ID：`7aff726f-0f9d-4b7e-a128-baeb368ab1ce`）。
-3. 已以 `ad.general@alp.global` 的 Office 365 Outlook 標準連線成功執行 `取得行事曆 (V2)`；2026-07-02 15:34（Asia/Taipei）的執行結果為成功，動作耗時約 0.4 秒。
-4. V2 實際輸出只有一筆 `Calendar`，擁有者為 `ad.general@alp.global`，未包含 Altis、Camry、Cross 三台資源行事曆。
-5. 因三台資源行事曆未出現在輸出，現階段無法取得其 Calendar ID，也無法執行三台車的 `取得事件的行事曆檢視 (V3)`。
-6. 測試流程曾為手動測試暫時開啟，確認結果後已於 2026-07-02 關閉，避免每分鐘重複執行。
-7. 已取得使用者允許，下一步可在 `ad.general@alp.global` 的 Outlook 中明確加入三台共用行事曆後重測；本輪 Outlook 網頁未在內嵌瀏覽器完成載入，因此尚未完成加入動作。
+2. 已使用既有測試流程 `公務車功能測試-資源信箱讀取`（Flow ID：`7aff726f-0f9d-4b7e-a128-baeb368ab1ce`）。
+3. 2026-07-02 已以 `ad.general@alp.global` 的 Office 365 Outlook 標準連線成功執行 `取得行事曆 (V2)`，輸出只有一筆個人 `Calendar`。
+4. 2026-07-04 已確認 `ad.general@alp.global` 的 Outlook 網頁可顯示三台公務車共用行事曆，包含 Altis、Camry、Cross。
+5. 因 Codex 側邊欄瀏覽器對 Power Automate 登入快取不穩，已改用正常瀏覽器開啟 Power Automate；流程詳細資料、連線與 28 天執行歷程均可正常載入。
+6. 2026-07-04 重新執行 `取得行事曆 (V2)` 後，輸出仍只回傳一個個人行事曆，未列出三台公務車 Resource Mailbox。
+7. 因三台資源行事曆未出現在輸出，現階段仍無法取得其 Calendar ID，也無法執行三台車的 `取得事件的行事曆檢視 (V3)`。
 8. 本輪未讀取或記錄任何實際借用事件內容，也未將待測欄位誤標為通過。
 
 ## 權限與連接器判定
 
 - 不需要登入 Exchange Administrator，也不修改 Resource Mailbox、Calendar Processing 或 Exchange 組態。
-- Calendar Reviewer 已足以讓 `ad.general@alp.global` 在 Outlook 查看資源行事曆，但本次實測證明它不會自動讓三台行事曆出現在 `取得行事曆 (V2)` 輸出。
+- Calendar Reviewer 已足以讓 `ad.general@alp.global` 在 Outlook 查看資源行事曆，但兩輪實測證明：即使 Outlook 網頁已顯示三台共用行事曆，三台車仍不會出現在 `取得行事曆 (V2)` 輸出。
 - Microsoft 的 Office 365 Outlook 連接器限制說明指出，共用行事曆要出現在行事曆相關動作的 Calendar ID 清單中，通常需同時具備檢視與編輯權限。
-- 因此後續先採最小變更：在 Outlook 明確加入三台共用行事曆並重測。若仍未列出，則需評估將流程帳號的行事曆資料夾權限由 Reviewer 調整為 Editor；這是資料夾權限調整，不代表流程日常執行需要 Exchange Administrator。
+- 因此後續需評估將流程帳號的行事曆資料夾權限由 Reviewer 調整為 Editor，或改採其他 O365 E1 可行且不使用 Premium 連接器的讀取方案。這是資源行事曆存取條件問題，不代表流程日常執行需要 Exchange Administrator。
 
 ## 恢復後固定測試步驟
 
-1. 在測試流程加入 `取得行事曆 (V2)`。
-2. 執行流程並保存回傳的 `name`、`owner.address`、`id`。
-3. 依三個 Resource Mailbox Email 配對 Calendar ID。
-4. 分別加入或執行三個 `取得事件的行事曆檢視 (V3)`。
-5. 查詢區間使用執行當下到未來 7 天，並以 `Asia/Taipei` 顯示測試結果。
-6. 驗證七項必要欄位並更新本文件。
-7. 三台均通過後更新 CHANGELOG、Master、里程碑與完成度，再提交下一個 commit。
+1. 先確認是否可將三台資源行事曆對 `ad.general@alp.global` 的資料夾權限由 Reviewer 調整為 Editor，或確認替代讀取方案。
+2. 重新執行 `取得行事曆 (V2)`。
+3. 若回傳三台公務車行事曆，保存 `name`、`owner.address`、`id`。
+4. 依三個 Resource Mailbox Email 配對 Calendar ID。
+5. 分別加入或執行三個 `取得事件的行事曆檢視 (V3)`。
+6. 查詢區間使用執行當下到未來 7 天，並以 `Asia/Taipei` 顯示測試結果。
+7. 驗證七項必要欄位並更新本文件。
+8. 三台均通過後更新 CHANGELOG、Master、里程碑與完成度，再提交下一個 commit。
 
 ## 本輪結論
 
-測試狀態：**部分完成；V2 標準連線與動作執行成功，但三台資源行事曆未被列出，V3 尚未執行**。
+測試狀態：**部分完成；V2 標準連線與動作執行成功，但 Outlook 已加入共用行事曆後仍未列出三台資源行事曆，V3 尚未執行**。
 
-權限結論：**流程不需要 Exchange Administrator；但 Reviewer 目前不足以讓三台行事曆自動出現在 Power Automate 清單，需先完成 Outlook 明確加入測試，必要時再評估 Editor 權限**。
+權限結論：**流程不需要 Exchange Administrator；但 Reviewer 目前不足以讓三台行事曆出現在 Power Automate 清單。下一步需評估 Editor 權限或其他標準連接器可行方案**。

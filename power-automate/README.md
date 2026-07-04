@@ -25,7 +25,7 @@
 |---|---|---|
 | SharePoint `取得多個項目` | 通過 | 可讀取 `ALP_TW_AD` 的 `公務車借用管理` 清單 |
 | Office 365 Outlook 標準連接器驗證 | 通過 | `ad.general@alp.global` 可建立連線 |
-| 資源行事曆 Calendar ID 取得 | 未通過 | 選單只有個人 `Calendar`；資源信箱 Email 不能直接當 Calendar ID |
+| 資源行事曆 Calendar ID 取得 | 未通過 | Outlook 已顯示三台共用行事曆後，`取得行事曆 (V2)` 仍只回傳個人 `Calendar`；資源信箱 Email 不能直接當 Calendar ID |
 | 流程執行紀錄 | 通過 | 2026-07-01 下午 05:07 顯示成功 |
 
 ## 資源信箱讀取實測
@@ -40,7 +40,7 @@
 | 結果 | 失敗：`ID 格式不正確`（BadRequest） |
 | 流程狀態 | 已關閉，保留執行紀錄供追蹤 |
 
-本次結果代表 Outlook 連接器驗證成功，但資源信箱 Email 不能直接作為 Calendar ID。`ad.general@alp.global` 已具有三台車 Calendar Reviewer 權限，不需要 Exchange Administrator；下一步改用 `取得行事曆 (V2)` 取得真正 Calendar ID，再依序重測 Altis、Camry、Cross。
+本次結果代表 Outlook 連接器驗證成功，但資源信箱 Email 不能直接作為 Calendar ID。`ad.general@alp.global` 已具有三台車 Calendar Reviewer 權限，不需要 Exchange Administrator；2026-07-04 已確認 Outlook 網頁可顯示三台公務車共用行事曆，但 `取得行事曆 (V2)` 仍只回傳個人 Calendar。下一步需評估 Editor 權限或其他不使用 Premium 連接器的標準讀取方案，再依序重測 Altis、Camry、Cross。
 
 ## 尚未完成正式流程
 
@@ -152,7 +152,7 @@
 
 | 項目 | 狀態 | 說明 |
 |---|---|---|
-| 三台資源信箱讀取權限 | 已具備 | `ad.general@alp.global` 已有 Calendar Reviewer；待 `取得行事曆 (V2)` 回傳真正 Calendar ID |
+| 三台資源信箱讀取權限 | 部分具備 | `ad.general@alp.global` 已有 Calendar Reviewer 且 Outlook 看得到三台車；但 Power Automate V2 未列出，待評估 Editor 或替代方案 |
 | 取消預約同步 | 待實作 | 預約取消後需更新 SharePoint 狀態 |
 | 時間異動同步 | 待實作 | 預約時間異動後需重算 `預計通知時間` |
 | Teams 回覆寫回 | 待實作 | 需完成 Adaptive Card 回覆與 SharePoint 更新 |

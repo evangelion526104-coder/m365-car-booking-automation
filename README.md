@@ -17,10 +17,10 @@
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
-| 目前版本 | `v0.2.5` |
-| 目前開發階段 | `取得行事曆 (V2)` 已成功執行但只回傳個人 Calendar；待在 Outlook 明確加入三台共用行事曆後重測 |
-| 專案完成度 | 69% |
-| 最新更新日期 | 2026-07-02 |
+| 目前版本 | `v0.2.6` |
+| 目前開發階段 | Outlook 已可顯示三台公務車共用行事曆，但 `取得行事曆 (V2)` 重測仍只回傳個人 Calendar；三台車 Calendar ID 尚未取得 |
+| 專案完成度 | 70% |
+| 最新更新日期 | 2026-07-04 |
 | Master 紀錄 | [docs/project-master-record.md](docs/project-master-record.md) |
 | SharePoint 清單 | [公務車借用管理](https://alpglobal.sharepoint.com/sites/ALP_TW_AD/Lists/List6/AllItems.aspx) |
 | Power Automate 測試流程 | 公務車功能測試-SharePoint清單連線 |
@@ -75,11 +75,12 @@ Teams Adaptive Card 通知規則已更新為：
 
 下一階段目標是完成正式自動化串接：
 
-1. 使用 `ad.general@alp.global` 的 Office 365 Outlook 標準連線執行 `取得行事曆 (V2)`，取得三台車真正的 Calendar ID。
-2. 建立 `公務車行事曆同步至 SharePoint` 流程。
-3. 建立 `公務車借用前 Teams 通知與回覆` 流程。
-4. 串接 Teams Adaptive Card 回覆寫回 SharePoint。
-5. 完成端到端功能測試後，再啟用正式流程。
+1. 評估將三台資源行事曆資料夾權限由 Reviewer 調整為 Editor，或採用其他不使用 Premium 連接器的可行讀取方式。
+2. 重新執行 `取得行事曆 (V2)`，確認是否能取得三台車真正 Calendar ID。
+3. 取得 Calendar ID 後，建立 `公務車行事曆同步至 SharePoint` 流程。
+4. 建立 `公務車借用前 Teams 通知與回覆` 流程。
+5. 串接 Teams Adaptive Card 回覆寫回 SharePoint。
+6. 完成端到端功能測試後，再啟用正式流程。
 
 ## 專案版本控管規則
 

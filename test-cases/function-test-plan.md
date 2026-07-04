@@ -26,6 +26,7 @@
 | FT-009 | Calendar Reviewer 前置條件 | 部分通過 | `ad.general@alp.global` 可查看三台車行事曆且不需 Exchange Administrator；但 Reviewer 尚未使共用行事曆出現在 Power Automate Calendar ID 清單 |
 | FT-010 | `取得行事曆 (V2)` 實際執行 | 部分通過 | 2026-07-02 15:34 成功執行，但輸出只有 `ad.general@alp.global` 的個人 `Calendar` |
 | FT-011 | 測試排程安全關閉 | 通過 | V2 測試後已關閉流程，避免每分鐘重複執行 |
+| FT-012 | Outlook 加入共用行事曆後重測 V2 | 未通過 | 2026-07-04 Outlook 已顯示三台公務車共用行事曆，但 `取得行事曆 (V2)` 仍只回傳一個個人 Calendar |
 
 ## 待執行測試案例
 
@@ -44,7 +45,7 @@
 | FT-111 | 借用人未勾選規範 | SharePoint 維持或更新為 `未完成填寫` | 待測 |
 | FT-112 | 承辦人查看後台 | 可依 `領鑰狀態` 判斷是否發放鑰匙 | 待測 |
 | FT-113 | 同一台車重複預約 | Outlook 資源信箱阻擋或避免雙重預約 | 待確認 |
-| FT-114 | 以 `取得行事曆 (V2)` 取得 ID 後逐台讀取 | Altis、Camry、Cross 均以真正 Calendar ID 讀到未來 7 天事件內容 | 受阻；V2 只回傳個人 Calendar，待 Outlook 明確加入三台共用行事曆後重測 |
+| FT-114 | 以 `取得行事曆 (V2)` 取得 ID 後逐台讀取 | Altis、Camry、Cross 均以真正 Calendar ID 讀到未來 7 天事件內容 | 受阻；Outlook 已顯示三台共用行事曆後，V2 仍只回傳個人 Calendar |
 
 ## 系統防呆測試案例（正式上線前必測）
 

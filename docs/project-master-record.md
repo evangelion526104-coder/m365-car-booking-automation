@@ -1,6 +1,6 @@
 # M365 公務車借用自動通知與後台管理流程 Master 專案紀錄
 
-更新日期：2026-07-02  
+更新日期：2026-07-04  
 Master 狀態：本文件為目前唯一最新版本，後續功能分支應以本文件為基準。
 
 ## 一、目前專案總覽
@@ -8,13 +8,13 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
-| 目前版本 | `v0.2.5` |
+| 目前版本 | `v0.2.6` |
 | 專案目標 | 讓員工透過 Outlook 預約公務車，系統自動同步至 SharePoint 後台，並在借用前透過 Teams Adaptive Card 通知借用人填寫共乘人數與確認公務車使用規範，供承辦人判斷是否發放鑰匙 |
 | 主要架構 | Outlook 資源行事曆 + Power Automate + Teams Adaptive Card + SharePoint List |
 | 授權限制 | O365 E1 可行，不使用 Power Automate Premium 連接器 |
-| 目前開發階段 | M5 已完成 V2 實際執行；目前只列出個人 Calendar，待明確加入三台共用行事曆後重測 Calendar ID |
-| 專案完成度 | 69% |
-| 下一個預計完成階段 | 完成三台資源行事曆 Calendar ID 可見性與逐台讀取驗證，再建立正式 Outlook 同步流程 |
+| 目前開發階段 | M5 已完成 Outlook 共用行事曆加入後重測；`取得行事曆 (V2)` 仍只列出個人 Calendar，三台車 Calendar ID 尚未取得 |
+| 專案完成度 | 70% |
+| 下一個預計完成階段 | 評估 Editor 權限或其他 O365 E1 標準讀取方案，取得三台 Calendar ID 後逐台讀取驗證 |
 
 ## 二、本次新增完成內容
 
@@ -52,7 +52,9 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 - 資源信箱 Email 不是 `取得事件的行事曆檢視 (V3)` 可接受的 Calendar ID。
 - 已確認 `ad.general@alp.global` 具有三台資源信箱 Calendar Reviewer 權限，可在 Outlook 查看行事曆；但 V2 實測尚未列出三台共用行事曆。
 - 本專案不修改 Resource Mailbox、Calendar Processing 或 Exchange 組態，因此不需要 Exchange Administrator。
-- 已於 2026-07-02 15:34 成功執行 `取得行事曆 (V2)`，輸出只有個人 `Calendar`；下一步先在 Outlook 明確加入三台共用行事曆後重測。
+- 已於 2026-07-02 15:34 成功執行 `取得行事曆 (V2)`，輸出只有個人 `Calendar`。
+- 已於 2026-07-04 確認 Outlook 網頁可顯示三台公務車共用行事曆，但重新執行 `取得行事曆 (V2)` 仍只回傳一個個人 Calendar。
+- 下一步需評估 Editor 權限或其他不使用 Premium 連接器的標準讀取方案。
 
 ### Excel
 
@@ -86,7 +88,7 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 - 資源行事曆 Calendar ID 可見性測試未通過，已確認為 M5 正式阻擋點。
 - 資源信箱讀取測試流程已關閉，避免持續排程失敗。
 - 已修正先前將 Calendar ID 錯誤推論為需要 Exchange Administrator 的判斷；既有 Reviewer 權限已足夠。
-- 本輪 Power Automate 網頁編輯器自動控制持續逾時，尚未取得 Calendar ID；詳見 `docs/calendar-access-test.md`。
+- 本輪已改由正常瀏覽器完成 Power Automate 測試，排除 Codex 側邊欄登入快取問題；詳見 `docs/calendar-access-test.md`。
 
 ### 系統防呆設計
 
@@ -106,10 +108,10 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 |---|---|---:|---|
 | 需求分析 | 已完成 | 100% | 核心需求、限制與例外情境已整理 |
 | SharePoint List | 已完成 | 100% | 已在 `ALP_TW_AD` 建立並驗證 |
-| Power Automate | 進行中 | 40% | V2 動作成功執行，但只回傳個人 Calendar；正式自動化尚未完成 |
+| Power Automate | 進行中 | 42% | V2 動作成功執行，但 Outlook 已加入共用行事曆後仍只回傳個人 Calendar；正式自動化尚未完成 |
 | Adaptive Card | 設計完成 | 80% | JSON 範例完成，尚未正式串接發送 |
 | Teams 通知 | 設計完成，待串接 | 30% | 通知時間規則已確認 |
-| Outlook | 測試中 | 44% | Reviewer 可供 Outlook 查看；待明確加入三台共用行事曆並重測 V2/V3 |
+| Outlook | 測試中 | 46% | Reviewer 可供 Outlook 查看三台車；但 V2 仍未列出三台 Resource Mailbox |
 | 系統防呆設計 | 欄位已落地，流程待實作 | 82% | 五項防呆機制已文件化，SharePoint 欄位已建立 |
 | 測試案例 | 進行中 | 60% | 已記錄 Calendar ID 可見性與無效 ID 實測，防呆情境待實測 |
 | 維護文件 | 已更新 | 94% | Master、治理、防呆、欄位與 Exchange 權限文件已更新 |
@@ -164,16 +166,17 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 
 | 優先順序 | 工作項目 | 說明 |
 |---:|---|---|
-| 1 | 取得三台 Calendar ID | 透過 `取得行事曆 (V2)` 列出可用行事曆並記錄三台資源行事曆真正 ID |
-| 2 | 建立正式行事曆同步流程 | 將 Outlook 預約同步到 SharePoint List，並寫入已建立的防呆欄位 |
-| 3 | 建立取消與異動同步 | 行事曆取消、時間、車輛、主旨或借用人異動時同步更新 |
-| 4 | 建立通知時間計算 | 依 `Asia/Taipei`、`是否整天`、`借用起始時間` 計算 `預計通知時間` |
-| 5 | 建立 Teams Adaptive Card 發送流程 | 到達 `預計通知時間` 後發送給借用人，並避免重複通知 |
-| 6 | 建立回覆前防呆檢查 | 檢查 Event ID、卡片版本、事件狀態，避免舊卡片覆蓋資料 |
-| 7 | 建立 Flow 執行鎖 | 啟用 Concurrency Control，避免重複資料與 Race Condition |
-| 8 | 執行端到端與防呆測試 | 從 Outlook 預約到 Teams 回覆到 SharePoint 後台確認 |
-| 9 | 建立操作手冊 | 提供行政、總務人員日常使用與異常處理 |
-| 10 | 上線前驗收 | 五項防呆機制與所有端到端測試通過後才可上線 |
+| 1 | 解除 Calendar ID 存取阻擋 | 評估 Editor 權限或其他 O365 E1 標準方案，讓三台車可被 Power Automate 讀取 |
+| 2 | 取得三台 Calendar ID | 透過 `取得行事曆 (V2)` 列出可用行事曆並記錄三台資源行事曆真正 ID |
+| 3 | 建立正式行事曆同步流程 | 將 Outlook 預約同步到 SharePoint List，並寫入已建立的防呆欄位 |
+| 4 | 建立取消與異動同步 | 行事曆取消、時間、車輛、主旨或借用人異動時同步更新 |
+| 5 | 建立通知時間計算 | 依 `Asia/Taipei`、`是否整天`、`借用起始時間` 計算 `預計通知時間` |
+| 6 | 建立 Teams Adaptive Card 發送流程 | 到達 `預計通知時間` 後發送給借用人，並避免重複通知 |
+| 7 | 建立回覆前防呆檢查 | 檢查 Event ID、卡片版本、事件狀態，避免舊卡片覆蓋資料 |
+| 8 | 建立 Flow 執行鎖 | 啟用 Concurrency Control，避免重複資料與 Race Condition |
+| 9 | 執行端到端與防呆測試 | 從 Outlook 預約到 Teams 回覆到 SharePoint 後台確認 |
+| 10 | 建立操作手冊 | 提供行政、總務人員日常使用與異常處理 |
+| 11 | 上線前驗收 | 五項防呆機制與所有端到端測試通過後才可上線 |
 
 ## 六、Master 專案紀錄更新狀態
 
@@ -189,4 +192,4 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 
 本專案目前已完成後台資料結構、系統防呆欄位、基礎連線測試與資源行事曆存取閘門實測。SharePoint 與 Outlook 連接器驗證正常，但尚未具備進入正式同步流程的資源行事曆存取條件。
 
-目前不需要以 Exchange Administrator 登入或執行流程。`ad.general@alp.global` 已具備三台資源行事曆 Calendar Reviewer 權限；2026-07-02 已成功執行 `取得行事曆 (V2)`，但輸出只有個人 `Calendar`，未列出三台資源行事曆。P0 工作改為先在 Outlook 明確加入三台共用行事曆後重測；若仍未列出，再評估將行事曆資料夾權限提升為 Editor。取得真正 Calendar ID 後，才以 `取得事件的行事曆檢視 (V3)` 逐台驗證未來 7 天事件欄位。
+目前不需要以 Exchange Administrator 登入或執行流程。`ad.general@alp.global` 已具備三台資源行事曆 Calendar Reviewer 權限，且 Outlook 網頁已可顯示三台公務車共用行事曆；但 2026-07-04 重測 `取得行事曆 (V2)` 後，輸出仍只有個人 `Calendar`，未列出三台資源行事曆。P0 工作改為評估將行事曆資料夾權限提升為 Editor，或採用其他 O365 E1 可行且不使用 Premium 連接器的讀取方案。取得真正 Calendar ID 後，才以 `取得事件的行事曆檢視 (V3)` 逐台驗證未來 7 天事件欄位。
