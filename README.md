@@ -17,9 +17,9 @@
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
-| 目前版本 | `v0.2.7` |
-| 目前開發階段 | 已決定先採用替代方案：員工預約公務車時同步邀請 `ad.general@alp.global`，Power Automate 改讀流程信箱自己的行事曆 |
-| 專案完成度 | 72% |
+| 目前版本 | `v0.2.6` |
+| 目前開發階段 | Outlook 已可顯示三台公務車共用行事曆，但 `取得行事曆 (V2)` 重測仍只回傳個人 Calendar；三台車 Calendar ID 尚未取得 |
+| 專案完成度 | 70% |
 | 最新更新日期 | 2026-07-04 |
 | Master 紀錄 | [docs/project-master-record.md](docs/project-master-record.md) |
 | SharePoint 清單 | [公務車借用管理](https://alpglobal.sharepoint.com/sites/ALP_TW_AD/Lists/List6/AllItems.aspx) |
@@ -65,7 +65,6 @@ Teams Adaptive Card 通知規則已更新為：
 | [docs/system-safeguards.md](docs/system-safeguards.md) | 系統防呆設計，上線前必須完成 |
 | [docs/Exchange_Resource_Mailbox_Permission.md](docs/Exchange_Resource_Mailbox_Permission.md) | Exchange 資源行事曆權限修復與驗證步驟 |
 | [docs/calendar-access-test.md](docs/calendar-access-test.md) | 三台公務車 Calendar ID 與事件欄位實測紀錄 |
-| [docs/alternative-calendar-capture.md](docs/alternative-calendar-capture.md) | 替代方案：邀請流程信箱模式 |
 | [sharepoint/list-schema.md](sharepoint/list-schema.md) | SharePoint List 欄位設計 |
 | [power-automate/README.md](power-automate/README.md) | Power Automate 流程設計與現況 |
 | [adaptive-cards/README.md](adaptive-cards/README.md) | Teams Adaptive Card 設計 |
@@ -76,13 +75,12 @@ Teams Adaptive Card 通知規則已更新為：
 
 下一階段目標是完成正式自動化串接：
 
-1. 先採用「邀請流程信箱模式」：員工預約公務車時同步邀請 `ad.general@alp.global`。
-2. 建立或調整同步流程，改讀取 `ad.general@alp.global` 自己的個人 `Calendar`。
-3. 依事件參與者中的 Resource Mailbox Email 判斷車輛名稱。
-4. 將符合條件的事件同步至 SharePoint。
-5. 建立 `公務車借用前 Teams 通知與回覆` 流程。
-6. 串接 Teams Adaptive Card 回覆寫回 SharePoint。
-7. 完成端到端功能測試後，再啟用正式流程。
+1. 評估將三台資源行事曆資料夾權限由 Reviewer 調整為 Editor，或採用其他不使用 Premium 連接器的可行讀取方式。
+2. 重新執行 `取得行事曆 (V2)`，確認是否能取得三台車真正 Calendar ID。
+3. 取得 Calendar ID 後，建立 `公務車行事曆同步至 SharePoint` 流程。
+4. 建立 `公務車借用前 Teams 通知與回覆` 流程。
+5. 串接 Teams Adaptive Card 回覆寫回 SharePoint。
+6. 完成端到端功能測試後，再啟用正式流程。
 
 ## 專案版本控管規則
 

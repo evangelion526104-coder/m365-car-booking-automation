@@ -70,12 +70,3 @@
 測試狀態：**部分完成；V2 標準連線與動作執行成功，但 Outlook 已加入共用行事曆後仍未列出三台資源行事曆，V3 尚未執行**。
 
 權限結論：**流程不需要 Exchange Administrator；但 Reviewer 目前不足以讓三台行事曆出現在 Power Automate 清單。下一步需評估 Editor 權限或其他標準連接器可行方案**。
-
-## 後續替代方案
-
-2026-07-04 已決定先採用「邀請流程信箱模式」：
-
-- 員工預約公務車時同步邀請 `ad.general@alp.global`。
-- Power Automate 改讀 `ad.general@alp.global` 自己的個人 `Calendar`。
-- 流程依事件參與者或地點中的 Resource Mailbox Email 判斷車輛。
-- 詳細設計請參考 [alternative-calendar-capture.md](alternative-calendar-capture.md)。

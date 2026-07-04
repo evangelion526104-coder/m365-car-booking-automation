@@ -42,51 +42,27 @@
 
 本次結果代表 Outlook 連接器驗證成功，但資源信箱 Email 不能直接作為 Calendar ID。`ad.general@alp.global` 已具有三台車 Calendar Reviewer 權限，不需要 Exchange Administrator；2026-07-04 已確認 Outlook 網頁可顯示三台公務車共用行事曆，但 `取得行事曆 (V2)` 仍只回傳個人 Calendar。下一步需評估 Editor 權限或其他不使用 Premium 連接器的標準讀取方案，再依序重測 Altis、Camry、Cross。
 
-## 已採用替代方案：邀請流程信箱模式
-
-由於 Power Automate 無法列舉三台 Resource Mailbox Calendar ID，本專案先採用「邀請流程信箱模式」。
-
-使用者仍透過 Outlook 預約公務車，但預約時必須同步邀請：
-
-```text
-ad.general@alp.global
-```
-
-Power Automate 改讀取 `ad.general@alp.global` 自己的個人 `Calendar`，再依事件參與者或地點是否包含三台 Resource Mailbox Email 判斷車輛。
-
-判斷表：
-
-| Resource Mailbox | 對應車輛 |
-|---|---|
-| `room_nhb4_car@alp.global` | 公務車 Altis ATA-9627 B4-16 |
-| `room_nhb4_car_camry@alp.global` | 公務車 Camry BKX-2370 B4-17 |
-| `room_nhb4_car_cross@alp.global` | 公務車 Cross BKY-0762 B4-44 |
- 
-此方案不使用 Premium 連接器，也不需要直接讀取 Resource Mailbox Calendar ID。
-
 ## 尚未完成正式流程
 
 正式流程建議拆成兩條，降低維護難度。
 
-### 流程一：流程信箱行事曆同步至 SharePoint
+### 流程一：公務車行事曆同步至 SharePoint
 
-目的：定期讀取 `ad.general@alp.global` 個人行事曆中被邀請的公務車預約，將資料同步到 SharePoint List。
+目的：定期讀取三台公務車 Outlook 資源行事曆，將預約資料同步到 SharePoint List。
 
 預計步驟：
 
 1. 排程觸發，例如每 15 分鐘或每 30 分鐘執行。
-2. 讀取 `ad.general@alp.global` 個人 `Calendar` 的行事曆事件。
-3. 檢查事件參與者或地點是否包含三台 Resource Mailbox Email。
-4. 不包含公務車 Resource Mailbox 時略過。
-5. 包含公務車 Resource Mailbox 時，判斷車輛名稱並取得借用日期、起訖時間、借用人、主旨、Event ID、iCalUId、事件最後修改時間。
-6. 將 Outlook 原始時間轉換為 `Asia/Taipei`，並保留 UTC 原始時間供稽核。
-7. 組合 `預約唯一鍵 = 資源信箱 + "|" + iCalUId`；若 iCalUId 不可用，改用流程信箱事件 ID。
-8. 依 `預約唯一鍵` 查詢 SharePoint，已存在則更新，不存在才新增。
-9. 判斷是否為整天預約，寫入 `是否整天`。
-10. 計算 `預計通知時間`，全天事件固定為當天 08:00。
-11. 預設 `領鑰狀態` 為 `待通知`，`事件同步狀態` 為 `有效`。
-12. 若 Outlook 預約取消或同步流程找不到原事件，更新 `領鑰狀態` 為 `已取消` 或 `已失效`。
-13. 若 Outlook 預約異動，更新 SharePoint、重算通知時間，並將舊 `卡片版本` 標記為失效。
+2. 讀取三台資源信箱的行事曆預約。
+3. 取得借用日期、起訖時間、借用人、主旨、車輛名稱、Event ID、iCalUId、事件最後修改時間。
+4. 將 Outlook 原始時間轉換為 `Asia/Taipei`，並保留 UTC 原始時間供稽核。
+5. 組合 `預約唯一鍵 = 資源信箱 + "|" + Event ID`。
+6. 依 `預約唯一鍵` 查詢 SharePoint，已存在則更新，不存在才新增。
+7. 判斷是否為整天預約，寫入 `是否整天`。
+8. 計算 `預計通知時間`，全天事件固定為當天 08:00。
+9. 預設 `領鑰狀態` 為 `待通知`，`事件同步狀態` 為 `有效`。
+10. 若 Outlook 預約取消，更新 `領鑰狀態` 為 `已取消`，`事件同步狀態` 為 `已取消`。
+11. 若 Outlook 預約異動，更新 SharePoint、重算通知時間，並將舊 `卡片版本` 標記為失效。
 
 ### 流程二：公務車借用前 Teams 通知與回覆
 
@@ -176,7 +152,7 @@ Power Automate 改讀取 `ad.general@alp.global` 自己的個人 `Calendar`，�
 
 | 項目 | 狀態 | 說明 |
 |---|---|---|
-| 三台資源信箱讀取權限 | 改採替代方案 | 不直接讀 Resource Mailbox Calendar ID；改讀流程信箱自己的 Calendar |
+| 三台資源信箱讀取權限 | 部分具備 | `ad.general@alp.global` 已有 Calendar Reviewer 且 Outlook 看得到三台車；但 Power Automate V2 未列出，待評估 Editor 或替代方案 |
 | 取消預約同步 | 待實作 | 預約取消後需更新 SharePoint 狀態 |
 | 時間異動同步 | 待實作 | 預約時間異動後需重算 `預計通知時間` |
 | Teams 回覆寫回 | 待實作 | 需完成 Adaptive Card 回覆與 SharePoint 更新 |
