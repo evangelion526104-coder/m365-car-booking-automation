@@ -127,3 +127,13 @@
 
 - 建立初始專案資料夾。
 - 建立初版 SharePoint、Power Automate、Adaptive Card、測試文件骨架。
+## v0.2.7 - ATA-9627 V3 Resource Calendar 事件讀取測試流程建立
+
+* 紀錄 IT 已將 `ad.general@alp.global` 對 `room_nhb4_car@alp.global` 的 Calendar Folder Permission 調整為 Editor。
+* 紀錄 Outlook 端已可看到 ATA-9627 行事曆，並可新增、修改、刪除測試事件。
+* 紀錄 Power Automate `取得行事曆 (V2)` 執行成功但僅回傳 `ad.general@alp.global` 自身 Calendar。
+* 明確判定 `取得行事曆 (V2)` 不能作為 Resource Mailbox 是否可讀取的最終判斷依據。
+* 新增 `取得事件的行事曆檢視 (V3)` 直接讀取 ATA-9627 事件的測試流程設計。
+* 新增 `docs/ata9627-v3-calendar-event-test.md`，作為下一階段 Power Automate 測試紀錄。
+* 第一輪 Calendar Id 測試值設定為 `room_nhb4_car@alp.global`。
+* 本版本尚未宣告 V3 實測成功，需待 Power Automate 執行後回填結果。

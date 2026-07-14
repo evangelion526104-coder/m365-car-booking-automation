@@ -64,3 +64,12 @@
 3. 建立日常維護說明。
 4. 完成上線前驗收紀錄。
 5. 視需要建立 Git tag 與正式 release note。
+## v0.2.7 待辦事項 - ATA-9627 V3 事件讀取
+
+1. 建立 Power Automate 測試流程 `公務車功能測試-ATA9627事件讀取`。
+2. 在 `取得事件的行事曆檢視 (V3)` 的 Calendar Id 第一輪填入 `room_nhb4_car@alp.global`。
+3. 查詢期間設定為 `utcNow()` 至 `addDays(utcNow(),7)`。
+4. 執行測試並確認是否可讀到 `subject = TEST`。
+5. 若成功，記錄 Event ID 與 iCalUId。
+6. 若失敗，保留完整錯誤訊息並分類原因。
+7. 測試完成後更新 `docs/ata9627-v3-calendar-event-test.md`、README、CHANGELOG 與 Master 紀錄。

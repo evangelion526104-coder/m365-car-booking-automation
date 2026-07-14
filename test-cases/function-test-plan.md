@@ -80,3 +80,15 @@
 - 未完整填寫時，`領鑰狀態` 不得變成 `已完成確認`。
 - 承辦人可在 SharePoint 後台即時判斷是否發放鑰匙。
 - 系統防呆測試 SG-T01 至 SG-T10 必須通過，才可正式上線。
+## v0.2.7 測試案例 - ATA-9627 Resource Calendar V3 事件讀取
+
+| 測試編號 | 測試項目 | 操作方式 | 預期結果 | 狀態 |
+|---|---|---|---|---|
+| CAL-V3-01 | Outlook Editor 權限確認 | 使用 `ad.general@alp.global` 開啟 Outlook 查看 ATA-9627 行事曆 | 可看到 ATA-9627 行事曆 | 通過 |
+| CAL-V3-02 | Outlook 新增事件 | 在 ATA-9627 行事曆建立主旨 `TEST` 的事件 | 事件可建立成功 | 通過 |
+| CAL-V3-03 | Outlook 修改事件 | 修改 `TEST` 事件 | 事件可修改成功 | 通過 |
+| CAL-V3-04 | Outlook 刪除事件 | 刪除測試事件或測試刪除能力 | 事件可刪除成功 | 通過 |
+| CAL-V3-05 | 取得行事曆 (V2) 列表確認 | 執行 `公務車功能測試-資源信箱讀取` | 僅列出 ad.general 自身 Calendar | 已確認 |
+| CAL-V3-06 | V3 直接讀取事件 | 執行 `公務車功能測試-ATA9627事件讀取` | 可讀到 subject = TEST | 待測 |
+| CAL-V3-07 | Event ID / iCalUId 確認 | 查看 V3 輸出欄位 | 可取得 id 與 iCalUId | 待測 |
+| CAL-V3-08 | Asia/Taipei 時區確認 | 比對 Outlook 顯示時間與流程輸出時間 | 顯示給人員看的時間為台北時間 | 待測 |

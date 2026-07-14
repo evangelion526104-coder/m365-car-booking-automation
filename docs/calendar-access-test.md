@@ -70,3 +70,59 @@
 測試狀態：**部分完成；V2 標準連線與動作執行成功，但 Outlook 已加入共用行事曆後仍未列出三台資源行事曆，V3 尚未執行**。
 
 權限結論：**流程不需要 Exchange Administrator；但 Reviewer 目前不足以讓三台行事曆出現在 Power Automate 清單。下一步需評估 Editor 權限或其他標準連接器可行方案**。
+## v0.2.7 補充紀錄 - ATA-9627 Editor 權限與 V3 測試方向
+
+日期：2026-07-14
+
+### 已完成確認
+
+IT 已先將 `ad.general@alp.global` 對 `room_nhb4_car@alp.global` 的 Calendar Folder Permission 調整為 Editor。
+
+Outlook 端已確認：
+
+- `ad.general@alp.global` 可以看到 ATA-9627 行事曆。
+- 可以透過「新增會議室或位置」預約 ATA-9627。
+- 可以新增行事曆事件。
+- 可以修改事件。
+- 可以刪除事件。
+
+因此 Outlook 端 Editor 權限已生效。
+
+### Power Automate 既有測試結果
+
+測試流程：`公務車功能測試-資源信箱讀取`
+
+測試動作：`取得行事曆 (V2)`
+
+結果：
+
+- Flow 執行成功。
+- statusCode 為 200。
+- 輸出僅有 `Calendar`。
+- owner 為 `AD General 總機專用 / ad.general@alp.global`。
+- 未列出 `room_nhb4_car@alp.global`。
+- 未列出 `公務車Altis ATA-9627 B4-16-永聯內湖辦公室`。
+
+目前判斷：
+
+`取得行事曆 (V2)` 可能只回傳連線帳號自身 Calendar，不能作為 Resource Mailbox 是否可讀取的最終判斷依據。
+
+### 下一步
+
+建立或修改獨立測試流程：
+
+`公務車功能測試-ATA9627事件讀取`
+
+改用 `取得事件的行事曆檢視 (V3)` 直接讀取 `room_nhb4_car@alp.global` 的事件。
+
+第一輪 Calendar Id 請直接填入：
+
+`room_nhb4_car@alp.global`
+
+成功判斷：
+
+若輸出中可看到 `subject = TEST`，即判定 Power Automate 可讀取 ATA-9627 Resource Mailbox 事件。
+
+完整測試步驟請見：
+
+`docs/ata9627-v3-calendar-event-test.md`

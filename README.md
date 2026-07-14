@@ -120,3 +120,23 @@ Teams Adaptive Card 通知規則已更新為：
 | Flow 防重複 | 啟用 Concurrency Control，避免重複建立與重複通知 |
 
 完整防呆設計請參考：[docs/system-safeguards.md](docs/system-safeguards.md)。
+## v0.2.7 更新摘要 - ATA-9627 V3 事件讀取測試
+
+目前專案進入 Resource Mailbox 事件讀取驗證階段。本階段先以 `公務車Altis ATA-9627 B4-16-永聯內湖辦公室` 測試。
+
+已確認事項：
+
+- IT 已將 `ad.general@alp.global` 對 `room_nhb4_car@alp.global` 的 Calendar Folder Permission 調整為 Editor。
+- Outlook 端已確認 `ad.general@alp.global` 可看到 ATA-9627 行事曆，且可新增、修改、刪除測試事件。
+- Power Automate `取得行事曆 (V2)` 執行成功，但目前僅回傳 `ad.general@alp.global` 自身 Calendar，未列出 ATA-9627。
+- 因此下一階段不再只依賴 `取得行事曆 (V2)`，改以 `取得事件的行事曆檢視 (V3)` 直接測試 Resource Mailbox 事件讀取。
+
+下一階段測試流程名稱：
+
+`公務車功能測試-ATA9627事件讀取`
+
+第一輪 Calendar Id 建議填入：
+
+`room_nhb4_car@alp.global`
+
+測試目標為讀取未來 7 天內主旨為 `TEST` 的 ATA-9627 測試事件。完整測試步驟請見 [ATA-9627 Resource Calendar V3 事件讀取測試](docs/ata9627-v3-calendar-event-test.md)。

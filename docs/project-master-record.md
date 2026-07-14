@@ -193,3 +193,35 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 本專案目前已完成後台資料結構、系統防呆欄位、基礎連線測試與資源行事曆存取閘門實測。SharePoint 與 Outlook 連接器驗證正常，但尚未具備進入正式同步流程的資源行事曆存取條件。
 
 目前不需要以 Exchange Administrator 登入或執行流程。`ad.general@alp.global` 已具備三台資源行事曆 Calendar Reviewer 權限，且 Outlook 網頁已可顯示三台公務車共用行事曆；但 2026-07-04 重測 `取得行事曆 (V2)` 後，輸出仍只有個人 `Calendar`，未列出三台資源行事曆。P0 工作改為評估將行事曆資料夾權限提升為 Editor，或採用其他 O365 E1 可行且不使用 Premium 連接器的讀取方案。取得真正 Calendar ID 後，才以 `取得事件的行事曆檢視 (V3)` 逐台驗證未來 7 天事件欄位。
+## v0.2.7 Master 更新 - ATA-9627 V3 事件讀取測試
+
+更新日期：2026-07-14
+
+目前版本更新為 `v0.2.7`，本階段為 Resource Mailbox 事件讀取驗證階段。
+
+### 本次新增完成內容
+
+- 紀錄 ATA-9627 Resource Mailbox 的 Outlook Editor 權限已由 IT 設定完成。
+- 紀錄 `ad.general@alp.global` 已可在 Outlook 端看到、建立、修改、刪除 ATA-9627 行事曆事件。
+- 紀錄 Power Automate `取得行事曆 (V2)` 雖執行成功，但僅回傳 `ad.general@alp.global` 自身 Calendar。
+- 新增下一階段 V3 事件讀取測試流程設計。
+- 新增 `docs/ata9627-v3-calendar-event-test.md` 測試紀錄文件。
+
+### 目前狀態
+
+| 功能 | 狀態 | 完成度 | 備註 |
+|---|---|---|---|
+| Outlook Editor 權限驗證 | 已完成 | 100% | ATA-9627 已在 Outlook 端驗證 |
+| 取得行事曆 (V2) 測試 | 已完成 | 100% | 僅回傳自身 Calendar |
+| V3 Resource Calendar 事件讀取 | 待測 | 0% | 下一步測 `subject = TEST` |
+| 三台車 Calendar ID 確認 | 進行中 | 33% | 先測 ATA-9627 |
+| SharePoint 同步正式串接 | 待續 | 0% | 等 V3 讀取成功後進行 |
+
+### 下一階段工作
+
+1. 在 Power Automate 建立 `公務車功能測試-ATA9627事件讀取`。
+2. 使用 `取得事件的行事曆檢視 (V3)`，Calendar Id 第一輪填入 `room_nhb4_car@alp.global`。
+3. 查詢 `utcNow()` 到 `addDays(utcNow(),7)`。
+4. 確認是否可讀到主旨 `TEST`。
+5. 回填 Calendar Id 實際設定方式、錯誤訊息或成功輸出。
+6. 成功後再套用 Camry 與 Cross。

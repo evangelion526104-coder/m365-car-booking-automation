@@ -20,3 +20,18 @@
 ## 目前所在里程碑
 
 目前位於 M5。已確認 `ad.general@alp.global` 具有三台車 Calendar Reviewer 權限，本專案不需要 Exchange Administrator。直接以資源信箱 Email 測試回傳「ID 格式不正確」。2026-07-04 已確認 Outlook 網頁可顯示三台公務車共用行事曆，但 `取得行事曆 (V2)` 仍只回傳個人 Calendar，實際 ID 與事件欄位尚未取得。下一步需評估 Editor 權限或其他 O365 E1 標準讀取方案。
+## v0.2.7 - ATA-9627 V3 事件讀取測試流程
+
+狀態：進行中
+
+目標：
+
+- 確認 Outlook Editor 權限已在 ATA-9627 生效。
+- 確認 `取得行事曆 (V2)` 不能作為 Resource Mailbox 讀取的唯一判斷依據。
+- 建立 `取得事件的行事曆檢視 (V3)` 直接讀取 ATA-9627 事件的測試流程。
+
+完成條件：
+
+- Power Automate 可讀到 ATA-9627 測試事件 `TEST`。
+- 可取得 subject、start、end、id、iCalUId。
+- 測試結果回填至 `docs/ata9627-v3-calendar-event-test.md`。

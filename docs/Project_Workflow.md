@@ -343,3 +343,26 @@ Master 專案永遠保持最新狀態。
 - Flow 必須避免重複建立、重複通知與同時執行造成的資料衝突。
 
 若本次異動會影響上述任一項，必須同步更新 [system-safeguards.md](system-safeguards.md)、測試案例與相關設計文件。
+## v0.2.7 Resource Mailbox 測試流程規則補充
+
+本專案後續測試 Resource Mailbox 行事曆時，需遵守以下規則：
+
+1. 不再以 `取得行事曆 (V2)` 是否列出 Resource Mailbox 作為唯一判斷依據。
+2. 若 Outlook 端已確認可看到、建立、修改、刪除 Resource Mailbox 事件，代表 Calendar Folder Permission 已在 Outlook 端生效。
+3. Power Automate 需另以 `取得事件的行事曆檢視 (V3)` 直接測試是否可讀取 Resource Mailbox 事件。
+4. 測試流程必須保留獨立流程，不直接改正式流程，避免測試資料影響後續自動通知。
+5. Calendar Id 測試需先記錄實際填入值、錯誤訊息與執行結果，不得只用推測判斷權限失敗。
+6. 若標準 Office 365 Outlook 連接器無法直接讀取 Resource Mailbox，需明確記錄為連接器或 Calendar Id 限制，再評估替代方案。
+7. 本專案仍以 O365 E1 可用的標準連接器為優先，不新增 Premium 連接器。
+
+目前下一階段測試流程：
+
+| 項目 | 內容 |
+|---|---|
+| 測試流程名稱 | 公務車功能測試-ATA9627事件讀取 |
+| 測試車輛 | 公務車Altis ATA-9627 B4-16-永聯內湖辦公室 |
+| Resource Mailbox | room_nhb4_car@alp.global |
+| 第一輪 Calendar Id | room_nhb4_car@alp.global |
+| 目標測試事件 | TEST |
+| 查詢期間 | `utcNow()` 至 `addDays(utcNow(),7)` |
+| 時區顯示原則 | Asia/Taipei |
