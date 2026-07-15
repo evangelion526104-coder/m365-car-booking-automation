@@ -1,7 +1,8 @@
 # ATA-9627 Resource Calendar V3 事件讀取測試
 
-版本：v0.2.7  
-建立日期：2026-07-14  
+版本：v0.2.8
+建立日期：2026-07-14
+最近更新：2026-07-15
 測試目標：確認 Power Automate 是否可以透過 Office 365 Outlook 標準連接器，直接讀取 ATA-9627 公務車 Resource Mailbox 的行事曆事件。
 
 ## 一、測試背景
@@ -16,6 +17,7 @@
 |---|---|
 | 公務車名稱 | 公務車Altis ATA-9627 B4-16-永聯內湖辦公室 |
 | Resource Mailbox | room_nhb4_car@alp.global |
+| Calendar ID | `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` |
 | 測試事件主旨 | TEST |
 | 目標連接器 | Office 365 Outlook |
 | 是否使用 Premium 連接器 | 否 |
@@ -82,7 +84,7 @@ Office 365 Outlook 連線帳號：
 | 順序 | Power Automate 動作 | 設定重點 |
 |---|---|---|
 | 1 | 手動觸發流程 | 方便行政或 IT 人員重複測試 |
-| 2 | 取得事件的行事曆檢視 (V3) | Calendar Id 先填 `room_nhb4_car@alp.global` |
+| 2 | 取得事件的行事曆檢視 (V3) | Calendar Id 填 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` |
 | 3 | 篩選陣列 | 篩選 Subject 等於 `TEST` 的事件 |
 | 4 | Compose - 事件數量 | 顯示抓到幾筆事件 |
 | 5 | Compose - 第一筆事件摘要 | 顯示主旨、開始時間、結束時間、Event ID、iCalUId |
@@ -96,9 +98,9 @@ Office 365 Outlook 連線帳號：
 
 Calendar Id 測試順序：
 
-1. 第一優先：直接填入 `room_nhb4_car@alp.global`
-2. 若失敗：記錄完整錯誤訊息，確認是否為 Calendar Id 格式限制。
-3. 若錯誤指出 Calendar Id 不存在或無權存取：請 IT 協助確認 Office 365 Outlook 連接器是否支援以 Resource Mailbox SMTP 地址作為 Calendar Id。
+1. 第一優先：填入真正 Calendar ID `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`。
+2. 不再使用 `room_nhb4_car@alp.global` 作為 V3 Calendar Id；先前已確認信箱地址格式不適用。
+3. 若 GUID 仍失敗：記錄完整錯誤訊息，確認是否為權限、連接器限制、快取或 Calendar ID 對應問題。
 4. 若標準連接器無法直接讀取：需評估替代方案，但仍以不使用 Premium 連接器為優先。
 
 開始時間：
@@ -164,7 +166,7 @@ subject = TEST
 | Outlook 是否可新增 TEST 事件 | 通過 | 已建立測試事件 |
 | 取得行事曆 (V2) 是否列出 ATA-9627 | 未通過 | 僅列出 ad.general 自身 Calendar |
 | 取得事件的行事曆檢視 (V3) 是否可讀取 TEST | 待測 | 下一階段測試 |
-| Calendar Id 最終格式 | 待確認 | 第一輪先使用 `room_nhb4_car@alp.global` |
+| Calendar Id 最終格式 | 已取得，待 V3 驗證 | `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` |
 | 是否可取得 Event ID / iCalUId | 待測 | 成功讀到事件後確認 |
 
 ## 十、測試完成後需回填
@@ -179,3 +181,14 @@ subject = TEST
 6. 問題屬於 Calendar Id、連接器限制、快取、權限或其他原因。
 7. 下一步建議。
 
+## 十一、v0.2.8 補充紀錄 - ATA-9627 Calendar ID 已取得
+
+更新日期：2026-07-15
+
+已取得 ATA-9627 公務車真正 Calendar ID：
+
+`6049e1d1-b34c-4cca-b530-2c7c4b77abe9`
+
+請在 Power Automate 測試流程 `公務車功能測試-ATA9627事件讀取` 的 `取得事件的行事曆檢視 (V3)` 動作中，將 Calendar Id 改填上述 GUID。
+
+本階段尚未完成 V3 實際執行驗證，因此不得將 CAL-V3-06、CAL-V3-07 或 M5 標記為通過。需等 Flow 執行輸出確認可取得事件資料後，再更新測試結果。

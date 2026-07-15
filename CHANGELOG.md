@@ -2,6 +2,14 @@
 
 本檔案記錄本專案的主要異動。最新 Master 狀態以 `docs/project-master-record.md` 為準。
 
+## v0.2.8 - ATA-9627 Calendar ID 取得
+
+* 取得 ATA-9627 公務車真正 Calendar ID：`6049e1d1-b34c-4cca-b530-2c7c4b77abe9`
+* 將 V3 事件讀取測試值由資源信箱 Email 改為真正 Calendar ID
+* 更新 README、Master、里程碑、待辦、Power Automate 說明與測試紀錄
+* 明確標示 V3 事件讀取仍待實際執行，不得先標記為通過
+* 下一步為執行 `公務車功能測試-ATA9627事件讀取`，確認是否可取得 subject、start、end、Event ID 與 iCalUId
+
 ## v0.2.6 - Outlook 共用行事曆加入後重測
 
 * 確認 `ad.general@alp.global` 的 Outlook 網頁可顯示三台公務車共用行事曆

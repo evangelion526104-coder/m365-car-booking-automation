@@ -175,7 +175,7 @@
 | 順序 | 動作 | 說明 |
 |---|---|---|
 | 1 | 手動觸發流程 | 方便反覆測試 |
-| 2 | 取得事件的行事曆檢視 (V3) | Calendar Id 第一輪填 `room_nhb4_car@alp.global` |
+| 2 | 取得事件的行事曆檢視 (V3) | Calendar Id 填 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` |
 | 3 | 篩選陣列 | 篩選主旨等於 `TEST` 的事件 |
 | 4 | Compose - 測試事件數量 | 顯示找到幾筆 TEST |
 | 5 | Compose - 事件摘要 | 顯示 subject、start、end、id、iCalUId |
@@ -190,4 +190,13 @@ V3 查詢期間：
 
 - 文件與 SharePoint 顯示時間一律使用 `Asia/Taipei`。
 - 若 V3 動作要求 UTC 格式，查詢可使用 UTC，但輸出給承辦人確認時需轉換為台北時間。
-- 若 Calendar Id 使用 `room_nhb4_car@alp.global` 失敗，需保留完整錯誤訊息，並記錄是 Calendar Id、連接器限制、快取或權限問題。
+- 不再使用 `room_nhb4_car@alp.global` 作為 V3 Calendar Id；請改用 ATA-9627 真正 Calendar ID `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`。
+- 若 GUID 仍失敗，需保留完整錯誤訊息，並記錄是 Calendar Id、連接器限制、快取或權限問題。
+
+## v0.2.8 更新 - ATA-9627 Calendar ID 測試值
+
+2026-07-15 已取得 ATA-9627 真正 Calendar ID：
+
+`6049e1d1-b34c-4cca-b530-2c7c4b77abe9`
+
+下一步請執行 `公務車功能測試-ATA9627事件讀取`，確認 V3 動作是否可讀取未來 7 天事件。成功後才可把同樣方法套用到 Camry 與 Cross，並進入正式 SharePoint 同步流程。

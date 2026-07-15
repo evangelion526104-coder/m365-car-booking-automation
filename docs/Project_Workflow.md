@@ -362,7 +362,15 @@ Master 專案永遠保持最新狀態。
 | 測試流程名稱 | 公務車功能測試-ATA9627事件讀取 |
 | 測試車輛 | 公務車Altis ATA-9627 B4-16-永聯內湖辦公室 |
 | Resource Mailbox | room_nhb4_car@alp.global |
-| 第一輪 Calendar Id | room_nhb4_car@alp.global |
+| 第一輪 Calendar Id | 已改為真正 Calendar ID：`6049e1d1-b34c-4cca-b530-2c7c4b77abe9` |
 | 目標測試事件 | TEST |
 | 查詢期間 | `utcNow()` 至 `addDays(utcNow(),7)` |
 | 時區顯示原則 | Asia/Taipei |
+
+## v0.2.8 Resource Calendar ID 測試規則補充
+
+2026-07-15 已取得 ATA-9627 真正 Calendar ID：
+
+`6049e1d1-b34c-4cca-b530-2c7c4b77abe9`
+
+後續 V3 測試需以此 GUID 作為 Calendar Id，不得再以 `room_nhb4_car@alp.global` 作為 V3 Calendar Id。若 GUID 測試成功，才能將同一做法擴展至 Camry 與 Cross，並進入正式 SharePoint 同步流程。

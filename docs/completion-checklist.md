@@ -44,8 +44,8 @@
 
 ## 尚未完成
 
-- [ ] 由 Exchange 管理員授予 `ad.general@alp.global` 三台資源行事曆 Calendar 資料夾 `Reviewer` 權限。
-- [ ] 確認三台資源行事曆出現在 Power Automate Calendar ID 選單並完成讀取測試。
+- [ ] 使用 ATA-9627 真正 Calendar ID `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` 完成 V3 事件讀取測試。
+- [ ] 取得 Camry 與 Cross 真正 Calendar ID，並完成三台車未來 7 天事件讀取測試。
 - [ ] 建立正式 Outlook 行事曆同步流程。
 - [ ] 實作 Asia/Taipei 統一時區轉換。
 - [ ] 實作 Event ID / iCalUId 唯一識別與重複資料防止。

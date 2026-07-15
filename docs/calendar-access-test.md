@@ -20,7 +20,7 @@
 
 | 車輛 | Resource Mailbox | Calendar ID | 未來 7 天讀取 |
 |---|---|---|---|
-| Altis ATA-9627 B4-16 | `room_nhb4_car@alp.global` | 尚未取得 | 尚未執行 |
+| Altis ATA-9627 B4-16 | `room_nhb4_car@alp.global` | `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` | 待執行 V3 |
 | Camry BKX-2370 B4-17 | `room_nhb4_car_camry@alp.global` | 尚未取得 | 尚未執行 |
 | Cross BKY-0762 B4-44 | `room_nhb4_car_cross@alp.global` | 尚未取得 | 尚未執行 |
 
@@ -115,9 +115,9 @@ Outlook 端已確認：
 
 改用 `取得事件的行事曆檢視 (V3)` 直接讀取 `room_nhb4_car@alp.global` 的事件。
 
-第一輪 Calendar Id 請直接填入：
+第一輪 Calendar Id 請填入真正 Calendar ID：
 
-`room_nhb4_car@alp.global`
+`6049e1d1-b34c-4cca-b530-2c7c4b77abe9`
 
 成功判斷：
 
@@ -126,3 +126,13 @@ Outlook 端已確認：
 完整測試步驟請見：
 
 `docs/ata9627-v3-calendar-event-test.md`
+
+## v0.2.8 補充紀錄 - ATA-9627 Calendar ID 已取得
+
+日期：2026-07-15
+
+已取得 ATA-9627 公務車真正 Calendar ID：
+
+`6049e1d1-b34c-4cca-b530-2c7c4b77abe9`
+
+後續 V3 測試請以此 GUID 作為 Calendar Id，不再使用 `room_nhb4_car@alp.global` 作為 V3 Calendar Id。測試狀態仍為「待執行」，需完成 Flow 執行後再回填是否可讀到主旨、起迄時間、是否全天、建立者／借用人、Event ID 與 iCalUId。

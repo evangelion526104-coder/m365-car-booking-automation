@@ -17,10 +17,10 @@
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
-| 目前版本 | `v0.2.6` |
-| 目前開發階段 | Outlook 已可顯示三台公務車共用行事曆，但 `取得行事曆 (V2)` 重測仍只回傳個人 Calendar；三台車 Calendar ID 尚未取得 |
-| 專案完成度 | 70% |
-| 最新更新日期 | 2026-07-04 |
+| 目前版本 | `v0.2.8` |
+| 目前開發階段 | ATA-9627 真正 Calendar ID 已取得，待以 `取得事件的行事曆檢視 (V3)` 驗證是否可讀取未來 7 天事件 |
+| 專案完成度 | 72% |
+| 最新更新日期 | 2026-07-15 |
 | Master 紀錄 | [docs/project-master-record.md](docs/project-master-record.md) |
 | SharePoint 清單 | [公務車借用管理](https://alpglobal.sharepoint.com/sites/ALP_TW_AD/Lists/List6/AllItems.aspx) |
 | Power Automate 測試流程 | 公務車功能測試-SharePoint清單連線 |
@@ -39,11 +39,11 @@
 
 ## 公務車資源
 
-| 車輛 | 資源信箱 |
-|---|---|
-| 公務車Altis ATA-9627 B4-16-永聯內湖辦公室 | `room_nhb4_car@alp.global` |
-| 公務車Camry BKX-2370 B4-17-永聯內湖辦公室 | `room_nhb4_car_camry@alp.global` |
-| 公務車Cross BKY-0762 B4-44-永聯內湖辦公室 | `room_nhb4_car_cross@alp.global` |
+| 車輛 | 資源信箱 | Calendar ID 狀態 |
+|---|---|---|
+| 公務車Altis ATA-9627 B4-16-永聯內湖辦公室 | `room_nhb4_car@alp.global` | 已取得：`6049e1d1-b34c-4cca-b530-2c7c4b77abe9` |
+| 公務車Camry BKX-2370 B4-17-永聯內湖辦公室 | `room_nhb4_car_camry@alp.global` | 待取得 |
+| 公務車Cross BKY-0762 B4-44-永聯內湖辦公室 | `room_nhb4_car_cross@alp.global` | 待取得 |
 
 ## 最新通知規則
 
@@ -75,12 +75,13 @@ Teams Adaptive Card 通知規則已更新為：
 
 下一階段目標是完成正式自動化串接：
 
-1. 評估將三台資源行事曆資料夾權限由 Reviewer 調整為 Editor，或採用其他不使用 Premium 連接器的可行讀取方式。
-2. 重新執行 `取得行事曆 (V2)`，確認是否能取得三台車真正 Calendar ID。
-3. 取得 Calendar ID 後，建立 `公務車行事曆同步至 SharePoint` 流程。
-4. 建立 `公務車借用前 Teams 通知與回覆` 流程。
-5. 串接 Teams Adaptive Card 回覆寫回 SharePoint。
-6. 完成端到端功能測試後，再啟用正式流程。
+1. 在 `公務車功能測試-ATA9627事件讀取` 中，將 `取得事件的行事曆檢視 (V3)` 的 Calendar Id 設為 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`。
+2. 執行測試並確認是否可讀到 ATA-9627 未來 7 天事件，至少需確認 subject、start、end、id、iCalUId。
+3. 若 ATA-9627 測試成功，再取得 Camry 與 Cross 的真正 Calendar ID 並逐台重測。
+4. 三台車皆可讀取後，建立 `公務車行事曆同步至 SharePoint` 流程。
+5. 建立 `公務車借用前 Teams 通知與回覆` 流程。
+6. 串接 Teams Adaptive Card 回覆寫回 SharePoint。
+7. 完成端到端功能測試後，再啟用正式流程。
 
 ## 專案版本控管規則
 
@@ -135,8 +136,16 @@ Teams Adaptive Card 通知規則已更新為：
 
 `公務車功能測試-ATA9627事件讀取`
 
-第一輪 Calendar Id 建議填入：
+原 v0.2.7 測試時曾建議先填入資源信箱 Email：
 
 `room_nhb4_car@alp.global`
 
-測試目標為讀取未來 7 天內主旨為 `TEST` 的 ATA-9627 測試事件。完整測試步驟請見 [ATA-9627 Resource Calendar V3 事件讀取測試](docs/ata9627-v3-calendar-event-test.md)。
+此測試值已由 v0.2.8 的真正 Calendar ID 取代。後續測試目標仍為讀取未來 7 天內主旨為 `TEST` 的 ATA-9627 測試事件。完整測試步驟請見 [ATA-9627 Resource Calendar V3 事件讀取測試](docs/ata9627-v3-calendar-event-test.md)。
+
+## v0.2.8 更新摘要 - ATA-9627 Calendar ID 已取得
+
+2026-07-15 已取得 ATA-9627 公務車真正 Calendar ID：
+
+`6049e1d1-b34c-4cca-b530-2c7c4b77abe9`
+
+下一步請在 Power Automate 測試流程 `公務車功能測試-ATA9627事件讀取` 中，將 `取得事件的行事曆檢視 (V3)` 的 Calendar Id 改填此 GUID，而不是資源信箱 Email。測試尚未標記為通過；必須實際執行 Flow 並確認可讀到事件資料後，才能進入正式 SharePoint 同步流程。

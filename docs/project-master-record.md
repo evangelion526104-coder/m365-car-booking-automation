@@ -1,6 +1,6 @@
 # M365 公務車借用自動通知與後台管理流程 Master 專案紀錄
 
-更新日期：2026-07-04  
+更新日期：2026-07-15
 Master 狀態：本文件為目前唯一最新版本，後續功能分支應以本文件為基準。
 
 ## 一、目前專案總覽
@@ -8,13 +8,13 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
-| 目前版本 | `v0.2.6` |
+| 目前版本 | `v0.2.8` |
 | 專案目標 | 讓員工透過 Outlook 預約公務車，系統自動同步至 SharePoint 後台，並在借用前透過 Teams Adaptive Card 通知借用人填寫共乘人數與確認公務車使用規範，供承辦人判斷是否發放鑰匙 |
 | 主要架構 | Outlook 資源行事曆 + Power Automate + Teams Adaptive Card + SharePoint List |
 | 授權限制 | O365 E1 可行，不使用 Power Automate Premium 連接器 |
-| 目前開發階段 | M5 已完成 Outlook 共用行事曆加入後重測；`取得行事曆 (V2)` 仍只列出個人 Calendar，三台車 Calendar ID 尚未取得 |
-| 專案完成度 | 70% |
-| 下一個預計完成階段 | 評估 Editor 權限或其他 O365 E1 標準讀取方案，取得三台 Calendar ID 後逐台讀取驗證 |
+| 目前開發階段 | ATA-9627 真正 Calendar ID 已取得，待以 V3 動作驗證是否可讀取未來 7 天事件 |
+| 專案完成度 | 72% |
+| 下一個預計完成階段 | 使用 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` 執行 ATA-9627 V3 事件讀取測試，成功後取得 Camry 與 Cross Calendar ID |
 
 ## 二、本次新增完成內容
 
@@ -220,8 +220,39 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 ### 下一階段工作
 
 1. 在 Power Automate 建立 `公務車功能測試-ATA9627事件讀取`。
-2. 使用 `取得事件的行事曆檢視 (V3)`，Calendar Id 第一輪填入 `room_nhb4_car@alp.global`。
+2. 使用 `取得事件的行事曆檢視 (V3)`，Calendar Id 改填 ATA-9627 真正 Calendar ID `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`。
 3. 查詢 `utcNow()` 到 `addDays(utcNow(),7)`。
 4. 確認是否可讀到主旨 `TEST`。
 5. 回填 Calendar Id 實際設定方式、錯誤訊息或成功輸出。
 6. 成功後再套用 Camry 與 Cross。
+
+## v0.2.8 Master 更新 - ATA-9627 Calendar ID 已取得
+
+更新日期：2026-07-15
+
+本階段已取得 ATA-9627 公務車真正 Calendar ID：
+
+`6049e1d1-b34c-4cca-b530-2c7c4b77abe9`
+
+### 本次新增完成內容
+
+- 將 ATA-9627 Calendar ID 記錄至 README、Power Automate 設計、測試紀錄與 Master 紀錄。
+- 將 V3 事件讀取測試值由資源信箱 Email 改為真正 Calendar ID。
+- 明確保留 V3 讀取狀態為待執行，不提前標記為通過。
+
+### 目前狀態
+
+| 功能 | 狀態 | 完成度 | 備註 |
+|---|---|---|---|
+| ATA-9627 Calendar ID 確認 | 已完成 | 100% | `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` |
+| ATA-9627 V3 事件讀取 | 待執行 | 0% | 需實際執行 Flow |
+| Camry / Cross Calendar ID 確認 | 待開始 | 0% | ATA-9627 成功後再處理 |
+| SharePoint 同步正式串接 | 待續 | 0% | 等三台車讀取成功後進行 |
+
+### 下一階段工作
+
+1. 在 Power Automate 開啟 `公務車功能測試-ATA9627事件讀取`。
+2. 將 `取得事件的行事曆檢視 (V3)` 的 Calendar Id 設為 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`。
+3. 查詢期間使用 `utcNow()` 至 `addDays(utcNow(),7)`。
+4. 執行 Flow，確認是否可取得主旨、起始時間、結束時間、是否全天、建立者／借用人、Event ID 與 iCalUId。
+5. 若成功，回填測試結果並進入 Camry、Cross Calendar ID 取得與測試。
