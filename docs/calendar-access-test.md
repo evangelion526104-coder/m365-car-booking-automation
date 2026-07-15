@@ -136,3 +136,27 @@ Outlook 端已確認：
 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`
 
 後續 V3 測試請以此 GUID 作為 Calendar Id，不再使用 `room_nhb4_car@alp.global` 作為 V3 Calendar Id。測試狀態仍為「待執行」，需完成 Flow 執行後再回填是否可讀到主旨、起迄時間、是否全天、建立者／借用人、Event ID 與 iCalUId。
+
+## v0.2.9 補充紀錄 - ATA-9627 V3 測試實作版
+
+日期：2026-07-15
+
+已建立可直接照 Power Automate 畫面操作的 ATA-9627 V3 測試實作版：
+
+`power-automate/ata9627-v3-test-implementation.md`
+
+本測試仍使用 Office 365 Outlook 標準連接器，不使用 Premium 連接器，也不需要 Exchange Administrator。
+
+測試完成後需回填：
+
+| 欄位 | 說明 |
+|---|---|
+| Flow 是否執行成功 | 成功或失敗 |
+| 全部事件數量 | `Compose_All_Event_Count` |
+| TEST 事件數量 | `Compose_TEST_Event_Count` |
+| 第一筆事件原始資料 | `Compose_First_Event_Raw` |
+| 是否取得 Event ID | 檢查 `id` |
+| 是否取得 iCalUId | 檢查 `iCalUId` |
+| 是否可進入下一步 | 依測試結果判斷 |
+
+只有在 V3 成功取得事件資料，且可取得 Event ID 或 iCalUId 後，才可進入 `公務車行事曆同步至 SharePoint - ATA9627 MVP`。

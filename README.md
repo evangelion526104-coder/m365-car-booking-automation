@@ -17,9 +17,9 @@
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
-| 目前版本 | `v0.2.8` |
-| 目前開發階段 | ATA-9627 真正 Calendar ID 已取得，待以 `取得事件的行事曆檢視 (V3)` 驗證是否可讀取未來 7 天事件 |
-| 專案完成度 | 72% |
+| 目前版本 | `v0.2.9` |
+| 目前開發階段 | ATA-9627 V3 事件讀取測試實作版已整理，待在 Power Automate 執行並回填結果 |
+| 專案完成度 | 73% |
 | 最新更新日期 | 2026-07-15 |
 | Master 紀錄 | [docs/project-master-record.md](docs/project-master-record.md) |
 | SharePoint 清單 | [公務車借用管理](https://alpglobal.sharepoint.com/sites/ALP_TW_AD/Lists/List6/AllItems.aspx) |
@@ -67,6 +67,7 @@ Teams Adaptive Card 通知規則已更新為：
 | [docs/calendar-access-test.md](docs/calendar-access-test.md) | 三台公務車 Calendar ID 與事件欄位實測紀錄 |
 | [sharepoint/list-schema.md](sharepoint/list-schema.md) | SharePoint List 欄位設計 |
 | [power-automate/README.md](power-automate/README.md) | Power Automate 流程設計與現況 |
+| [power-automate/ata9627-v3-test-implementation.md](power-automate/ata9627-v3-test-implementation.md) | ATA-9627 V3 事件讀取測試實作版 |
 | [adaptive-cards/README.md](adaptive-cards/README.md) | Teams Adaptive Card 設計 |
 | [test-cases/function-test-plan.md](test-cases/function-test-plan.md) | 功能測試計畫 |
 | [CHANGELOG.md](CHANGELOG.md) | 版本異動紀錄 |
@@ -149,3 +150,11 @@ Teams Adaptive Card 通知規則已更新為：
 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`
 
 下一步請在 Power Automate 測試流程 `公務車功能測試-ATA9627事件讀取` 中，將 `取得事件的行事曆檢視 (V3)` 的 Calendar Id 改填此 GUID，而不是資源信箱 Email。測試尚未標記為通過；必須實際執行 Flow 並確認可讀到事件資料後，才能進入正式 SharePoint 同步流程。
+
+## v0.2.9 更新摘要 - ATA-9627 V3 測試實作版
+
+本版本已將 ATA-9627 V3 事件讀取測試整理成可直接照 Power Automate 畫面建立的實作版文件：
+
+[power-automate/ata9627-v3-test-implementation.md](power-automate/ata9627-v3-test-implementation.md)
+
+本階段仍不將 V3 事件讀取標記為通過。必須在 Power Automate 實際執行 `公務車功能測試-ATA9627事件讀取`，並確認可取得事件數量、主旨、起訖時間、是否全天、Event ID 與 iCalUId 後，才可進入 `公務車行事曆同步至 SharePoint - ATA9627 MVP`。

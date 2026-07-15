@@ -8,13 +8,13 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
-| 目前版本 | `v0.2.8` |
+| 目前版本 | `v0.2.9` |
 | 專案目標 | 讓員工透過 Outlook 預約公務車，系統自動同步至 SharePoint 後台，並在借用前透過 Teams Adaptive Card 通知借用人填寫共乘人數與確認公務車使用規範，供承辦人判斷是否發放鑰匙 |
 | 主要架構 | Outlook 資源行事曆 + Power Automate + Teams Adaptive Card + SharePoint List |
 | 授權限制 | O365 E1 可行，不使用 Power Automate Premium 連接器 |
-| 目前開發階段 | ATA-9627 真正 Calendar ID 已取得，待以 V3 動作驗證是否可讀取未來 7 天事件 |
-| 專案完成度 | 72% |
-| 下一個預計完成階段 | 使用 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` 執行 ATA-9627 V3 事件讀取測試，成功後取得 Camry 與 Cross Calendar ID |
+| 目前開發階段 | ATA-9627 V3 事件讀取測試實作版已建立，待 Power Automate 實際執行並回填結果 |
+| 專案完成度 | 73% |
+| 下一個預計完成階段 | 執行 `公務車功能測試-ATA9627事件讀取`，確認是否可取得事件欄位與 Event ID / iCalUId |
 
 ## 二、本次新增完成內容
 
@@ -116,7 +116,7 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 | 測試案例 | 進行中 | 60% | 已記錄 Calendar ID 可見性與無效 ID 實測，防呆情境待實測 |
 | 維護文件 | 已更新 | 94% | Master、治理、防呆、欄位與 Exchange 權限文件已更新 |
 | 操作手冊 | 待建立 | 20% | 尚需整理行政人員日常操作手冊 |
-| Git 版本 | 已建立 | 80% | 目前在 `develop` 分支，依 Project Governance 自動提交與同步 |
+| Git 版本 | 已建立 | 82% | 目前在 `feature/calendar-access-test` 分支，依 Project Governance 提交並同步 GitHub |
 
 ## 四、本次異動摘要
 
@@ -256,3 +256,36 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 3. 查詢期間使用 `utcNow()` 至 `addDays(utcNow(),7)`。
 4. 執行 Flow，確認是否可取得主旨、起始時間、結束時間、是否全天、建立者／借用人、Event ID 與 iCalUId。
 5. 若成功，回填測試結果並進入 Camry、Cross Calendar ID 取得與測試。
+
+## v0.2.9 Master 更新 - ATA-9627 V3 測試實作版
+
+更新日期：2026-07-15
+
+本階段已將 ATA-9627 V3 事件讀取測試整理成 Power Automate 可落地執行版本，文件位置：
+
+`power-automate/ata9627-v3-test-implementation.md`
+
+### 本次新增完成內容
+
+- 建立 `公務車功能測試-ATA9627事件讀取` 的實作步驟。
+- 指定 V3 動作 Calendar Id 使用 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`。
+- 新增事件數量、TEST 篩選、第一筆原始事件、欄位摘要等測試輸出設計。
+- 明確定義 V3 成功前不得進入正式 SharePoint 同步流程。
+- 建立成功後下一步 `公務車行事曆同步至 SharePoint - ATA9627 MVP` 草案。
+
+### 目前狀態
+
+| 功能 | 狀態 | 完成度 | 備註 |
+|---|---|---|---|
+| ATA-9627 Calendar ID 確認 | 已完成 | 100% | `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` |
+| ATA-9627 V3 測試實作版 | 已完成 | 100% | 已建立可照 Power Automate 畫面操作的步驟 |
+| ATA-9627 V3 實際執行 | 待執行 | 0% | 需在 Power Automate 按測試 |
+| SharePoint 同步 MVP | 待開始 | 0% | 等 V3 事件讀取成功後才能建立 |
+
+### 下一階段工作
+
+1. 在 Power Automate 依 `power-automate/ata9627-v3-test-implementation.md` 建立或調整測試流程。
+2. 執行 `公務車功能測試-ATA9627事件讀取`。
+3. 回填全部事件數量、TEST 事件數量、第一筆事件原始資料。
+4. 確認是否取得 subject、start、end、isAllDay、id、iCalUId。
+5. 若成功，建立 `公務車行事曆同步至 SharePoint - ATA9627 MVP`。

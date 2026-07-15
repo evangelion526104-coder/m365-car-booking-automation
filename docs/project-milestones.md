@@ -11,7 +11,7 @@
 | M4 通知規則補強 | 加入最早 08:00 與整天借用 08:00 通知規則 | 已完成 | 2026-07-02 |
 | M4.5 系統防呆設計 | 納入時區、唯一鍵、取消異動、舊卡失效、Flow 防重複設計 | 已完成 | 2026-07-02 |
 | M4.6 SharePoint 防呆欄位建置 | 在正式 SharePoint 清單新增並驗證防呆欄位 | 已完成 | 2026-07-02 |
-| M5 資源信箱讀取確認 | 取得三台 Calendar ID 並讀取未來 7 天事件 | 進行中 | 2026-07-15 已取得 ATA-9627 Calendar ID，待 V3 實測 |
+| M5 資源信箱讀取確認 | 取得三台 Calendar ID 並讀取未來 7 天事件 | 進行中 | 2026-07-15 已建立 ATA-9627 V3 測試實作版，待 Power Automate 實測 |
 | M6 正式同步流程 | 建立 Outlook 行事曆同步至 SharePoint 流程，並納入防呆欄位與取消異動邏輯 | 待開始 | 待排程 |
 | M7 Teams 通知與回覆 | 建立 Adaptive Card 發送、回覆寫回與舊卡失效機制 | 待開始 | 待排程 |
 | M8 端到端與防呆測試 | 完成 Outlook 預約、Teams 回覆、SharePoint 後台與 SG-T01 至 SG-T10 測試 | 待開始 | 待排程 |
@@ -49,3 +49,19 @@
 
 - 使用上述 Calendar ID 執行 Power Automate V3 事件讀取。
 - 可取得 subject、start、end、isAllDay、organizer / creator、id、iCalUId。
+
+## v0.2.9 - ATA-9627 V3 測試實作版
+
+狀態：進行中
+
+已完成：
+
+- 建立 `power-automate/ata9627-v3-test-implementation.md`。
+- 明確列出 Power Automate 中 V3 測試流程的動作、命名與 Expression。
+- 明確建立 V3 成功前不得進入正式 SharePoint 同步的閘門。
+
+下一個完成條件：
+
+- 使用 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` 實際執行 V3 測試。
+- 可取得 ATA-9627 事件資料與 Event ID / iCalUId。
+- 測試成功後進入 `公務車行事曆同步至 SharePoint - ATA9627 MVP`。

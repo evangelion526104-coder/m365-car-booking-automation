@@ -2,6 +2,15 @@
 
 本檔案記錄本專案的主要異動。最新 Master 狀態以 `docs/project-master-record.md` 為準。
 
+## v0.2.9 - ATA-9627 V3 測試實作版
+
+* 新增 `power-automate/ata9627-v3-test-implementation.md`
+* 將 `公務車功能測試-ATA9627事件讀取` 的 Power Automate 動作、命名、欄位與 Expression 寫成可照做版本
+* 明確定義 V3 測試成功、部分成功與失敗時的判斷方式
+* 明確規定 V3 成功前不得進入正式 SharePoint 同步流程
+* 新增成功後下一步 `公務車行事曆同步至 SharePoint - ATA9627 MVP` 草案
+* 更新 README、Master、里程碑、完成清單、待辦、Power Automate 說明與測試紀錄
+
 ## v0.2.8 - ATA-9627 Calendar ID 取得
 
 * 取得 ATA-9627 公務車真正 Calendar ID：`6049e1d1-b34c-4cca-b530-2c7c4b77abe9`

@@ -81,3 +81,15 @@
 3. 檢查 V3 輸出是否有事件陣列。
 4. 若有事件，確認是否包含 subject、start、end、isAllDay、organizer / creator、id、iCalUId。
 5. 將成功或失敗結果回填至 `docs/ata9627-v3-calendar-event-test.md`。
+
+## v0.2.9 待辦事項 - ATA-9627 V3 測試實作版
+
+1. 依 `power-automate/ata9627-v3-test-implementation.md` 建立或調整 `公務車功能測試-ATA9627事件讀取`。
+2. 確認 V3 動作名稱為 `Get_ATA9627_Events_V3`。
+3. 確認 Calendar Id 為 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`。
+4. 確認已加入 `Filter_TEST_Events`、`Compose_All_Event_Count`、`Compose_TEST_Event_Count`、`Compose_First_Event_Raw`、`Select_Event_Field_Check`。
+5. 執行手動測試。
+6. 若可讀到事件，回填 Event ID、iCalUId、起訖時間與是否全天。
+7. 若未讀到 TEST，但全部事件數量大於 0，確認 TEST 是否在未來 7 天內。
+8. 若 V3 失敗，保留完整錯誤訊息並判斷是否為 Calendar ID、權限、連接器限制或查詢期間問題。
+9. V3 成功後，建立 `公務車行事曆同步至 SharePoint - ATA9627 MVP`。

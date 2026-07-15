@@ -192,3 +192,31 @@ subject = TEST
 請在 Power Automate 測試流程 `公務車功能測試-ATA9627事件讀取` 的 `取得事件的行事曆檢視 (V3)` 動作中，將 Calendar Id 改填上述 GUID。
 
 本階段尚未完成 V3 實際執行驗證，因此不得將 CAL-V3-06、CAL-V3-07 或 M5 標記為通過。需等 Flow 執行輸出確認可取得事件資料後，再更新測試結果。
+
+## 十二、v0.2.9 補充紀錄 - V3 測試實作版已建立
+
+更新日期：2026-07-15
+
+已新增 Power Automate 實作版文件：
+
+`power-automate/ata9627-v3-test-implementation.md`
+
+本次補強內容：
+
+1. 明確指定測試流程名稱：`公務車功能測試-ATA9627事件讀取`。
+2. 明確指定 V3 動作命名：`Get_ATA9627_Events_V3`。
+3. 明確指定 Calendar Id：`6049e1d1-b34c-4cca-b530-2c7c4b77abe9`。
+4. 明確指定查詢期間：`utcNow()` 到 `addDays(utcNow(),7)`。
+5. 新增 `Filter_TEST_Events`、`Compose_All_Event_Count`、`Compose_TEST_Event_Count`、`Compose_First_Event_Raw`、`Select_Event_Field_Check` 等測試動作。
+6. 定義成功、部分成功、失敗的判斷方式。
+7. 明確規定 V3 成功前不得串接正式 SharePoint 同步流程。
+
+目前狀態：
+
+| 項目 | 狀態 |
+|---|---|
+| ATA-9627 Calendar ID | 已取得 |
+| Power Automate V3 測試實作版 | 已完成 |
+| V3 實際執行 | 待執行 |
+| Event ID / iCalUId 實際取得 | 待測 |
+| 是否可進入 SharePoint 同步 | 待 V3 測試結果判斷 |

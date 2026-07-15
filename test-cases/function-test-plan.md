@@ -93,3 +93,4 @@
 | CAL-V3-07 | Event ID / iCalUId 確認 | 查看 V3 輸出欄位 | 可取得 id 與 iCalUId | 待測 |
 | CAL-V3-08 | Asia/Taipei 時區確認 | 比對 Outlook 顯示時間與流程輸出時間 | 顯示給人員看的時間為台北時間 | 待測 |
 | CAL-V3-09 | ATA-9627 Calendar ID 取得 | 將取得的 Calendar ID 記錄於文件 | Calendar ID 已明確記錄並可供 V3 測試使用 | 通過 |
+| CAL-V3-10 | ATA-9627 V3 測試實作版 | 依 `power-automate/ata9627-v3-test-implementation.md` 建立測試動作與輸出 | 測試動作、Expression 與成功判斷已明確 | 文件完成，待實測 |
