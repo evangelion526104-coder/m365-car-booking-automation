@@ -1,6 +1,6 @@
 # M365 公務車借用自動通知與後台管理流程 Master 專案紀錄
 
-更新日期：2026-07-15
+更新日期：2026-07-17
 Master 狀態：本文件為目前唯一最新版本，後續功能分支應以本文件為基準。
 
 ## 一、目前專案總覽
@@ -88,7 +88,7 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 - 資源行事曆 Calendar ID 可見性測試未通過，已確認為 M5 正式阻擋點。
 - 資源信箱讀取測試流程已關閉，避免持續排程失敗。
 - 已修正先前將 Calendar ID 錯誤推論為需要 Exchange Administrator 的判斷；既有 Reviewer 權限已足夠。
-- 本輪已改由正常瀏覽器完成 Power Automate 測試，排除 Codex 側邊欄登入快取問題；詳見 `docs/calendar-access-test.md`。
+- 已確認 Codex 內建瀏覽器與 Chrome 均可作為 Power Automate 操作後端；後續應沿用目前已登入且已連線的工作階段，不得因舊版瀏覽器紀錄推定目前不可操作。實際失敗時須記錄當次工具授權或連線錯誤；詳見 `docs/calendar-access-test.md` 與 `docs/Project_Workflow.md`。
 
 ### 系統防呆設計
 

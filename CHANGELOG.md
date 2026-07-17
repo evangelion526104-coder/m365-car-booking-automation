@@ -2,6 +2,13 @@
 
 本檔案記錄本專案的主要異動。最新 Master 狀態以 `docs/project-master-record.md` 為準。
 
+## 文件修正 - 瀏覽器操作判定規則
+
+* 修正 `docs/calendar-access-test.md` 中已過時的 Codex 側邊欄登入快取敘述
+* 確認 Codex 內建瀏覽器與 Chrome 均可作為 Power Automate 操作後端
+* 新增瀏覽器與電腦操作規則，禁止僅依歷史紀錄推定目前瀏覽器不可用
+* 明確區分專案文件規範與 Codex 執行環境的 Browser Plugin、Computer Use、App Approval 權限
+
 ## v0.2.9 - ATA-9627 V3 測試實作版
 
 * 新增 `power-automate/ata9627-v3-test-implementation.md`
@@ -22,7 +29,7 @@
 ## v0.2.6 - Outlook 共用行事曆加入後重測
 
 * 確認 `ad.general@alp.global` 的 Outlook 網頁可顯示三台公務車共用行事曆
-* 使用正常瀏覽器排除 Codex 側邊欄登入快取問題，Power Automate 詳細資料、連線與 28 天執行歷程均可正常載入
+* 當時曾切換瀏覽器後端確認 Power Automate 詳細資料、連線與 28 天執行歷程可正常載入；此項僅為該次測試紀錄，不代表 Codex 內建瀏覽器目前不可用
 * 重新執行 `取得行事曆 (V2)`，輸出仍只回傳一個個人 `Calendar`
 * 確認三台 Resource Mailbox 尚未出現在 Power Automate Calendar 清單，仍無法取得 Calendar ID
 * 將下一步調整為評估 Editor 權限或其他不使用 Premium 連接器的標準讀取方案
