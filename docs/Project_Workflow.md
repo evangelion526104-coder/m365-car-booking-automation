@@ -370,15 +370,23 @@ Master 專案永遠保持最新狀態。
 | 測試流程名稱 | 公務車功能測試-ATA9627事件讀取 |
 | 測試車輛 | 公務車Altis ATA-9627 B4-16-永聯內湖辦公室 |
 | Resource Mailbox | room_nhb4_car@alp.global |
-| 第一輪 Calendar Id | 已改為真正 Calendar ID：`6049e1d1-b34c-4cca-b530-2c7c4b77abe9` |
+| 第一輪 Calendar Id | 候選 GUID：`6049e1d1-b34c-4cca-b530-2c7c4b77abe9`；2026-07-18 V3 實測不適用 |
 | 目標測試事件 | TEST |
 | 查詢期間 | `utcNow()` 至 `addDays(utcNow(),7)` |
 | 時區顯示原則 | Asia/Taipei |
 
 ## v0.2.8 Resource Calendar ID 測試規則補充
 
-2026-07-15 已取得 ATA-9627 真正 Calendar ID：
+2026-07-15 曾取得 ATA-9627 候選物件 GUID：
 
 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`
 
-後續 V3 測試需以此 GUID 作為 Calendar Id，不得再以 `room_nhb4_car@alp.global` 作為 V3 Calendar Id。若 GUID 測試成功，才能將同一做法擴展至 Camry 與 Cross，並進入正式 SharePoint 同步流程。
+2026-07-18 的 V3 實測已確認此 GUID 回傳 `ErrorInvalidIdMalformed`，不得再用於下一輪。後續需取得連接器可接受的 Calendar ID；成功讀到事件與 Event ID / iCalUId 前，不得擴展至 Camry、Cross 或正式 SharePoint 同步。
+
+## v0.2.10 Power Automate 實測治理補充
+
+1. `公務車功能測試-ATA9627事件讀取` 的 Run `08584172227294871773330429620CU04` 為本輪權威證據。
+2. Calendar Id 已由執行輸入證實確實送達連接器，因此不得把失敗歸因為畫面值未儲存。
+3. `ErrorInvalidIdMalformed` 歸類為 Calendar ID／連接器識別限制，不是 Access Denied。
+4. 每分鐘測試流程在 Browser 操作後仍顯示「開啟」，需人工停用。
+5. 下一輪僅能使用新取得且來源可追溯的連接器 Calendar ID，並以受控手動方式執行。

@@ -1,6 +1,6 @@
 # M365 公務車借用自動通知與後台管理流程 Master 專案紀錄
 
-更新日期：2026-07-17
+更新日期：2026-07-18
 Master 狀態：本文件為目前唯一最新版本，後續功能分支應以本文件為基準。
 
 ## 一、目前專案總覽
@@ -8,13 +8,13 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
-| 目前版本 | `v0.2.9` |
+| 目前版本 | `v0.2.10` |
 | 專案目標 | 讓員工透過 Outlook 預約公務車，系統自動同步至 SharePoint 後台，並在借用前透過 Teams Adaptive Card 通知借用人填寫共乘人數與確認公務車使用規範，供承辦人判斷是否發放鑰匙 |
 | 主要架構 | Outlook 資源行事曆 + Power Automate + Teams Adaptive Card + SharePoint List |
 | 授權限制 | O365 E1 可行，不使用 Power Automate Premium 連接器 |
-| 目前開發階段 | ATA-9627 V3 事件讀取測試實作版已建立，待 Power Automate 實際執行並回填結果 |
+| 目前開發階段 | ATA-9627 候選 GUID V3 實測未通過；待取得連接器可接受的 Calendar ID |
 | 專案完成度 | 73% |
-| 下一個預計完成階段 | 執行 `公務車功能測試-ATA9627事件讀取`，確認是否可取得事件欄位與 Event ID / iCalUId |
+| 下一個預計完成階段 | 取得 V3 可接受的 ATA-9627 Calendar ID，受控重跑並取得事件欄位與 Event ID / iCalUId |
 
 ## 二、本次新增完成內容
 
@@ -220,7 +220,7 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 ### 下一階段工作
 
 1. 在 Power Automate 建立 `公務車功能測試-ATA9627事件讀取`。
-2. 使用 `取得事件的行事曆檢視 (V3)`，Calendar Id 改填 ATA-9627 真正 Calendar ID `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`。
+2. 使用 `取得事件的行事曆檢視 (V3)`，Calendar Id 改填當時的候選 GUID `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`。
 3. 查詢 `utcNow()` 到 `addDays(utcNow(),7)`。
 4. 確認是否可讀到主旨 `TEST`。
 5. 回填 Calendar Id 實際設定方式、錯誤訊息或成功輸出。
@@ -230,21 +230,21 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 
 更新日期：2026-07-15
 
-本階段已取得 ATA-9627 公務車真正 Calendar ID：
+本階段曾取得並視為 ATA-9627 Calendar ID 的候選 GUID：
 
 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`
 
 ### 本次新增完成內容
 
 - 將 ATA-9627 Calendar ID 記錄至 README、Power Automate 設計、測試紀錄與 Master 紀錄。
-- 將 V3 事件讀取測試值由資源信箱 Email 改為真正 Calendar ID。
+- 將 V3 事件讀取測試值由資源信箱 Email 改為候選 GUID；其有效性已於 v0.2.10 被實測推翻。
 - 明確保留 V3 讀取狀態為待執行，不提前標記為通過。
 
 ### 目前狀態
 
 | 功能 | 狀態 | 完成度 | 備註 |
 |---|---|---|---|
-| ATA-9627 Calendar ID 確認 | 已完成 | 100% | `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` |
+| ATA-9627 候選 GUID 紀錄 | 已完成 | 100% | v0.2.10 已證實不適用 V3 |
 | ATA-9627 V3 事件讀取 | 待執行 | 0% | 需實際執行 Flow |
 | Camry / Cross Calendar ID 確認 | 待開始 | 0% | ATA-9627 成功後再處理 |
 | SharePoint 同步正式串接 | 待續 | 0% | 等三台車讀取成功後進行 |
@@ -277,9 +277,9 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 
 | 功能 | 狀態 | 完成度 | 備註 |
 |---|---|---|---|
-| ATA-9627 Calendar ID 確認 | 已完成 | 100% | `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` |
+| ATA-9627 候選 GUID 紀錄 | 已完成 | 100% | v0.2.10 已證實不適用 V3 |
 | ATA-9627 V3 測試實作版 | 已完成 | 100% | 已建立可照 Power Automate 畫面操作的步驟 |
-| ATA-9627 V3 實際執行 | 待執行 | 0% | 需在 Power Automate 按測試 |
+| ATA-9627 V3 實際執行 | 已執行／未通過 | 100% | `ErrorInvalidIdMalformed` |
 | SharePoint 同步 MVP | 待開始 | 0% | 等 V3 事件讀取成功後才能建立 |
 
 ### 下一階段工作
@@ -289,3 +289,29 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 3. 回填全部事件數量、TEST 事件數量、第一筆事件原始資料。
 4. 確認是否取得 subject、start、end、isAllDay、id、iCalUId。
 5. 若成功，建立 `公務車行事曆同步至 SharePoint - ATA9627 MVP`。
+
+## v0.2.10 Master 更新 - ATA-9627 候選 GUID V3 實測未通過
+
+更新日期：2026-07-18
+
+### 實測證據
+
+| 項目 | 值 |
+|---|---|
+| Flow | `公務車功能測試-ATA9627事件讀取` |
+| Flow ID | `7d66adc8-eccd-4cc0-9ab1-a031a6676df9` |
+| Run ID | `08584172227294871773330429620CU04` |
+| Calendar Id 輸入 | `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` |
+| 查詢期間 | `2026-07-14T00:00:00Z` 至 `2026-07-21T23:59:59Z` |
+| 結果 | `400 BadRequest` |
+| 錯誤 | `ErrorInvalidIdMalformed` / `The Id is invalid.` |
+| clientRequestId | `6edfd333-e4b0-4d2d-a3e7-46ced3ee4270` |
+| serviceRequestId | `8db0eba7-f781-4dd8-aacc-d7e4d81d3c70` |
+
+### Master 判定
+
+- `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` 為候選物件 GUID，不是已驗證可供 Office 365 Outlook V3 使用的 Calendar ID。
+- CAL-V3-06 未通過；CAL-V3-07、CAL-V3-08 因事件讀取未成立而阻擋。
+- 本次不是 Access Denied，且 Calendar Id 已由執行輸入證實確實送達連接器。
+- `公務車功能測試-ATA9627事件讀取` 仍顯示「開啟」且為每分鐘排程，需優先人工停用。
+- M5 維持進行中／受阻；不得建立正式 SharePoint 同步 MVP。

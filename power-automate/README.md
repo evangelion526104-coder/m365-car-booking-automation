@@ -190,12 +190,12 @@ V3 查詢期間：
 
 - 文件與 SharePoint 顯示時間一律使用 `Asia/Taipei`。
 - 若 V3 動作要求 UTC 格式，查詢可使用 UTC，但輸出給承辦人確認時需轉換為台北時間。
-- 不再使用 `room_nhb4_car@alp.global` 作為 V3 Calendar Id；請改用 ATA-9627 真正 Calendar ID `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`。
+- 不再使用 `room_nhb4_car@alp.global` 作為 V3 Calendar Id；`6049e1d1-b34c-4cca-b530-2c7c4b77abe9` 亦已於 2026-07-18 證實不是 V3 可接受的 Calendar ID。
 - 若 GUID 仍失敗，需保留完整錯誤訊息，並記錄是 Calendar Id、連接器限制、快取或權限問題。
 
 ## v0.2.8 更新 - ATA-9627 Calendar ID 測試值
 
-2026-07-15 已取得 ATA-9627 真正 Calendar ID：
+2026-07-15 曾取得 ATA-9627 候選物件 GUID：
 
 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`
 
@@ -224,3 +224,14 @@ V3 查詢期間：
 - 若 V3 可取得事件，且可取得 Event ID 或 iCalUId，才可進入 `公務車行事曆同步至 SharePoint - ATA9627 MVP`。
 - 若 V3 失敗，需先依錯誤訊息判斷是 Calendar ID、權限、連接器限制或查詢期間問題。
 - 在 V3 測試成功前，不啟用正式 SharePoint 同步。
+
+## v0.2.10 更新 - ATA-9627 候選 GUID V3 實測未通過
+
+2026-07-18 執行紀錄 `08584172227294871773330429620CU04` 已確認候選 GUID 實際送入 `取得事件的行事曆檢視 (V3)`，但回傳 `400 BadRequest / ErrorInvalidIdMalformed / The Id is invalid.`。
+
+後續規則：
+
+- 不得再把該 GUID 當成已驗證 Calendar ID。
+- 先停用目前每分鐘執行且仍顯示「開啟」的測試流程。
+- 取得 Office 365 Outlook 連接器可接受的 Calendar ID 後，改用受控手動測試。
+- 未取得事件及 Event ID / iCalUId 前，不得建立正式 SharePoint 同步。

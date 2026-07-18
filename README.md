@@ -17,10 +17,10 @@
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
-| 目前版本 | `v0.2.9` |
-| 目前開發階段 | ATA-9627 V3 事件讀取測試實作版已整理，待在 Power Automate 執行並回填結果 |
+| 目前版本 | `v0.2.10` |
+| 目前開發階段 | ATA-9627 候選 GUID 已完成 V3 實測；連接器回傳 `ErrorInvalidIdMalformed`，待取得 V3 可接受的 Calendar ID |
 | 專案完成度 | 73% |
-| 最新更新日期 | 2026-07-15 |
+| 最新更新日期 | 2026-07-18 |
 | Master 紀錄 | [docs/project-master-record.md](docs/project-master-record.md) |
 | SharePoint 清單 | [公務車借用管理](https://alpglobal.sharepoint.com/sites/ALP_TW_AD/Lists/List6/AllItems.aspx) |
 | Power Automate 測試流程 | 公務車功能測試-SharePoint清單連線 |
@@ -41,7 +41,7 @@
 
 | 車輛 | 資源信箱 | Calendar ID 狀態 |
 |---|---|---|
-| 公務車Altis ATA-9627 B4-16-永聯內湖辦公室 | `room_nhb4_car@alp.global` | 已取得：`6049e1d1-b34c-4cca-b530-2c7c4b77abe9` |
+| 公務車Altis ATA-9627 B4-16-永聯內湖辦公室 | `room_nhb4_car@alp.global` | 候選 GUID 已驗證不適用 V3：`6049e1d1-b34c-4cca-b530-2c7c4b77abe9` |
 | 公務車Camry BKX-2370 B4-17-永聯內湖辦公室 | `room_nhb4_car_camry@alp.global` | 待取得 |
 | 公務車Cross BKY-0762 B4-44-永聯內湖辦公室 | `room_nhb4_car_cross@alp.global` | 待取得 |
 
@@ -76,10 +76,10 @@ Teams Adaptive Card 通知規則已更新為：
 
 下一階段目標是完成正式自動化串接：
 
-1. 在 `公務車功能測試-ATA9627事件讀取` 中，將 `取得事件的行事曆檢視 (V3)` 的 Calendar Id 設為 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`。
-2. 執行測試並確認是否可讀到 ATA-9627 未來 7 天事件，至少需確認 subject、start、end、id、iCalUId。
-3. 若 ATA-9627 測試成功，再取得 Camry 與 Cross 的真正 Calendar ID 並逐台重測。
-4. 三台車皆可讀取後，建立 `公務車行事曆同步至 SharePoint` 流程。
+1. 取得 Office 365 Outlook V3 連接器可接受的 ATA-9627 Calendar ID；不得再使用上述候選 GUID。
+2. 停用目前每分鐘執行的 `公務車功能測試-ATA9627事件讀取`，避免持續產生失敗紀錄。
+3. 以受控手動測試重跑 V3，成功取得事件欄位與 Event ID / iCalUId 後，再處理 Camry 與 Cross。
+4. 三台車皆可讀取後，才建立 `公務車行事曆同步至 SharePoint` 流程。
 5. 建立 `公務車借用前 Teams 通知與回覆` 流程。
 6. 串接 Teams Adaptive Card 回覆寫回 SharePoint。
 7. 完成端到端功能測試後，再啟用正式流程。
@@ -141,15 +141,15 @@ Teams Adaptive Card 通知規則已更新為：
 
 `room_nhb4_car@alp.global`
 
-此測試值已由 v0.2.8 的真正 Calendar ID 取代。後續測試目標仍為讀取未來 7 天內主旨為 `TEST` 的 ATA-9627 測試事件。完整測試步驟請見 [ATA-9627 Resource Calendar V3 事件讀取測試](docs/ata9627-v3-calendar-event-test.md)。
+此測試值曾於 v0.2.8 改為候選 GUID；2026-07-18 實測已證明該 GUID 同樣不是 V3 可接受的 Calendar ID。完整證據請見 [ATA-9627 Resource Calendar V3 事件讀取測試](docs/ata9627-v3-calendar-event-test.md)。
 
 ## v0.2.8 更新摘要 - ATA-9627 Calendar ID 已取得
 
-2026-07-15 已取得 ATA-9627 公務車真正 Calendar ID：
+2026-07-15 曾取得 ATA-9627 候選物件 GUID：
 
 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`
 
-下一步請在 Power Automate 測試流程 `公務車功能測試-ATA9627事件讀取` 中，將 `取得事件的行事曆檢視 (V3)` 的 Calendar Id 改填此 GUID，而不是資源信箱 Email。測試尚未標記為通過；必須實際執行 Flow 並確認可讀到事件資料後，才能進入正式 SharePoint 同步流程。
+2026-07-18 已確認此值確實送入 V3，但連接器回傳 `400 BadRequest / ErrorInvalidIdMalformed / The Id is invalid.`，因此不得再稱為已驗證 Calendar ID，也不得進入正式 SharePoint 同步流程。
 
 ## v0.2.9 更新摘要 - ATA-9627 V3 測試實作版
 
@@ -158,3 +158,7 @@ Teams Adaptive Card 通知規則已更新為：
 [power-automate/ata9627-v3-test-implementation.md](power-automate/ata9627-v3-test-implementation.md)
 
 本階段仍不將 V3 事件讀取標記為通過。必須在 Power Automate 實際執行 `公務車功能測試-ATA9627事件讀取`，並確認可取得事件數量、主旨、起訖時間、是否全天、Event ID 與 iCalUId 後，才可進入 `公務車行事曆同步至 SharePoint - ATA9627 MVP`。
+
+## v0.2.10 更新摘要 - ATA-9627 候選 GUID V3 實測未通過
+
+執行紀錄 `08584172227294871773330429620CU04` 已證明 Calendar Id 輸入值為 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`；失敗原因屬 Calendar ID 格式／連接器識別限制，不是 Access Denied，也不是查詢期間問題。下一步需先取得 Office 365 Outlook 標準連接器可接受的 Calendar ID，或評估 O365 E1 可行且不使用 Premium 的替代方案。

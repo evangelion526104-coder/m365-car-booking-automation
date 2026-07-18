@@ -9,7 +9,7 @@ Calendar ID：`6049e1d1-b34c-4cca-b530-2c7c4b77abe9`
 
 ## 一、測試目的
 
-本測試用來確認 Power Automate 的 Office 365 Outlook 標準連接器，是否可以用 ATA-9627 的真正 Calendar ID 讀取未來 7 天行事曆事件。
+本測試原用來確認 Power Automate 的 Office 365 Outlook 標準連接器，是否可以用 ATA-9627 的候選 Calendar ID 讀取未來 7 天行事曆事件。
 
 若本測試成功，才可進入下一階段：
 
@@ -224,3 +224,23 @@ MVP 同步流程只先處理 ATA-9627，不直接擴大到三台車。等 ATA-96
 | 9 | 防重複欄位寫入 | 寫入 Event ID、iCalUId、Flow 執行 ID、處理鎖定狀態 |
 
 本 MVP 流程仍需遵守五項系統防呆設計，不得省略。
+
+## 八、2026-07-18 實測回填
+
+實際 Flow 目前為已排程流程，V3 動作仍使用畫面顯示名稱 `取得事件的行事曆檢視 (V3)`。執行紀錄 `08584172227294871773330429620CU04` 的輸入已確認：
+
+```text
+calendarId = 6049e1d1-b34c-4cca-b530-2c7c4b77abe9
+startDateTimeUtc = 2026-07-14T00:00:00Z
+endDateTimeUtc = 2026-07-21T23:59:59Z
+```
+
+結果：
+
+```text
+HTTP 400 BadRequest
+ErrorInvalidIdMalformed
+The Id is invalid.
+```
+
+因此文件中的候選 GUID 假設已被實測推翻。下一輪不得重複使用此值；必須先取得 V3 連接器可接受的 Calendar ID。測試流程仍顯示「開啟」且每分鐘執行，需人工停用後才進行下一輪受控測試。

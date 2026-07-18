@@ -93,3 +93,12 @@
 7. 若未讀到 TEST，但全部事件數量大於 0，確認 TEST 是否在未來 7 天內。
 8. 若 V3 失敗，保留完整錯誤訊息並判斷是否為 Calendar ID、權限、連接器限制或查詢期間問題。
 9. V3 成功後，建立 `公務車行事曆同步至 SharePoint - ATA9627 MVP`。
+
+## v0.2.10 待辦事項 - ATA-9627 候選 GUID 實測後
+
+1. [x] 將候選 GUID `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` 實際送入 V3。
+2. [x] 保存 `400 BadRequest / ErrorInvalidIdMalformed / The Id is invalid.` 與執行追蹤資訊。
+3. [ ] 停用目前每分鐘執行的 `公務車功能測試-ATA9627事件讀取`；2026-07-18 Browser 操作後狀態仍顯示「開啟」。
+4. [ ] 從連接器可列舉來源、重新建立的標準連線或 IT 可提供的 Exchange/Outlook Folder ID，取得 V3 可接受的 Calendar ID。
+5. [ ] 若標準連接器仍無法讀取 Resource Calendar，評估 O365 E1 可行且不使用 Premium 的替代方案。
+6. [ ] 僅在 V3 成功取得事件與 Event ID / iCalUId 後，才建立 SharePoint 同步 MVP。

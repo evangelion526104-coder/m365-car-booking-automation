@@ -2,6 +2,15 @@
 
 本檔案記錄本專案的主要異動。最新 Master 狀態以 `docs/project-master-record.md` 為準。
 
+## v0.2.10 - ATA-9627 候選 GUID V3 實測未通過
+
+* 2026-07-18 於 `公務車功能測試-ATA9627事件讀取` 完成真正的 GUID 輸入實測
+* 執行紀錄 `08584172227294871773330429620CU04` 確認 Calendar Id 已送出為 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`
+* Office 365 Outlook V3 回傳 `400 BadRequest / ErrorInvalidIdMalformed / The Id is invalid.`
+* 判定此值為候選物件 GUID，不是 V3 連接器可接受的 Calendar ID；未出現 Access Denied
+* CAL-V3-06 標記為未通過，CAL-V3-07 與 CAL-V3-08 因未取得事件而阻擋
+* 正式 SharePoint 同步仍不得啟用；下一步為取得連接器可接受的 Calendar ID 或評估 O365 E1 標準替代方案
+
 ## 文件修正 - 瀏覽器操作判定規則
 
 * 修正 `docs/calendar-access-test.md` 中已過時的 Codex 側邊欄登入快取敘述

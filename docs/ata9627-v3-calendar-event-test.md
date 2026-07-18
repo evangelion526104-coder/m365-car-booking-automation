@@ -98,7 +98,7 @@ Office 365 Outlook 連線帳號：
 
 Calendar Id 測試順序：
 
-1. 第一優先：填入真正 Calendar ID `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`。
+1. 歷史測試值：`6049e1d1-b34c-4cca-b530-2c7c4b77abe9`；2026-07-18 已證實不適用 V3，不得再使用。
 2. 不再使用 `room_nhb4_car@alp.global` 作為 V3 Calendar Id；先前已確認信箱地址格式不適用。
 3. 若 GUID 仍失敗：記錄完整錯誤訊息，確認是否為權限、連接器限制、快取或 Calendar ID 對應問題。
 4. 若標準連接器無法直接讀取：需評估替代方案，但仍以不使用 Premium 連接器為優先。
@@ -165,9 +165,9 @@ subject = TEST
 | Outlook 是否可看到 ATA-9627 | 通過 | Editor 權限已在 Outlook 端生效 |
 | Outlook 是否可新增 TEST 事件 | 通過 | 已建立測試事件 |
 | 取得行事曆 (V2) 是否列出 ATA-9627 | 未通過 | 僅列出 ad.general 自身 Calendar |
-| 取得事件的行事曆檢視 (V3) 是否可讀取 TEST | 待測 | 下一階段測試 |
-| Calendar Id 最終格式 | 已取得，待 V3 驗證 | `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` |
-| 是否可取得 Event ID / iCalUId | 待測 | 成功讀到事件後確認 |
+| 取得事件的行事曆檢視 (V3) 是否可讀取 TEST | 未通過 | `ErrorInvalidIdMalformed` |
+| Calendar Id 最終格式 | 候選 GUID 不適用 V3 | `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` |
+| 是否可取得 Event ID / iCalUId | 阻擋 | V3 未取得事件 |
 
 ## 十、測試完成後需回填
 
@@ -185,7 +185,7 @@ subject = TEST
 
 更新日期：2026-07-15
 
-已取得 ATA-9627 公務車真正 Calendar ID：
+當時取得並視為 ATA-9627 Calendar ID 的候選 GUID：
 
 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`
 
@@ -215,8 +215,44 @@ subject = TEST
 
 | 項目 | 狀態 |
 |---|---|
-| ATA-9627 Calendar ID | 已取得 |
+| ATA-9627 Calendar ID | 候選 GUID 已實測不適用 |
 | Power Automate V3 測試實作版 | 已完成 |
-| V3 實際執行 | 待執行 |
-| Event ID / iCalUId 實際取得 | 待測 |
-| 是否可進入 SharePoint 同步 | 待 V3 測試結果判斷 |
+| V3 實際執行 | 已執行，未通過 |
+| Event ID / iCalUId 實際取得 | 阻擋 |
+| 是否可進入 SharePoint 同步 | 不可 |
+
+## 十三、2026-07-18 V3 候選 GUID 實測結果
+
+### 實際執行
+
+| 項目 | 值 |
+|---|---|
+| Flow | `公務車功能測試-ATA9627事件讀取` |
+| Flow ID | `7d66adc8-eccd-4cc0-9ab1-a031a6676df9` |
+| Run ID | `08584172227294871773330429620CU04` |
+| 開始／結束時間 | 2026-07-18 22:15:56／22:15:57（Asia/Taipei） |
+| Calendar Id | `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` |
+| startDateTimeUtc | `2026-07-14T00:00:00Z` |
+| endDateTimeUtc | `2026-07-21T23:59:59Z` |
+| HTTP | `400 BadRequest` |
+| 錯誤碼 | `ErrorInvalidIdMalformed` |
+| 原始訊息 | `The Id is invalid.` |
+| 中文訊息 | `ID 格式不正確。` |
+| clientRequestId | `6edfd333-e4b0-4d2d-a3e7-46ced3ee4270` |
+| serviceRequestId | `8db0eba7-f781-4dd8-aacc-d7e4d81d3c70` |
+| Action tracking ID | `5f715fa9-1108-48fd-82c7-0b862ca71a51` |
+
+### 判定
+
+1. 執行輸入已證明候選 GUID 確實送達 Office 365 Outlook V3 連接器。
+2. 此 GUID 不是連接器可接受的 Calendar ID；先前「真正 Calendar ID」的假設已被實測推翻。
+3. 本次錯誤不是 Access Denied，也不是查詢期間未涵蓋 `TEST`。
+4. CAL-V3-06 未通過；CAL-V3-07 與 CAL-V3-08 因未取得事件而阻擋。
+5. 尚不可進入 SharePoint 同步 MVP。
+6. 測試 Flow 目前為每分鐘排程且仍顯示「開啟」，需優先人工停用後再進行下一輪受控測試。
+
+### 下一步
+
+- 從 Office 365 Outlook 連接器可列舉的行事曆、重新建立的標準連線或 IT 可提供的 Exchange/Outlook Folder ID 取得可接受值。
+- 若標準連接器仍無法讀取 Resource Calendar，評估 O365 E1 可行且不使用 Premium 的替代方案。
+- 僅在成功取得事件與 `id`／`iCalUId` 後，才建立 `公務車行事曆同步至 SharePoint - ATA9627 MVP`。

@@ -6,7 +6,7 @@
 
 ## 測試目的
 
-使用 `ad.general@alp.global` 的 Office 365 Outlook 標準連線，先執行 `取得行事曆 (V2)` 取得三台公務車真正 Calendar ID，再用 `取得事件的行事曆檢視 (V3)` 讀取未來 7 天事件。
+使用 `ad.general@alp.global` 的 Office 365 Outlook 標準連線，先執行 `取得行事曆 (V2)` 尋找三台公務車的連接器 Calendar ID，再用 `取得事件的行事曆檢視 (V3)` 讀取未來 7 天事件。
 
 ## 已確認前提
 
@@ -20,7 +20,7 @@
 
 | 車輛 | Resource Mailbox | Calendar ID | 未來 7 天讀取 |
 |---|---|---|---|
-| Altis ATA-9627 B4-16 | `room_nhb4_car@alp.global` | `6049e1d1-b34c-4cca-b530-2c7c4b77abe9` | 待執行 V3 |
+| Altis ATA-9627 B4-16 | `room_nhb4_car@alp.global` | 候選 GUID：`6049e1d1-b34c-4cca-b530-2c7c4b77abe9` | V3 未通過：`ErrorInvalidIdMalformed` |
 | Camry BKX-2370 B4-17 | `room_nhb4_car_camry@alp.global` | 尚未取得 | 尚未執行 |
 | Cross BKY-0762 B4-44 | `room_nhb4_car_cross@alp.global` | 尚未取得 | 尚未執行 |
 
@@ -115,7 +115,7 @@ Outlook 端已確認：
 
 改用 `取得事件的行事曆檢視 (V3)` 直接讀取 `room_nhb4_car@alp.global` 的事件。
 
-第一輪 Calendar Id 請填入真正 Calendar ID：
+第一輪曾填入當時視為 Calendar ID 的候選 GUID：
 
 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`
 
@@ -131,7 +131,7 @@ Outlook 端已確認：
 
 日期：2026-07-15
 
-已取得 ATA-9627 公務車真正 Calendar ID：
+當時取得並視為 ATA-9627 Calendar ID 的候選 GUID：
 
 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`
 
@@ -160,3 +160,15 @@ Outlook 端已確認：
 | 是否可進入下一步 | 依測試結果判斷 |
 
 只有在 V3 成功取得事件資料，且可取得 Event ID 或 iCalUId 後，才可進入 `公務車行事曆同步至 SharePoint - ATA9627 MVP`。
+
+## v0.2.10 補充紀錄 - ATA-9627 候選 GUID V3 實測未通過
+
+日期：2026-07-18
+
+`公務車功能測試-ATA9627事件讀取` 的執行紀錄 `08584172227294871773330429620CU04` 已確認 Calendar Id 實際輸入為 `6049e1d1-b34c-4cca-b530-2c7c4b77abe9`，但 Office 365 Outlook V3 回傳：
+
+`400 BadRequest / ErrorInvalidIdMalformed / The Id is invalid.`
+
+因此此值只能視為候選物件 GUID，不是已驗證的 Calendar ID。錯誤未顯示 Access Denied，故本輪不判定為 Editor 權限失敗。下一步需取得連接器可接受的 Calendar ID，或評估 O365 E1 標準替代方案；在此之前不得開始正式 SharePoint 同步。
+
+測試 Flow 仍顯示「開啟」且為每分鐘排程，需優先人工停用以避免持續產生失敗紀錄。
