@@ -11,6 +11,24 @@
 
 ## 目前已建立流程
 
+### 正式流程：公務車行事曆同步至SharePoint（v0.2.13 已修正執行期錯誤並完成首次成功執行）
+
+| 項目 | 內容 |
+|---|---|
+| 流程名稱 | `公務車行事曆同步至SharePoint` |
+| Flow ID | `b6d1ec5c-0fc5-46c1-85b0-d8d68c72c0ce` |
+| 環境 | `Default-0e690dd6-da00-4897-bf51-a91c687a02bd` |
+| 觸發方式 | Recurrence，每 15 分鐘 |
+| 狀態 | 已開啟（排程運作中），已確認可成功執行 |
+| 結構 | Recurrence → 車輛清單（Compose）→ 套用至各項（三台車）→ 傳送 HTTP 要求 → 剖析 JSON → 套用至各項 1（逐筆事件）→ 編輯（預約唯一鍵）→ 編輯 1（預計通知時間）→ 取得多個項目（SharePoint）→ 條件 → 更新項目／建立項目 |
+| 儲存驗證 | 零錯誤，流程檢查程式錯誤 0、警告 0 |
+| 執行期驗證 | v0.2.12 開啟排程後所有執行紀錄皆失敗；v0.2.13 修正四種執行期錯誤（迴圈 foreach 大括號、SharePoint 篩選查詢內部名稱、條件判斷式大括號、「是否整天」欄位型別）後，運行紀錄首次出現「測試成功」，並以 SharePoint REST API 驗證資料正確寫入且無重複 |
+| 尚待驗證 | P3 各項情境測試（取消、時間異動、整天借用、重複觸發等） |
+
+詳見 `release-notes/v0.2.13.md`（前次見 `release-notes/v0.2.12.md`）。
+
+### 測試流程：公務車功能測試-SharePoint清單連線
+
 | 項目 | 內容 |
 |---|---|
 | 流程名稱 | `公務車功能測試-SharePoint清單連線` |
@@ -42,18 +60,18 @@
 
 本次結果代表 Outlook 連接器驗證成功，但資源信箱 Email 不能直接作為 Calendar ID。`ad.general@alp.global` 已具有三台車 Calendar Reviewer 權限，不需要 Exchange Administrator；2026-07-04 已確認 Outlook 網頁可顯示三台公務車共用行事曆，但 `取得行事曆 (V2)` 仍只回傳個人 Calendar。下一步需評估 Editor 權限或其他不使用 Premium 連接器的標準讀取方案，再依序重測 Altis、Camry、Cross。
 
-## 尚未完成正式流程
+## 正式流程設計（流程一已完成，流程二尚未完成）
 
-正式流程建議拆成兩條，降低維護難度。
+正式流程拆成兩條，降低維護難度。
 
-### 流程一：公務車行事曆同步至 SharePoint
+### 流程一：公務車行事曆同步至 SharePoint（v0.2.12 已完成）
 
 目的：定期讀取三台公務車 Outlook 資源行事曆，將預約資料同步到 SharePoint List。
 
 預計步驟：
 
 1. 排程觸發，例如每 15 分鐘或每 30 分鐘執行。
-2. 讀取三台資源信箱的行事曆預約。
+2. 讀取三台資源信箱的行事曆預約：使用 Office 365 Outlook 連接器的「傳送 HTTP 要求」動作，呼叫 `GET /v1.0/users/{資源信箱}/calendar/events?$filter=start/dateTime ge '...' and start/dateTime le '...'`（v0.2.11 已驗證，詳見下方說明）。
 3. 取得借用日期、起訖時間、借用人、主旨、車輛名稱、Event ID、iCalUId、事件最後修改時間。
 4. 將 Outlook 原始時間轉換為 `Asia/Taipei`，並保留 UTC 原始時間供稽核。
 5. 組合 `預約唯一鍵 = 資源信箱 + "|" + Event ID`。
@@ -152,12 +170,15 @@
 
 | 項目 | 狀態 | 說明 |
 |---|---|---|
-| 三台資源信箱讀取權限 | 部分具備 | `ad.general@alp.global` 已有 Calendar Reviewer 且 Outlook 看得到三台車；但 Power Automate V2 未列出，待評估 Editor 或替代方案 |
-| 取消預約同步 | 待實作 | 預約取消後需更新 SharePoint 狀態 |
-| 時間異動同步 | 待實作 | 預約時間異動後需重算 `預計通知時間` |
+| 三台資源信箱讀取權限 | 已完成 | 三台車皆已驗證「傳送 HTTP 要求」直連 Graph 讀取成功 |
+| 正式行事曆同步流程建立 | 已完成 | v0.2.12 已建立並開啟排程，每 15 分鐘執行 |
+| 正式行事曆同步流程執行期錯誤修正 | 已完成 | v0.2.13 修正四種執行期錯誤並完成首次成功執行與 SharePoint 資料驗證 |
+| 正式行事曆同步流程端到端測試（P3 情境） | 待執行 | 已驗證新增與一般更新情境；取消、時間異動、整天借用、重複觸發等 P3 情境尚待測試 |
+| 取消預約同步 | 待驗證 | 欄位已寫入預設值，實際取消情境尚未測試 |
+| 時間異動同步 | 待驗證 | 欄位已寫入，實際異動情境尚未測試 |
 | Teams 回覆寫回 | 待實作 | 需完成 Adaptive Card 回覆與 SharePoint 更新 |
 | 端到端測試 | 待執行 | 從 Outlook 預約到 Teams 回覆到領鑰判斷 |
-| 系統防呆設計實作 | 待實作 | 時區、唯一鍵、取消異動、舊卡失效、Flow 防重複皆為上線前必要條件 |
+| 系統防呆設計實作 | 欄位已寫入，異動情境待驗證 | 時區、唯一鍵已於流程中實作；取消異動、舊卡失效、Flow 防重複情境仍待測試 |
 ## v0.2.7 測試流程 - ATA-9627 事件讀取
 
 請新增一支獨立測試流程，不直接修改正式同步流程。
@@ -235,3 +256,79 @@ V3 查詢期間：
 - 先停用目前每分鐘執行且仍顯示「開啟」的測試流程。
 - 取得 Office 365 Outlook 連接器可接受的 Calendar ID 後，改用受控手動測試。
 - 未取得事件及 Event ID / iCalUId 前，不得建立正式 SharePoint 同步。
+
+## v0.2.11 更新 - Resource Calendar 讀取阻擋解除（HTTP 直連 Graph）
+
+2026-07-23：IT 將 `ad.general@alp.global` 對三台車 Resource Mailbox 的權限提升為 Mailbox Full Access 後，重測確認 `取得行事曆 (V2)` 與 `取得事件的行事曆檢視 (V3)` 兩個動作皆為連接器限制，無法讀取 Resource Mailbox，不論授予何種權限皆無效。
+
+改用 Office 365 Outlook 標準連接器（非 Premium）內建的「傳送 HTTP 要求」動作直連 Graph，實測成功：
+
+| 項目 | 內容 |
+|---|---|
+| 動作名稱 | 傳送 HTTP 要求（Office 365 Outlook 連接器） |
+| 方法 | GET |
+| URI | `/v1.0/users/{資源信箱}/calendar/events?$filter=start/dateTime ge '{起始}' and start/dateTime le '{結束}'` |
+| 白名單物件 | `messages`、`mailFolders`、`events`、`calendar`、`calendars`、`outlook`、`inferenceClassification`（`calendarView` 不可用） |
+| ATA-9627 實測結果 | `statusCode 200`，取得真實借用事件（借用人、主旨、起訖時間、是否全天、iCalUId 等） |
+
+這個方法不需要 Calendar ID、不需要 Premium 授權、也不需要另建 Azure AD App。三台車共用同一個動作，只需替換 `{資源信箱}` 與時間區間參數。
+
+`公務車行事曆同步至 SharePoint` 正式流程建議直接採用此方法作為讀取步驟；詳細測試過程見 `docs/ata9627-v3-calendar-event-test.md` 第十四節與 `release-notes/v0.2.11.md`。
+
+下一步：對 Camry（`room_nhb4_car_camry@alp.global`）、Cross（`room_nhb4_car_cross@alp.global`）重複驗證後，建立正式同步流程。
+
+## v0.2.12 更新 - 建立正式公務車行事曆同步至SharePoint流程並啟用排程
+
+2026-07-23：Camry、Cross 重複驗證通過後，建立正式流程 `公務車行事曆同步至SharePoint`（Flow ID `b6d1ec5c-0fc5-46c1-85b0-d8d68c72c0ce`），結構如下：
+
+```text
+Recurrence（15 分鐘）
+  → 車輛清單（Compose，三台車資源信箱與名稱）
+  → 套用至各項（外層，逐台車）
+      → 傳送 HTTP 要求（calendar/events + $filter）
+      → 剖析 JSON
+      → 套用至各項 1（內層，逐筆事件）
+          → 編輯（Compose，預約唯一鍵）
+          → 編輯 1（Compose，預計通知時間）
+          → 取得多個項目（SharePoint，依預約唯一鍵篩選）
+          → 條件（篩選筆數 > 0？）
+              → 真：更新項目
+              → 假：建立項目
+```
+
+「更新項目」「建立項目」兩分支皆依 `sharepoint/list-schema.md` 完整寫入約 40 個欄位，含系統防呆欄位預設值；`是否測試資料` 暫維持 `是` 作為上線前安全預設值。
+
+### 排除的設計問題：Apply to each 命名空格轉底線
+
+儲存流程時曾出現：
+
+```text
+InvalidTemplate: The template validation failed: 'The repetition action(s) '套用至各項 1' referenced by 'inputs' in action '更新項目' are not defined in the template.'
+```
+
+原因：Power Automate 動作／迴圈的顯示名稱若含空格，從**該動作自身作用範圍以外**以名稱參照時（`items(...)`、`outputs(...)`），空格會被轉換為底線。巢狀迴圈 `套用至各項 1` 須寫成 `items('套用至各項_1')`，而非 `items('套用至各項 1')`。此為 Power Automate 設計工具的命名慣例限制，後續建立巢狀迴圈時應直接採用底線形式，避免重複踩坑。
+
+### 驗證與啟用
+
+- 流程儲存驗證零錯誤（「您的流程已準備就緒」）。
+- 流程檢查程式（Flow Checker）開啟前僅顯示 1 項警告「此流程已關閉」；點選「開啟此流程」後，狀態變更為「開啟」，錯誤 0、警告 0。
+- 流程現為每 15 分鐘自動執行一次，正式進入排程運作階段。
+
+詳細版本紀錄見 `release-notes/v0.2.12.md`。
+
+下一步：執行端到端測試（Outlook 預約 → SharePoint 同步）、P3 情境測試、建立 Concurrency Control，通過後進入「公務車借用前 Teams 通知與回覆」流程開發，並刪除暫存測試流程 `公務車功能測試-郵件動作參數檢查(可刪除)`。
+
+## v0.2.13 更新 - 執行期錯誤修正並完成首次成功執行驗證
+
+2026-07-24：v0.2.12 開啟排程後，運行紀錄（Run History）中所有執行皆顯示失敗，代表「儲存零錯誤」不等於「執行成功」。逐一排查後找出並修正四種執行期錯誤：
+
+1. **兩處 Apply to each 迴圈的 `foreach` 參數誤加大括號**：`"@{items(...)}"` 會被當成字串插值處理、強制轉為字串型別，導致 `InvalidTemplate` 型別不符；修正為不加大括號的原生運算式 `"@items(...)"`。
+2. **「取得多個項目」篩選查詢誤用中文欄位顯示名稱**：SharePoint 對非英數欄位顯示名稱會以 Unicode 逐字元編碼產生 `_xNNNN_` 內部名稱（上限 32 字元，超過會截斷），且 OData 查詢時非英數起首的內部名稱前面需再加 `OData_` 前綴。以 REST API `/_api/web/lists(guid'...')/fields?$filter=Title eq '預約唯一鍵'&$select=InternalName,StaticName,EntityPropertyName` 查得正確篩選欄位為 `OData__x9810__x7d04__x552f__x4e00__x93`。
+3. **「條件」判斷式 `greater` 比較誤加大括號**：同第 1 項的大括號型別轉換問題，修正為 `"@length(...)"`；此動作屬結構性動作，程式碼檢視為唯讀，須改由「參數」頁籤 UI 編輯。
+4. **「是否整天」欄位型別不符**：`if(equals(...),'是','否')` 回傳中文字串，但欄位為布林型別，觸發 `OpenApiOperationParameterTypeConversionFailed`；修正為直接參照原生布林值 `@items('套用至各項_1')?['isAllDay']`。
+
+修正後手動觸發測試，運行紀錄首次出現「測試成功」，並逐層展開執行追蹤確認：外層「套用至各項」（三台車）→「傳送 HTTP 要求」→「剖析 JSON」→ 內層「套用至各項 1」→「編輯」「編輯 1」→「取得多個項目」→「條件」→「建立項目」（本次事件為新資料，條件為假，成功執行；「更新項目」分支正確顯示為略過）皆為成功狀態。另以 SharePoint REST API 直接查詢清單，確認三筆借用紀錄正確寫入且「是否整天」為真正布林值；後續排程再次自動執行後項目數未增加，確認「預約唯一鍵」防重複比對邏輯正常運作。
+
+詳細版本紀錄見 `release-notes/v0.2.13.md`。
+
+下一步：執行 P3 各項情境測試（取消、時間異動、整天借用、重複觸發等），通過後將 `是否測試資料` 切換為正式運作邏輯、建立 Concurrency Control、刪除暫存測試流程，並確認「我的流程」清單中是否有本流程的重複項目需清理。
