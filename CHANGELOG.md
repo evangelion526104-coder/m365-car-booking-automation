@@ -2,6 +2,38 @@
 
 本檔案記錄本專案的主要異動。最新 Master 狀態以 `docs/project-master-record.md` 為準。
 
+## v0.2.13 - 正式同步流程執行期錯誤修正並完成首次成功執行驗證
+
+* v0.2.12 儲存驗證雖為零錯誤，但排程開啟後所有執行紀錄皆顯示失敗；本版本逐一排查並修正四種執行期錯誤：
+  * 兩處 Apply to each 迴圈的 `foreach` 參數誤加大括號（`@{items(...)}`），型別被轉為字串，修正為 `@items(...)`
+  * 「取得多個項目」篩選查詢誤用中文欄位顯示名稱，修正為 SharePoint REST API 驗證後的正確內部名稱 `OData__x9810__x7d04__x552f__x4e00__x93`
+  * 「條件」判斷式的 `greater` 比較誤加大括號，修正為 `@length(...)`
+  * 「建立項目」「更新項目」的「是否整天」欄位誤寫入中文字串，修正為直接參照原生布林值 `@items('套用至各項_1')?['isAllDay']`
+* 修正後手動觸發測試，運行紀錄首次出現「測試成功」，並逐層展開執行追蹤確認三台車、內層事件迴圈、SharePoint 取得/建立/更新項目皆成功
+* 以 SharePoint REST API 直接查詢清單，確認三筆借用紀錄正確寫入，「是否整天」欄位為真正布林值；後續排程再次執行後項目數未增加，確認防重複比對邏輯正常
+* 詳見 `release-notes/v0.2.13.md`
+
+## v0.2.12 - 建立正式公務車行事曆同步至SharePoint流程並啟用排程
+
+* 完成正式流程 `公務車行事曆同步至SharePoint`（Flow ID `b6d1ec5c-0fc5-46c1-85b0-d8d68c72c0ce`）：Recurrence（15 分鐘）→ 車輛清單 → 套用至各項（三台車）→ 傳送 HTTP 要求 → 剖析 JSON → 套用至各項 1（逐筆事件）→ 計算預約唯一鍵／預計通知時間 → SharePoint 取得多個項目 → 條件 → 更新項目／建立項目
+* 三台公務車共用同一組讀取、解析、寫入邏輯，依 `sharepoint/list-schema.md` 完整寫入約 40 個欄位（含系統防呆欄位預設值）
+* 排除設計問題：Power Automate 動作／迴圈顯示名稱含空格時，從外部以名稱參照（`items()`、`outputs()`）會被轉換為底線，例如 `套用至各項 1` 需寫成 `items('套用至各項_1')`；修正「更新項目」約 13 個受影響欄位
+* 流程儲存驗證零錯誤（「您的流程已準備就緒」），流程檢查程式錯誤 0、警告 0
+* 已將流程狀態由「關閉」切換為「開啟」，正式進入每 15 分鐘排程運作
+* `是否測試資料` 暫時維持 `是` 作為上線前安全預設值，待端到端測試通過後再切換
+* 詳見 `release-notes/v0.2.12.md`
+
+## v0.2.11 - Resource Calendar 讀取阻擋解除（HTTP 直連 Graph）
+
+* IT 已將 `ad.general@alp.global` 對三台公務車 Resource Mailbox 的權限提升為 Mailbox Full Access
+* 重測 `取得行事曆 (V2)` 與 `取得事件的行事曆檢視 (V3)`：兩者仍只能存取連線帳號自己的行事曆，判定為連接器動作限制，非權限問題
+* 驗證 `取得電子郵件 (V3)` 的 `原始信箱地址` 參數可成功指定 Resource Mailbox 並讀信，確認 Full Access 對郵件類動作有效
+* 找到正式解法：Office 365 Outlook 標準連接器（非 Premium）的「傳送 HTTP 要求」動作可直連 Graph，路徑限定於 `messages`、`mailFolders`、`events`、`calendar`、`calendars`、`outlook`、`inferenceClassification` 白名單物件
+* 以 `GET /v1.0/users/room_nhb4_car@alp.global/calendar/events?$filter=...` 實測成功，取得完整借用紀錄（借用人、起訖時間、主旨、是否全天、iCalUId 等）
+* 停用測試流程 `公務車功能測試-ATA9627事件讀取` 的每分鐘排程（先前已知待辦，本次確認已完成）
+* M5 Resource Calendar 事件讀取正式解除阻擋，可進入 `公務車行事曆同步至 SharePoint` 正式建置階段
+* 詳見 `release-notes/v0.2.11.md`
+
 ## v0.2.10 - ATA-9627 候選 GUID V3 實測未通過
 
 * 2026-07-18 於 `公務車功能測試-ATA9627事件讀取` 完成真正的 GUID 輸入實測
