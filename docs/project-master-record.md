@@ -1,6 +1,6 @@
 # M365 公務車借用自動通知與後台管理流程 Master 專案紀錄
 
-更新日期：2026-07-18
+更新日期：2026-07-24
 Master 狀態：本文件為目前唯一最新版本，後續功能分支應以本文件為基準。
 
 ## 一、目前專案總覽
@@ -8,13 +8,13 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
-| 目前版本 | `v0.2.10` |
+| 目前版本 | `v0.2.13` |
 | 專案目標 | 讓員工透過 Outlook 預約公務車，系統自動同步至 SharePoint 後台，並在借用前透過 Teams Adaptive Card 通知借用人填寫共乘人數與確認公務車使用規範，供承辦人判斷是否發放鑰匙 |
-| 主要架構 | Outlook 資源行事曆 + Power Automate + Teams Adaptive Card + SharePoint List |
+| 主要架構 | Outlook 資源行事曆 + Power Automate（Office 365 Outlook「傳送 HTTP 要求」直連 Graph）+ Teams Adaptive Card + SharePoint List |
 | 授權限制 | O365 E1 可行，不使用 Power Automate Premium 連接器 |
-| 目前開發階段 | ATA-9627 候選 GUID V3 實測未通過；待取得連接器可接受的 Calendar ID |
-| 專案完成度 | 73% |
-| 下一個預計完成階段 | 取得 V3 可接受的 ATA-9627 Calendar ID，受控重跑並取得事件欄位與 Event ID / iCalUId |
+| 目前開發階段 | M6 正式行事曆同步流程已修正四項執行期錯誤並完成首次成功執行驗證；下一步為 P3 各項情境測試 |
+| 專案完成度 | 87% |
+| 下一個預計完成階段 | 執行 P3 各項情境測試（取消、時間異動、整天借用、重複觸發等），通過後進入 Teams 通知與回覆流程開發 |
 
 ## 二、本次新增完成內容
 
@@ -108,13 +108,13 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 |---|---|---:|---|
 | 需求分析 | 已完成 | 100% | 核心需求、限制與例外情境已整理 |
 | SharePoint List | 已完成 | 100% | 已在 `ALP_TW_AD` 建立並驗證 |
-| Power Automate | 進行中 | 42% | V2 動作成功執行，但 Outlook 已加入共用行事曆後仍只回傳個人 Calendar；正式自動化尚未完成 |
+| Power Automate | 進行中 | 75% | 正式同步流程已建立並修正四項執行期錯誤，完成首次成功執行與 SharePoint 資料驗證；P3 情境測試尚待進行 |
 | Adaptive Card | 設計完成 | 80% | JSON 範例完成，尚未正式串接發送 |
 | Teams 通知 | 設計完成，待串接 | 30% | 通知時間規則已確認 |
-| Outlook | 測試中 | 46% | Reviewer 可供 Outlook 查看三台車；但 V2 仍未列出三台 Resource Mailbox |
+| Outlook | 測試中 | 70% | ATA-9627 已驗證可讀取真實事件；Camry、Cross 待重複驗證 |
 | 系統防呆設計 | 欄位已落地，流程待實作 | 82% | 五項防呆機制已文件化，SharePoint 欄位已建立 |
-| 測試案例 | 進行中 | 60% | 已記錄 Calendar ID 可見性與無效 ID 實測，防呆情境待實測 |
-| 維護文件 | 已更新 | 94% | Master、治理、防呆、欄位與 Exchange 權限文件已更新 |
+| 測試案例 | 進行中 | 65% | 已記錄 HTTP 直連 Graph 成功案例，防呆情境待實測 |
+| 維護文件 | 已更新 | 95% | Master、治理、防呆、欄位與測試紀錄已更新 |
 | 操作手冊 | 待建立 | 20% | 尚需整理行政人員日常操作手冊 |
 | Git 版本 | 已建立 | 82% | 目前在 `feature/calendar-access-test` 分支，依 Project Governance 提交並同步 GitHub |
 
@@ -166,8 +166,8 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 
 | 優先順序 | 工作項目 | 說明 |
 |---:|---|---|
-| 1 | 解除 Calendar ID 存取阻擋 | 評估 Editor 權限或其他 O365 E1 標準方案，讓三台車可被 Power Automate 讀取 |
-| 2 | 取得三台 Calendar ID | 透過 `取得行事曆 (V2)` 列出可用行事曆並記錄三台資源行事曆真正 ID |
+| 1 | [已完成] 解除 Resource Calendar 讀取阻擋 | 已改用「傳送 HTTP 要求」+ `calendar/events` 直連 Graph，ATA-9627 驗證成功，不需 Calendar ID |
+| 2 | 對 Camry、Cross 重複驗證 | 沿用 ATA-9627 相同的 HTTP 要求路徑，逐台確認可讀取事件 |
 | 3 | 建立正式行事曆同步流程 | 將 Outlook 預約同步到 SharePoint List，並寫入已建立的防呆欄位 |
 | 4 | 建立取消與異動同步 | 行事曆取消、時間、車輛、主旨或借用人異動時同步更新 |
 | 5 | 建立通知時間計算 | 依 `Asia/Taipei`、`是否整天`、`借用起始時間` 計算 `預計通知時間` |
@@ -190,9 +190,9 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 
 ## 七、目前判斷
 
-本專案目前已完成後台資料結構、系統防呆欄位、基礎連線測試與資源行事曆存取閘門實測。SharePoint 與 Outlook 連接器驗證正常，但尚未具備進入正式同步流程的資源行事曆存取條件。
+本專案目前已完成後台資料結構、系統防呆欄位、基礎連線測試，並已解除資源行事曆存取閘門阻擋。SharePoint 與 Outlook 連接器驗證正常，ATA-9627 已可透過 Power Automate 正式讀取真實借用事件。
 
-目前不需要以 Exchange Administrator 登入或執行流程。`ad.general@alp.global` 已具備三台資源行事曆 Calendar Reviewer 權限，且 Outlook 網頁已可顯示三台公務車共用行事曆；但 2026-07-04 重測 `取得行事曆 (V2)` 後，輸出仍只有個人 `Calendar`，未列出三台資源行事曆。P0 工作改為評估將行事曆資料夾權限提升為 Editor，或採用其他 O365 E1 可行且不使用 Premium 連接器的讀取方案。取得真正 Calendar ID 後，才以 `取得事件的行事曆檢視 (V3)` 逐台驗證未來 7 天事件欄位。
+目前不需要以 Exchange Administrator 登入或執行流程。`ad.general@alp.global` 已具備三台資源信箱 Mailbox Full Access 權限；`取得行事曆 (V2)` 與 `取得事件的行事曆檢視 (V3)` 兩個動作經證實無法讀取 Resource Mailbox（屬連接器限制，非權限問題），已改用 Office 365 Outlook 標準連接器內建的「傳送 HTTP 要求」動作直連 Graph（`GET /v1.0/users/{mailbox}/calendar/events?$filter=...`），不需要 Calendar ID、不需要 Premium 授權。ATA-9627 已驗證成功，下一步為 Camry、Cross 重複驗證，並建立正式 SharePoint 同步流程。
 ## v0.2.7 Master 更新 - ATA-9627 V3 事件讀取測試
 
 更新日期：2026-07-14
@@ -315,3 +315,114 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
 - 本次不是 Access Denied，且 Calendar Id 已由執行輸入證實確實送達連接器。
 - `公務車功能測試-ATA9627事件讀取` 仍顯示「開啟」且為每分鐘排程，需優先人工停用。
 - M5 維持進行中／受阻；不得建立正式 SharePoint 同步 MVP。
+
+## v0.2.11 Master 更新 - Resource Calendar 讀取阻擋解除
+
+更新日期：2026-07-23
+
+### 本次新增完成內容
+
+- IT 已將 `ad.general@alp.global` 對三台公務車 Resource Mailbox 的權限提升為 Mailbox Full Access。
+- 重測 `取得行事曆 (V2)` 與 `取得事件的行事曆檢視 (V3)`：確認兩者皆為連接器動作限制，僅能存取連線帳號自己的行事曆，與權限層級無關。
+- 確認 `公務車功能測試-ATA9627事件讀取` 已由「開啟／每分鐘排程」變更為「關閉」。
+- 驗證 `取得電子郵件 (V3)` 的 `原始信箱地址` 參數可指定 Resource Mailbox 並成功讀信，證實 Full Access 對郵件類動作有效。
+- 找到正式解法：Office 365 Outlook 標準連接器（非 Premium）的「傳送 HTTP 要求」動作可直連 Graph，白名單物件包含 `calendar`、`events`、`calendars`。
+- 以 `GET /v1.0/users/room_nhb4_car@alp.global/calendar/events?$filter=...` 實測成功（`statusCode 200`），取得 ATA-9627 真實借用紀錄，欄位完整（主旨、起訖時間、是否全天、借用人、iCalUId、最後修改時間、地點、重複規則）。
+- 新增測試紀錄：`docs/ata9627-v3-calendar-event-test.md` 第十四節；新增 `release-notes/v0.2.11.md`。
+
+### 目前狀態
+
+| 功能 | 狀態 | 完成度 | 備註 |
+|---|---|---|---|
+| ATA-9627 Resource Calendar 讀取 | 已完成 | 100% | HTTP 要求 + `calendar/events` + `$filter` 驗證成功 |
+| Camry / Cross Resource Calendar 讀取 | 待驗證 | 0% | 沿用 ATA-9627 相同路徑，待逐台實測 |
+| 正式行事曆同步流程 | 待開始 | 0% | 讀取路徑已確認，可開始建置 |
+| SharePoint 同步 MVP | 待開始 | 0% | 等三台車讀取驗證完成後同步進行 |
+
+### Master 判定
+
+- M5 Resource Calendar 事件讀取正式解除阻擋，判定為**通過**。
+- 不需要 Exchange Administrator、Power Automate Premium 授權或額外 Azure AD App。
+- 可以正式進入 `公務車行事曆同步至 SharePoint` 流程建置階段。
+
+### 下一階段工作
+
+1. 對 Camry（`room_nhb4_car_camry@alp.global`）、Cross（`room_nhb4_car_cross@alp.global`）重複相同的 HTTP 要求驗證。
+2. 建立正式流程 `公務車行事曆同步至 SharePoint`，三台車共用同一組讀取、解析、寫入邏輯。
+3. 依 `預約唯一鍵`（資源信箱 + 行事曆事件 ID）判斷新增或更新 SharePoint 項目。
+4. 計算 `是否整天`、`預計通知時間`，並將 UTC 時間轉換為 `Asia/Taipei`。
+5. 完成後建立下一個階段版本記錄，並依 `docs/version-control-workflow.md` 執行 commit、push、tag 與 GitHub Release。
+
+## v0.2.12 Master 更新 - 正式行事曆同步流程建立並啟用排程
+
+更新日期：2026-07-23
+
+### 本次新增完成內容
+
+- 完成三台公務車共用的正式流程 `公務車行事曆同步至SharePoint`（Flow ID `b6d1ec5c-0fc5-46c1-85b0-d8d68c72c0ce`）：Recurrence（15 分鐘）→ 車輛清單 → 套用至各項（三台車）→ 傳送 HTTP 要求 → 剖析 JSON → 套用至各項 1（逐筆事件）→ 計算預約唯一鍵／預計通知時間 → SharePoint 取得多個項目 → 條件 → 更新項目／建立項目。
+- 依 `sharepoint/list-schema.md` 於「更新項目」「建立項目」兩分支完整寫入約 40 個欄位，含系統防呆欄位預設值。
+- 排除設計問題：確認 Power Automate 動作／迴圈顯示名稱含空格時，從外部以名稱參照會被轉換為底線（例如 `套用至各項 1` 需寫成 `items('套用至各項_1')`），修正「更新項目」約 13 個受影響欄位。
+- 流程儲存驗證零錯誤，流程檢查程式錯誤 0、警告 0。
+- 已將流程由「關閉」切換為「開啟」，正式進入每 15 分鐘排程運作。
+- 新增 `release-notes/v0.2.12.md`，更新 `docs/todo.md`、`power-automate/README.md`、`CHANGELOG.md`。
+
+### 目前狀態
+
+| 功能 | 狀態 | 完成度 | 備註 |
+|---|---|---|---|
+| ATA-9627 / Camry / Cross Resource Calendar 讀取 | 已完成 | 100% | 三台車皆採用相同 HTTP 直連 Graph 路徑 |
+| 正式行事曆同步流程建立 | 已完成 | 100% | 已儲存零錯誤並開啟排程 |
+| 正式行事曆同步流程端到端測試 | 待開始 | 0% | 尚未以實際 Outlook 預約驗證同步結果 |
+| Teams 通知與回覆流程 | 待開始 | 0% | 等同步流程端到端測試通過後進行 |
+
+### Master 判定
+
+- M6「建立正式 `公務車行事曆同步至 SharePoint` 流程」正式完成，判定為**通過**。
+- 流程已上線排程（每 15 分鐘執行一次），惟尚未完成端到端測試，`是否測試資料` 暫維持 `是` 作為安全預設值。
+- 尚未建立 Concurrency Control，暫存測試流程 `公務車功能測試-郵件動作參數檢查(可刪除)` 尚未刪除，皆列為下一階段工作。
+
+### 下一階段工作
+
+1. 執行端到端測試：實際於 Outlook 建立／修改／取消預約，確認流程可在 15 分鐘內正確同步至 SharePoint。
+2. 依 `docs/todo.md` P3 測試各項情境（整天借用、早上過早借用、取消、時間異動、重複觸發等）。
+3. 端到端測試通過後，將 `是否測試資料` 切換為正式運作邏輯，並刪除暫存測試流程。
+4. 建立 Concurrency Control，降低重複同步風險。
+5. 進入 P2 階段，建立「公務車借用前 Teams 通知與回覆」流程。
+
+## v0.2.13 Master 更新 - 執行期錯誤修正並完成首次成功執行驗證
+
+更新日期：2026-07-24
+
+### 本次新增完成內容
+
+- v0.2.12 儲存驗證雖為零錯誤，但開啟排程後所有執行紀錄皆顯示失敗；本版本逐一排查並修正四種造成執行期失敗的錯誤：
+  1. 兩處 Apply to each 迴圈的 `foreach` 參數誤加大括號（`@{items(...)}`），修正為 `@items(...)`。
+  2. 「取得多個項目」篩選查詢誤用中文欄位顯示名稱，改以 SharePoint REST API 驗證後的正確內部名稱 `OData__x9810__x7d04__x552f__x4e00__x93`。
+  3. 「條件」判斷式 `greater` 比較誤加大括號，修正為 `@length(...)`。
+  4. 「建立項目」「更新項目」的「是否整天」欄位誤寫入中文字串，改為原生布林參照 `@items('套用至各項_1')?['isAllDay']`。
+- 修正後手動觸發測試，運行紀錄首次出現「測試成功」；逐層展開執行追蹤確認三台車、內層事件迴圈、SharePoint 取得/建立/更新項目皆成功執行。
+- 以 SharePoint REST API 直接查詢清單，確認三筆借用紀錄正確寫入，「是否整天」欄位為真正布林值（非文字字串）；後續排程再次執行後項目數未增加，確認「預約唯一鍵」防重複比對邏輯正常運作。
+- 新增 `release-notes/v0.2.13.md`，更新 `docs/todo.md`、`power-automate/README.md`、`CHANGELOG.md`。
+
+### 目前狀態
+
+| 功能 | 狀態 | 完成度 | 備註 |
+|---|---|---|---|
+| 正式行事曆同步流程執行期錯誤修正 | 已完成 | 100% | 四種錯誤皆已修正並驗證 |
+| 首次成功執行驗證 | 已完成 | 100% | 運行紀錄「測試成功」，SharePoint 資料驗證通過 |
+| P3 各項情境測試 | 待開始 | 0% | 取消、時間異動、整天借用、重複觸發等尚待測試 |
+| Teams 通知與回覆流程 | 待開始 | 0% | 等 P3 測試通過後進行 |
+
+### Master 判定
+
+- 正式流程 `公務車行事曆同步至SharePoint` 完成首次真正端到端成功執行，並以 SharePoint 實際資料驗證寫入正確性，判定為**通過**。
+- v0.2.12「流程儲存驗證零錯誤」之敘述，就實際執行結果而言並不完整；本版本已補充說明並修正執行期錯誤，後續版本紀錄應留意「儲存零錯誤」不等於「執行成功」。
+- 尚未涵蓋取消、時間異動等情境，`是否測試資料` 暫維持 `是`，Concurrency Control 與暫存測試流程刪除仍列為下一階段工作。
+
+### 下一階段工作
+
+1. 執行 P3 各項情境測試（取消、時間異動、整天借用、重複觸發等）。
+2. 確認「我的流程」清單中是否有本流程的重複項目需清理。
+3. 通過後將 `是否測試資料` 切換為正式運作邏輯，並刪除暫存測試流程。
+4. 建立 Concurrency Control，降低重複同步風險。
+5. 進入 P2 階段，建立「公務車借用前 Teams 通知與回覆」流程。

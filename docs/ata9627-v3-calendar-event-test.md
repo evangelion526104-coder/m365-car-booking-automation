@@ -256,3 +256,67 @@ subject = TEST
 - 從 Office 365 Outlook 連接器可列舉的行事曆、重新建立的標準連線或 IT 可提供的 Exchange/Outlook Folder ID 取得可接受值。
 - 若標準連接器仍無法讀取 Resource Calendar，評估 O365 E1 可行且不使用 Premium 的替代方案。
 - 僅在成功取得事件與 `id`／`iCalUId` 後，才建立 `公務車行事曆同步至 SharePoint - ATA9627 MVP`。
+
+## 十四、v0.2.11 補充紀錄 - Full Access 委派後重測與 HTTP 直連 Graph 成功
+
+更新日期：2026-07-23
+
+### Full Access 委派後重測既有動作
+
+IT 已將 `ad.general@alp.global` 對 `room_nhb4_car@alp.global` 的權限由 Calendar Folder Editor 提升為 Mailbox Full Access。重新執行 `公務車功能測試-ATA9627事件讀取`：
+
+| 動作 | 結果 |
+|---|---|
+| 取得行事曆 (V2) | 仍只回傳 `ad.general@alp.global` 自身 `Calendar`，未列出 Resource Mailbox |
+| 取得事件的行事曆檢視 (V3) | 改用格式正確的 Exchange Item ID 測試，錯誤由 `ErrorInvalidIdMalformed` 變為 `404 ErrorItemNotFound`（`The specified object was not found in the store.`） |
+| V3 完整參數檢查 | 確認僅有 3 個必填欄位＋5 個進階參數（篩選查詢、排序依據、最高計數、略過計數、搜尋），無任何「指定其他信箱」欄位 |
+
+判定：`取得行事曆 (V2)` 與 `取得事件的行事曆檢視 (V3)` 兩者在架構上僅能存取連線帳號自己的行事曆，Full Access 委派無法解除此限制，屬於連接器動作本身設計限制，不是權限問題。
+
+附帶完成：確認測試 Flow 狀態已由「開啟／每分鐘排程」變更為「關閉」，解除 v0.2.10 遺留待辦。
+
+### 驗證 Full Access 對郵件類動作有效
+
+建立暫存測試流程 `公務車功能測試-郵件動作參數檢查(可刪除)`：
+
+- `取得電子郵件 (V3)` 動作進階參數中的 `原始信箱地址`（mailboxAddress）填入 `room_nhb4_car@alp.global`，`statusCode 200`，成功讀到該資源信箱 Inbox 真實郵件。
+- 證實 Full Access 委派對「郵件類」動作有效，限制僅發生在「行事曆類」動作。
+
+### 正式解法：傳送 HTTP 要求直連 Graph
+
+Office 365 Outlook 標準連接器（非 Premium）內建「傳送 HTTP 要求」動作，可直接呼叫 Graph 端點：
+
+1. 第一次嘗試 `GET /v1.0/users/room_nhb4_car@alp.global/calendarView?startDateTime=...&endDateTime=...` 失敗，回傳 `BadRequest`：
+
+   ```text
+   URI path is not a valid Graph endpoint, path is neither absolute nor relative or resource/object is not supported for this connector.
+   Invalid resource,Allowed values: me,users.
+   Invalid Object,Allowed values: messages,mailFolders,events,calendar,calendars,outlook,inferenceClassification.
+   ```
+
+2. 改用白名單內的 `calendar/events` 物件，並以 `$filter` 篩選時間區間：
+
+   ```text
+   GET /v1.0/users/room_nhb4_car@alp.global/calendar/events?$filter=start/dateTime ge '2026-07-14T00:00:00' and start/dateTime le '2026-07-30T23:59:59'
+   ```
+
+3. 執行結果：`statusCode 200`，成功取得 ATA-9627 真實借用紀錄，包含 `subject`、`start.dateTime`、`end.dateTime`、`isAllDay`、`organizer.emailAddress.name`／`address`、`id`、`iCalUId`、`lastModifiedDateTime`、`location.displayName`、`recurrence` 等完整欄位。實際取得的一筆真實事件範例：借用人 `daniel.yen@alp.global`，主旨「瑞芳參訪」，2026-07-24 借用。
+
+### 判定
+
+- M5 Resource Calendar 事件讀取正式解除阻擋，判定為**通過**。
+- 不需要 Premium 授權、不需要另建 Azure AD App 或 Logic App。
+- 可以正式進入 `公務車行事曆同步至 SharePoint` 流程建置階段。
+
+### 已知限制
+
+1. Graph 端點僅限白名單物件，`calendarView` 不可用，一律改用 `calendar/events` + `$filter`。
+2. 重複事件（recurring series）目前僅回傳 `seriesMaster`，尚未展開個別發生實例；MVP 階段先涵蓋單次與系列主體事件，個別實例展開留待後續評估。
+3. 目前僅以 ATA-9627 驗證，Camry、Cross 尚未逐一重測。
+4. 回傳時間為 UTC，寫入 SharePoint 時仍須依既有防呆規則轉換為 `Asia/Taipei`。
+
+### 下一步
+
+1. 對 Camry（`room_nhb4_car_camry@alp.global`）、Cross（`room_nhb4_car_cross@alp.global`）重複相同的 HTTP 要求驗證。
+2. 建立正式流程 `公務車行事曆同步至 SharePoint`，三台車共用同一組 HTTP 要求＋解析＋寫入邏輯。
+3. 依 `預約唯一鍵`（資源信箱 + 行事曆事件 ID）判斷新增或更新 SharePoint 項目，並計算 `是否整天`、`預計通知時間`。
