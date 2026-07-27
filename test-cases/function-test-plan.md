@@ -60,7 +60,7 @@
 | SG-T07 | 重複觸發測試 | 同一 Outlook 事件短時間內觸發兩次同步 | 不建立重複 SharePoint 紀錄，不重複通知 | 通過（以歷史執行記錄佐證：同一批事件經排程每 15 分鐘重複觸發數十次，SharePoint 中對應紀錄皆維持單筆，Event ID/iCalUId 比對機制有效防止重複建立） |
 | SG-T08 | Event ID 唯一鍵測試 | 用相同日期、主旨、借用人建立不同事件 | 系統以 Event ID / iCalUId 區分，不誤判為同一筆 | 待測 |
 | SG-T09 | 重複資料異常測試 | 人為建立相同 `預約唯一鍵` 多筆資料 | 標記重複異常，不發送 Teams 通知 | 待測 |
-| SG-T10 | Flow Concurrency 測試 | 同時同步多筆或重複事件 | 流程依序處理，不發生 Race Condition | 待測 |
+| SG-T10 | Flow Concurrency 測試 | 同時同步多筆或重複事件 | 流程依序處理，不發生 Race Condition | 通過（v0.2.16）：Recurrence 觸發程序已啟用並行控制並設定平行處理原則的程度為 1，避免流程重疊執行；確認三個 Apply to each 迴圈預設即為循序執行。 |
 
 ## 測試資料原則
 
