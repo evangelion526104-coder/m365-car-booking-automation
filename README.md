@@ -17,10 +17,10 @@
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
-| 目前版本 | `v0.3.0` |
-| 目前開發階段 | P2「公務車借用前 Teams 通知與回覆」流程已完成並驗證通過（FT-108～FT-111、SG-T06 正向與負向路徑），進入 P4 上線文件階段 |
-| 專案完成度 | 92% |
-| 最新更新日期 | 2026-07-29 |
+| 目前版本 | `v0.3.1` |
+| 目前開發階段 | P2 收尾測試補齊完成（FT-104～FT-107、FT-112、SG-T08 通過；FT-113 發現並列為已知限制；SG-T09 尚待執行），進入 P4 上線文件階段 |
+| 專案完成度 | 96% |
+| 最新更新日期 | 2026-07-30 |
 | Master 紀錄 | [docs/project-master-record.md](docs/project-master-record.md) |
 | SharePoint 清單 | [公務車借用管理](https://alpglobal.sharepoint.com/sites/ALP_TW_AD/Lists/List6/AllItems.aspx) |
 | Power Automate 測試流程 | 公務車功能測試-SharePoint清單連線 |
