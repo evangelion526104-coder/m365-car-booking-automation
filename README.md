@@ -17,10 +17,10 @@
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
-| 目前版本 | `v0.3.1` |
-| 目前開發階段 | P2 收尾測試補齊完成（FT-104～FT-107、FT-112、SG-T08 通過；FT-113 發現並列為已知限制；SG-T09 尚待執行），進入 P4 上線文件階段 |
-| 專案完成度 | 96% |
-| 最新更新日期 | 2026-07-30 |
+| 目前版本 | `v0.3.2` |
+| 目前開發階段 | FT-113（同車重複預約）補強邏輯完成並驗證通過，管理員手動確認操作程序文件已完成；SG-T09 尚待執行，進入 P4 上線文件階段 |
+| 專案完成度 | 97% |
+| 最新更新日期 | 2026-08-03 |
 | Master 紀錄 | [docs/project-master-record.md](docs/project-master-record.md) |
 | SharePoint 清單 | [公務車借用管理](https://alpglobal.sharepoint.com/sites/ALP_TW_AD/Lists/List6/AllItems.aspx) |
 | Power Automate 測試流程 | 公務車功能測試-SharePoint清單連線 |
@@ -65,6 +65,7 @@ Teams Adaptive Card 通知規則已更新為：
 | [docs/system-safeguards.md](docs/system-safeguards.md) | 系統防呆設計，上線前必須完成 |
 | [docs/Exchange_Resource_Mailbox_Permission.md](docs/Exchange_Resource_Mailbox_Permission.md) | Exchange 資源行事曆權限修復與驗證步驟 |
 | [docs/calendar-access-test.md](docs/calendar-access-test.md) | 三台公務車 Calendar ID 與事件欄位實測紀錄 |
+| [docs/admin-manual-confirmation-procedure.md](docs/admin-manual-confirmation-procedure.md) | 管理員手動確認操作程序（借用人未透過 Teams 卡片回覆時） |
 | [sharepoint/list-schema.md](sharepoint/list-schema.md) | SharePoint List 欄位設計 |
 | [power-automate/README.md](power-automate/README.md) | Power Automate 流程設計與現況 |
 | [power-automate/ata9627-v3-test-implementation.md](power-automate/ata9627-v3-test-implementation.md) | ATA-9627 V3 事件讀取測試實作版 |
