@@ -17,9 +17,9 @@
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
-| 目前版本 | `v0.3.3` |
-| 目前開發階段 | SG-T09（重複資料異常標記）補強邏輯完成並驗證通過；FT-113、SG-T09 測試資料待清理，進入 P4 上線文件階段 |
-| 專案完成度 | 98% |
+| 目前版本 | `v0.3.4` |
+| 目前開發階段 | P4 上線前四份文件（操作手冊、異常處理說明、日常維護說明、上線前驗收紀錄）建立完成；FT-113、SG-T09 測試資料待清理 |
+| 專案完成度 | 99% |
 | 最新更新日期 | 2026-08-04 |
 | Master 紀錄 | [docs/project-master-record.md](docs/project-master-record.md) |
 | SharePoint 清單 | [公務車借用管理](https://alpglobal.sharepoint.com/sites/ALP_TW_AD/Lists/List6/AllItems.aspx) |
@@ -66,11 +66,15 @@ Teams Adaptive Card 通知規則已更新為：
 | [docs/Exchange_Resource_Mailbox_Permission.md](docs/Exchange_Resource_Mailbox_Permission.md) | Exchange 資源行事曆權限修復與驗證步驟 |
 | [docs/calendar-access-test.md](docs/calendar-access-test.md) | 三台公務車 Calendar ID 與事件欄位實測紀錄 |
 | [docs/admin-manual-confirmation-procedure.md](docs/admin-manual-confirmation-procedure.md) | 管理員手動確認操作程序（借用人未透過 Teams 卡片回覆時） |
+| [docs/operation-manual.md](docs/operation-manual.md) | 行政／總務操作手冊 |
+| [docs/incident-handling-guide.md](docs/incident-handling-guide.md) | 異常處理說明 |
+| [docs/maintenance-guide.md](docs/maintenance-guide.md) | 日常維護說明 |
 | [sharepoint/list-schema.md](sharepoint/list-schema.md) | SharePoint List 欄位設計 |
 | [power-automate/README.md](power-automate/README.md) | Power Automate 流程設計與現況 |
 | [power-automate/ata9627-v3-test-implementation.md](power-automate/ata9627-v3-test-implementation.md) | ATA-9627 V3 事件讀取測試實作版 |
 | [adaptive-cards/README.md](adaptive-cards/README.md) | Teams Adaptive Card 設計 |
 | [test-cases/function-test-plan.md](test-cases/function-test-plan.md) | 功能測試計畫 |
+| [test-cases/go-live-acceptance-record.md](test-cases/go-live-acceptance-record.md) | 上線前驗收紀錄 |
 | [CHANGELOG.md](CHANGELOG.md) | 版本異動紀錄 |
 
 ## 下一階段
