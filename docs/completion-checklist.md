@@ -1,6 +1,6 @@
 # 完成清單
 
-更新日期：2026-07-18
+更新日期：2026-08-04（v0.3.4）
 
 ## 已完成
 
@@ -44,24 +44,30 @@
 - [x] 完成 ATA-9627 V3 事件讀取測試實作版文件，包含 Power Automate 動作、Expression、成功判斷與下一步 MVP 草案。
 - [x] 使用候選 GUID 完成一次 V3 實測，確認輸入已送達連接器並取得 `ErrorInvalidIdMalformed` 證據。
 
+## v0.2.11～v0.3.4 期間新完成項目
+
+- [x] 放棄 Calendar ID／V3 連接器路徑，改以「傳送 HTTP 要求」直連 Graph `calendar/events`，三台車（Altis、Camry、Cross）皆完成事件讀取驗證。
+- [x] 停用 `公務車功能測試-ATA9627事件讀取` 等暫存測試流程。
+- [x] 建立正式 Outlook 行事曆同步流程 `公務車行事曆同步至SharePoint`（v0.2.12 建立，v0.2.13～v0.2.16 陸續修正並正式化）。
+- [x] 實作 Asia/Taipei 統一時區轉換（SG-T01，v0.2.14 修正 Update 路徑 +8 小時位移錯誤後驗證通過）。
+- [x] 實作 Event ID / iCalUId 唯一識別與重複資料防止（SG-T08、SG-T09，SG-T09 於 v0.3.3 完成補強邏輯）。
+- [x] 建立行事曆取消預約同步邏輯（FT-103／SG-T04，v0.2.15）。
+- [x] 建立行事曆時間異動同步邏輯（FT-102）。
+- [x] 建立 `預計通知時間` 自動計算邏輯（FT-104～FT-107）。
+- [x] 建立 Teams Adaptive Card 正式發送流程 `公務車借用前Teams通知與回覆`（v0.3.0）。
+- [x] 建立 Teams 回覆寫回 SharePoint 流程（v0.3.0）。
+- [x] 建立舊 Teams Adaptive Card 失效機制（SG-T06，v0.3.0）。
+- [x] 啟用 Flow Concurrency Control 與執行鎖（SG-T10，v0.2.16）。
+- [x] 建立未完成填寫狀態維持邏輯（FT-110、FT-111，Adaptive Card 必填/必勾選機制）。
+- [x] 建立承辦人已領鑰更新流程或操作規則（`docs/admin-manual-confirmation-procedure.md`，v0.3.2）。
+- [x] 完成系統防呆測試 SG-T01 至 SG-T10（SG-T05 為部分通過，詳見 `test-cases/go-live-acceptance-record.md`）。
+- [x] 完成端到端測試（P3 情境測試全數執行）。
+- [x] 建立行政、總務操作手冊（`docs/operation-manual.md`，v0.3.4）。
+- [x] 建立異常處理說明（`docs/incident-handling-guide.md`，v0.3.4）。
+- [x] 建立日常維護說明（`docs/maintenance-guide.md`，v0.3.4）。
+- [x] 建立上線前驗收紀錄（`test-cases/go-live-acceptance-record.md`，v0.3.4）。
+
 ## 尚未完成
 
-- [ ] 取得 Office 365 Outlook V3 可接受的 ATA-9627 Calendar ID，並成功完成事件讀取測試。
-- [ ] 停用目前每分鐘執行的 `公務車功能測試-ATA9627事件讀取`。
-- [ ] 取得 Camry 與 Cross 真正 Calendar ID，並完成三台車未來 7 天事件讀取測試。
-- [ ] 建立正式 Outlook 行事曆同步流程。
-- [ ] 實作 Asia/Taipei 統一時區轉換。
-- [ ] 實作 Event ID / iCalUId 唯一識別與重複資料防止。
-- [ ] 建立行事曆取消預約同步邏輯。
-- [ ] 建立行事曆時間異動同步邏輯。
-- [ ] 建立 `預計通知時間` 自動計算邏輯。
-- [ ] 建立 Teams Adaptive Card 正式發送流程。
-- [ ] 建立 Teams 回覆寫回 SharePoint 流程。
-- [ ] 建立舊 Teams Adaptive Card 失效機制。
-- [ ] 啟用 Flow Concurrency Control 與執行鎖。
-- [ ] 建立未完成填寫狀態維持邏輯。
-- [ ] 建立承辦人已領鑰更新流程或操作規則。
-- [ ] 完成系統防呆測試 SG-T01 至 SG-T10。
-- [ ] 完成端到端測試。
-- [ ] 建立行政、總務操作手冊。
-- [ ] 完成正式上線驗收。
+- [ ] 清理 FT-113、SG-T09 本輪測試資料（詳見 `test-cases/go-live-acceptance-record.md` 第四節）。
+- [ ] 完成正式上線驗收確認（測試資料清理後即可完成）。

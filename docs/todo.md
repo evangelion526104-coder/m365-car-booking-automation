@@ -57,11 +57,13 @@
 
 ## P4 文件與上線
 
-1. 建立行政、總務操作手冊。
-2. 建立異常處理說明。
-3. 建立日常維護說明。
-4. 完成上線前驗收紀錄。
-5. 視需要建立 Git tag 與正式 release note。
+1. [x] 建立行政、總務操作手冊（`docs/operation-manual.md`，v0.3.4 已完成）。
+2. [x] 建立異常處理說明（`docs/incident-handling-guide.md`，v0.3.4 已完成）。
+3. [x] 建立日常維護說明（`docs/maintenance-guide.md`，v0.3.4 已完成）。
+4. [x] 完成上線前驗收紀錄（`test-cases/go-live-acceptance-record.md`，v0.3.4 已完成）。
+5. [x] 視需要建立 Git tag 與正式 release note（v0.2.12～v0.3.3 已透過 GitHub 網頁 UI 補齊）。
+6. [ ] 清理 FT-113、SG-T09 測試資料（詳見 `test-cases/go-live-acceptance-record.md` 第四節）。
+7. [ ] 清理完成後，完成正式上線驗收確認。
 ## v0.2.7 待辦事項 - ATA-9627 V3 事件讀取
 
 1. 建立或開啟 Power Automate 測試流程 `公務車功能測試-ATA9627事件讀取`。
@@ -213,8 +215,8 @@
 ・ [x] 撰寫管理員手動確認操作程序文件 `docs/admin-manual-confirmation-procedure.md`（承辦人於借用人未透過 Teams 卡片回覆時，如何手動於 SharePoint 後台確認並發放鑰匙，須同步更新「領鑰狀態」與「通知狀態」等欄位）。
 ・ [ ] 清理本輪測試產生的 Outlook 測試事件（TEST-FT113-A/B、A2/B2、A3/B3）與 SharePoint 測試紀錄（ID 13、14、16、17），清單詳見 `release-notes/v0.3.2.md`。
 ・ [x] 安排執行 SG-T09（v0.3.3 已完成並驗證通過，詳見下方 v0.3.3 待辦事項）。
-・ [ ] 補上「通知發送時間」欄位實際寫入邏輯（沿用既有待辦）。
-・ [ ] 進入 P4 階段，建立行政/總務操作手冊、異常處理與日常維護說明，完成上線前驗收紀錄。
+・ [ ] 補上「通知發送時間」欄位實際寫入邏輯（沿用既有待辦，已於 `docs/incident-handling-guide.md` 列為已知限制）。
+・ [x] 進入 P4 階段，建立行政/總務操作手冊、異常處理與日常維護說明，完成上線前驗收紀錄（v0.3.4 已完成）。
 
 ## v0.3.3 待辦事項 - SG-T09 重複資料異常標記補強邏輯完成並驗證通過後
 
@@ -224,6 +226,13 @@
 ・ [x] 儲存流程確認零錯誤，以 SharePoint REST API 建立與既有測試事件相同 `預約唯一鍵` 的人為重複紀錄（TEST-SGT09-A／B），手動觸發驗證兩筆皆正確標記 `疑似重複`。
 ・ [x] 複核「公務車借用前Teams通知與回覆」流程 8 項條件式，確認明確比對 `重複資料檢查結果 = 正常`，`疑似重複`／`異常`皆會被排除於通知對象之外，無需修改。
 ・ [ ] 清理本輪測試產生的 SharePoint 測試紀錄（TEST-SGT09-A、TEST-SGT09-B）與 Outlook 測試事件（TEST-SGT09-A，2026/8/4 14:00-14:30，於公務車9627-B4-永聯內湖辦公室資源行事曆）。
-・ [ ] 評估是否將 `重複資料檢查結果` 拆分為獨立欄位，避免 FT-113（時間重疊）與 SG-T09（唯一鍵重複）兩種語意共用同一欄位時互相覆蓋（已知限制，非阻擋性）。
-・ [ ] 補上「通知發送時間」欄位實際寫入邏輯（沿用既有待辦）。
-・ [ ] 進入 P4 階段，建立行政/總務操作手冊、異常處理與日常維護說明，完成上線前驗收紀錄。
+・ [ ] 評估是否將 `重複資料檢查結果` 拆分為獨立欄位，避免 FT-113（時間重疊）與 SG-T09（唯一鍵重複）兩種語意共用同一欄位時互相覆蓋（已知限制，非阻擋性，已於 `docs/incident-handling-guide.md` 記錄）。
+・ [ ] 補上「通知發送時間」欄位實際寫入邏輯（沿用既有待辦，已於 `docs/incident-handling-guide.md` 列為已知限制）。
+・ [x] 進入 P4 階段，建立行政/總務操作手冊、異常處理與日常維護說明，完成上線前驗收紀錄（v0.3.4 已完成）。
+
+## v0.3.4 待辦事項 - P4 上線前文件補齊完成後
+
+・ [x] 建立 `docs/operation-manual.md`、`docs/incident-handling-guide.md`、`docs/maintenance-guide.md`、`test-cases/go-live-acceptance-record.md`。
+・ [ ] 清理 FT-113 測試資料（TEST-FT113-A/B、A2/B2、A3/B3；SharePoint ID 13、14、16、17）。
+・ [ ] 清理 SG-T09 測試資料（TEST-SGT09-A；SharePoint ID 19、21）——專案負責人自行清理。
+・ [ ] 兩批測試資料清理完成後，完成正式上線驗收確認並更新 Master 紀錄。
