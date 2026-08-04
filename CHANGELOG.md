@@ -9,6 +9,7 @@
 ・ 新增 `docs/maintenance-guide.md`（日常維護說明）：定期檢查項目、測試資料清理原則、Concurrency Control 與資源信箱權限維護
 ・ 新增 `test-cases/go-live-acceptance-record.md`（上線前驗收紀錄）：彙整全部 FT／SG-T 測試結果，對照系統防呆驗收標準逐項確認
 ・ P4 上線前四份文件建立完成，判定為通過；待清理 FT-113、SG-T09 測試資料後即符合正式上線條件
+・ 2026-08-04 追加：完成 FT-113 測試資料清理（SharePoint ID 13/14/16/17、Outlook 全部測試事件確認已清除）；SG-T09 測試資料（TEST-SGT09-A、ID 19/21）留待專案負責人自行清理，為正式上線前唯一剩餘事項
 ・ 詳見 `release-notes/v0.3.4.md`
 
 ## v0.3.3 - SG-T09 重複資料異常標記補強邏輯完成並驗證通過
