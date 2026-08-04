@@ -62,8 +62,9 @@
 3. [x] 建立日常維護說明（`docs/maintenance-guide.md`，v0.3.4 已完成）。
 4. [x] 完成上線前驗收紀錄（`test-cases/go-live-acceptance-record.md`，v0.3.4 已完成）。
 5. [x] 視需要建立 Git tag 與正式 release note（v0.2.12～v0.3.3 已透過 GitHub 網頁 UI 補齊）。
-6. [ ] 清理 FT-113、SG-T09 測試資料（詳見 `test-cases/go-live-acceptance-record.md` 第四節）。
-7. [ ] 清理完成後，完成正式上線驗收確認。
+6. [x] 清理 FT-113 測試資料（2026-08-04 已完成，SharePoint ID 13/14/16/17 與 Outlook 全部測試事件皆已確認清除）。
+7. [ ] 清理 SG-T09 測試資料（TEST-SGT09-A；SharePoint ID 19、21）——專案負責人自行清理。
+8. [ ] 清理完成後，完成正式上線驗收確認。
 ## v0.2.7 待辦事項 - ATA-9627 V3 事件讀取
 
 1. 建立或開啟 Power Automate 測試流程 `公務車功能測試-ATA9627事件讀取`。
@@ -233,6 +234,6 @@
 ## v0.3.4 待辦事項 - P4 上線前文件補齊完成後
 
 ・ [x] 建立 `docs/operation-manual.md`、`docs/incident-handling-guide.md`、`docs/maintenance-guide.md`、`test-cases/go-live-acceptance-record.md`。
-・ [ ] 清理 FT-113 測試資料（TEST-FT113-A/B、A2/B2、A3/B3；SharePoint ID 13、14、16、17）。
+・ [x] 清理 FT-113 測試資料（TEST-FT113-A/B、A2/B2、A3/B3；SharePoint ID 13、14、16、17），2026-08-04 完成。
 ・ [ ] 清理 SG-T09 測試資料（TEST-SGT09-A；SharePoint ID 19、21）——專案負責人自行清理。
-・ [ ] 兩批測試資料清理完成後，完成正式上線驗收確認並更新 Master 紀錄。
+・ [ ] SG-T09 測試資料清理完成後，完成正式上線驗收確認並更新 Master 紀錄。
