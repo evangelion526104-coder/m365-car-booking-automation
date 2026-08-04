@@ -17,10 +17,10 @@
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
-| 目前版本 | `v0.3.2` |
-| 目前開發階段 | FT-113（同車重複預約）補強邏輯完成並驗證通過，管理員手動確認操作程序文件已完成；SG-T09 尚待執行，進入 P4 上線文件階段 |
-| 專案完成度 | 97% |
-| 最新更新日期 | 2026-08-03 |
+| 目前版本 | `v0.3.3` |
+| 目前開發階段 | SG-T09（重複資料異常標記）補強邏輯完成並驗證通過；FT-113、SG-T09 測試資料待清理，進入 P4 上線文件階段 |
+| 專案完成度 | 98% |
+| 最新更新日期 | 2026-08-04 |
 | Master 紀錄 | [docs/project-master-record.md](docs/project-master-record.md) |
 | SharePoint 清單 | [公務車借用管理](https://alpglobal.sharepoint.com/sites/ALP_TW_AD/Lists/List6/AllItems.aspx) |
 | Power Automate 測試流程 | 公務車功能測試-SharePoint清單連線 |
