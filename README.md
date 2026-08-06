@@ -17,9 +17,9 @@
 | 項目 | 內容 |
 |---|---|
 | 專案名稱 | M365 公務車借用自動通知與後台管理流程 |
-| 目前版本 | `v0.3.4` |
-| 目前開發階段 | 專案仍為**測試階段，尚未正式啟用**。2026-08-06 員工回報收到重複借車通知卡片，診斷確認為系統性 Bug（詳見 CHANGELOG v0.3.4 追加說明、`docs/incident-handling-guide.md` 第三節），已將「公務車借用前Teams通知與回覆」與「公務車行事曆同步至SharePoint」兩流程全部關閉止血，待修正並驗證通過後才會重新開啟；另 FT-113、SG-T09 測試資料清理事項維持原狀 |
-| 專案完成度 | 99%（含待修正 Bug，尚不可正式上線） |
+| 目前版本 | `v0.3.5` |
+| 目前開發階段 | 專案仍為**測試階段，尚未正式啟用**。2026-08-06 員工回報收到重複借車通知卡片，診斷確認為系統性 Bug#1（詳見 CHANGELOG v0.3.4 追加說明、`docs/incident-handling-guide.md` 第三節），修正邏輯已完成；同日另排查循環預借（同一人連續多日借用同一台車）每日重複發卡問題，已於 v0.3.5 完成「自動延用」邏輯並儲存驗證零錯誤，惟其中 FYI 訊息發送對象為暫行設計決策，待專案負責人審閱。「公務車借用前Teams通知與回覆」與「公務車行事曆同步至SharePoint」兩流程目前全部關閉止血，待專案負責人確認後才會重新開啟；另 FT-113、SG-T09 測試資料清理事項維持原狀 |
+| 專案完成度 | 99%（修正邏輯已完成，尚待專案負責人審閱後重新開啟才可正式上線） |
 | 最新更新日期 | 2026-08-06 |
 | Master 紀錄 | [docs/project-master-record.md](docs/project-master-record.md) |
 | SharePoint 清單 | [公務車借用管理](https://alpglobal.sharepoint.com/sites/ALP_TW_AD/Lists/List6/AllItems.aspx) |
@@ -39,7 +39,7 @@
 
 ## 公務車資源
 
-| 車輛 | 資源信箱 | Calendar ID 狀態 |
+| 車輛 | 資源信笩 | Calendar ID 狀態 |
 |---|---|---|
 | 公務車Altis ATA-9627 B4-16-永聯內湖辦公室 | `room_nhb4_car@alp.global` | 候選 GUID 已驗證不適用 V3：`6049e1d1-b34c-4cca-b530-2c7c4b77abe9` |
 | 公務車Camry BKX-2370 B4-17-永聯內湖辦公室 | `room_nhb4_car_camry@alp.global` | 待取得 |
