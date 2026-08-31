@@ -990,3 +990,40 @@ Master 狀態：本文件為目前唯一最新版本，後續功能分支應以�
       4. 安排 #136：循環預約功能完整實作（本專案最大工作量項目）。
          5. 更新 README、CHANGELOG、todo 反映本次變更，並依專案版本控管規則透過 Chrome 瀏覽器同步至 GitHub。
          
+
+## v0.3.9 Master 更新 - #135 SharePoint 即時同步之 Power Apps 可行性實測通過
+
+更新日期：2026-08-31
+
+### 背景
+
+依 v0.3.8 待辦事項，安排 #135：實測 SharePoint 即時同步之 Power Apps 可行性，對應 `docs/company-account-and-booking-rules-change-decisions.md` 第四節「同步機制」決策——「SharePoint 立即同步：先實測 Power Apps 可行性，若不可行再改用按鈕＋控制清單方案」，主要情境為第五節所述「臨時借用新增 20 分鐘門檻、立即同步、人工確認測試」，目的在於評估是否能在不使用 Power Automate Premium 連接器、維持 O365 E1 授權範圍的前提下，將現行『公務車行事曆同步至SharePoint』流程的 15 分鐘排程輪詢，補強為可由使用者主動觸發的即時同步管道。
+
+### 本次變更內容/測試過程
+
+・ 確認 make.powerapps.com 與 make.powerautomate.com 共用同一租戶環境（環境 ID `Default-0e690dd6-da00-4897-bf51-a91c687a02bd`，顯示名稱 alp.global (default)），AD General 帳號可正常存取 Power Apps 首頁、建立畫布應用程式（Canvas App）並連接 SharePoint 清單「公務車借用管理」，過程未觸發任何 Premium 授權提示，符合 O365 E1 範圍。
+・ 檢視既有 Power Apps 應用程式「公務車立即同步POC測試」（建立於 2026-08-24）：畫面含一個「立即同步」按鈕與一個顯示回傳結果與前端實測延遲的標籤；按鈕 OnSelect 呼叫已綁定的即時觸發 Power Automate 流程 `公務車功能測試-Power Apps立即同步POC`（Flow ID `141b8d64-e8de-4bd4-af27-d4a53ffa0c93`），並於呼叫完成後執行 `Refresh('公務車借用管理')`。
+・ 確認該即時觸發流程之連接器僅使用 Office 365 Outlook 與 SharePoint 兩個標準（非 Premium）連接器，與現行正式同步流程一致。
+・ 於本次（2026-08-31）重新登入 Power Apps（原工作階段 Token 已過期，重新登入後正常）並於預覽模式下實際點擊「立即同步」按鈕兩次，以 Power Automate 執行歷程記錄驗證：兩次呼叫皆成功觸發該即時流程並於 8～9 秒內執行成功（08:31 10:46、10:48 兩筆執行紀錄，狀態皆為「成功」），證實 Power Apps 畫布應用程式可直接呼叫 Power Automate 即時流程作為「立即同步」按鈕，且全程使用標準連接器、不需 Premium 授權。
+・ 前端 Label 因瀏覽器自動化工具本次連線之畫布渲染限制，未能於截圖中直接確認顯示文字，惟已以 Power Automate 執行歷程記錄（起始時間、持續時間、狀態）作為呼叫成功與否的直接證據，判定不影響本次可行性結論。
+
+### 已知限制與待辦
+
+| 項目 | 狀態 | 備註 |
+|---|---|---|
+| Power Apps 觸發即時 Power Automate 流程 | 已驗證可行 | 使用標準 Office 365 Outlook + SharePoint 連接器，O365 E1 範圍內可行 |
+| 執行延遲 | 8~9 秒（本次）／2~3 秒（8/24 初次測試） | 遠低於臨時借用情境 20 分鐘門檻需求 |
+| 前端 Label 顯示驗證 | 未直接確認 | 瀏覽器自動化工具畫布渲染限制，以 Power Automate 執行歷程佐證呼叫成功 |
+| 正式導入方案設計 | 待進行 | 需決定按鈕放置位置（例如整合進現有承辦人後台或另建輕量 Power Apps）、觸發範圍（是否限臨時借用）與使用者權限 |
+
+### Master 判定
+・ #135（實測 SharePoint 即時同步之 Power Apps 可行性）判定為**可行，測試通過**：Power Apps 畫布應用程式可在不使用 Premium 連接器、O365 E1 授權範圍內，直接呼叫 Power Automate 即時觸發流程完成 SharePoint 立即同步，執行時間約 2~9 秒，遠低於臨時借用情境的 20 分鐘門檻要求。
+・ 依 `docs/company-account-and-booking-rules-change-decisions.md` 第四節既定決策路徑，Power Apps 可行性測試通過，**無需改用按鈕＋控制清單備用方案**。
+・ 現有 POC 應用程式與即時流程可作為後續正式導入之技術原型基礎，惟正式導入前仍需完成方案設計（按鈕放置位置、觸發範圍、使用者權限等），非本次測試範圍。
+
+### 下一階段工作
+1. 與專案負責人確認 #135 正式導入方案：Power Apps 按鈕的放置位置、適用情境（是否僅限臨時借用）與使用者權限範圍。
+2. Power Automate 網頁恢復正常存取後，補查『公務車借用前Teams通知與回覆』流程的 `runAfter=Failed` 失敗告警設計，完成 #134。
+3. 評估是否重新開啟『公務車借用前Teams通知與回覆』流程正式排程（SG-T07、Bug#1 皆已驗證通過）。
+4. 安排 #136：循環預約功能完整實作（本專案最大工作量項目）。
+5. 更新 README、CHANGELOG、todo 反映本次變更，並依專案版本控管規則透過 Chrome 瀏覽器同步至 GitHub。
