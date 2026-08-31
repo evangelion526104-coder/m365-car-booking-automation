@@ -269,6 +269,6 @@
 ・ [ ] #134（Teams 流程部分）：因 Power Automate 網頁本次連線異常（`Network Error`）尚未確認，待恢復存取後補查。
 ・ [x] 意外發現並修復：『公務車行事曆同步至SharePoint』流程已停用 19 天（8/8～8/27），經專案負責人同意已重新開啟並手動執行一次補回同步資料。
 ・ [ ] SG-T07（重複觸發）原「通過」結果撤回，待安排專門驗證 Teams 發卡不重複（詳見下方 #137）。
-・ [ ] 進入 #135：實測 SharePoint 即時同步之 Power Apps 可行性。
+・ [x] #135：實測 SharePoint 即時同步之 Power Apps 可行性——已完成，判定可行（Power Apps 畫布應用程式呼叫即時觸發 Power Automate 流程，2~9 秒內完成 SharePoint 同步，全程使用標準連接器，符合 O365 E1；詳見 `docs/project-master-record.md` v0.3.9 章節）。正式導入方案設計待與專案負責人確認。
 ・ [ ] 進入 #136：循環預約功能完整實作（本專案最大工作量項目）。
 ・ [ ] 進入 #137：SG-T07 重新驗證 Teams 發卡不重複，通過後評估是否可重新開啟 Teams 通知流程。
