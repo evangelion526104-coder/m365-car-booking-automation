@@ -55,6 +55,15 @@ Graph 對循環系列的單日修改／取消，是以獨立的 `type = exceptio
 
 此驗證方式比照專案過去每個階段的既定慣例（例如 v0.2.7～v0.2.11 針對 ATA-9627 事件讀取的實測驗證），先以真實 API 回應為準，不依賴文件推測或記憶中的 API 行為直接編碼。
 
+### Phase 0 驗證結果（2026-09-01 補充）
+
+已完成部分驗證，仍有未解決事項：
+
+1. **connector 限制再次確認**：以獨立測試流程新增「Office 365 Outlook－傳送 HTTP 要求」動作，URI 指向 `.../room_nhb4_car@alp.global/calendarView?startDateTime=...&endDateTime=...`，實際執行後動作失敗，錯誤訊息為：「URI path is not a valid Graph endpoint...Invalid resource,Allowed values: me,users. Invalid Object,Allowed values: messages,mailFolders,events,calendar,calendars,outlook,inferenceClassification.」，證實此連接器的 Object 白名單本身不含 calendarView，與第一節既有結論一致，並非暫時性錯誤或設定錯誤。
+2. **可能替代路徑（尚未測試）**：白名單包含 `events`，理論上 `/users/{mailbox}/events/{seriesMasterId}/instances?startDateTime=...&endDateTime=...`（Graph 官方取得單一循環系列展開實例的端點）路徑前綴符合 events，可能可通過此連接器的路徑驗證，可作為不依賴 calendarView 的替代方案，留待下一階段實測確認是否真的放行。
+3. **exception／取消樣態尚未取得真實範例**：原規劃用於驗證的測試循環預約（含一天修改、一天取消）於本次查詢視窗（room_nhb4_car@alp.global，約 2026-08-25～2026-10-05）中未查得，可能已於先前階段被清理，或建立於非預期的信箱／時間範圍。透過現行 `/calendar/events` 端點取得的真實正式資料中，目前僅觀察到 `seriesMaster`／`singleInstance` 兩種型別，尚未取得任何 `exception` 型別物件可供欄位結構比對；`isCancelled` 等取消相關欄位確認存在於既有事件物件結構中，但尚未有真實取消案例可驗證其實際回傳行為（完全消失或以欄位標記呈現）。
+4. **待辦**：需重新建立測試循環預約（含修改與取消其中一天）於明確已知的信箱與時間窗內，並改用上述 `events/{id}/instances` 端點測試（或請具備 Graph Explorer 個人簽入權限者手動查詢）取得 `exception` 物件真實結構後，再回填本節內容並定案。
+
 ## 四、資料結構變更
 
 - **預約唯一鍵**：現行為「資源信箱 + 行事曆事件 ID」。循環系列所有 occurrence 共用同一個系列事件 ID，若沿用現行鍵值，同一系列的每一天會被視為同一筆、彼此覆蓋寫入。需改為「資源信箱 + 系列事件 ID（或 occurrence／exception 自身 ID）+ occurrence 日期」的組合鍵，確保每天各自是獨立一筆 SharePoint 紀錄。
