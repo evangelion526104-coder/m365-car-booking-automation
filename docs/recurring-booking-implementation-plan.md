@@ -90,7 +90,7 @@ Graph 對循環系列的單日修改／取消，是以獨立的 `type = exceptio
    - 2027-02 → 28 日（2027非閏年，2月僅28天，裁切）
 
    結論：`dayOfMonth` 超出當月天數時，由 Graph API 伺服器端自動裁切至當月最後一天，Power Automate 端不需自行處理此邊界情況，可直接信任 `/instances` 回傳結果（呼應第七節原列風險，該項風險已解除）。
-4. **建立循環預約時 `patternedRecurrence.range` 的必填欄位（實作細節，非 Graph 查詢行為，但實測中發現值得記錄）**：以程式（HTTP 動作直接 POST）建立騬試用循環預約時發現，`range.type` 為 `numbered` 時，即使邏輯上不需要明確的結束日期，Graph API 仍要求 `range` 物件內必須包含 `startDate` 欄位，否則回傳 400 BadRequest（「The recurrence start date is too early.」）。此為建立循環預約時的必填欄位限制，與 Phase 1 展開／查詢邏輯本身無關，先記錄備查。
+4. **建立循環預約時 `patternedRecurrence.range` 的必填欄位（實作細節，非 Graph 查詢行為，但實測中發現值得記錄）**：以程式（HTTP 動作直接 POST）建立測試用循環預約時發現，`range.type` 為 `numbered` 時，即使邏輯上不需要明確的結束日期，Graph API 仍要求 `range` 物件內必須包含 `startDate` 欄位，否則回傳 400 BadRequest（「The recurrence start date is too early.」）。此為建立循環預約時的必填欄位限制，與 Phase 1 展開／查詢邏輯本身無關，先記錄備查。
 
 以上兩組測試資料（daily、absoluteMonthly 測試系列）已於驗證完成後清理；測試流程「公務車功能測試-ATA9627事件讀取」已再次確認關閉排程、暫存的查詢/測試動作已還原或移除。
 
