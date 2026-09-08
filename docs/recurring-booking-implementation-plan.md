@@ -1,8 +1,8 @@
 # 循環預約功能完整實作 — 規劃文件（#136）
 
-更新日期：2026-08-31
+更新日期：2026-09-08
 對應決策：docs/company-account-and-booking-rules-change-decisions.md 第五節「循環預約功能」
-文件狀態：規劃階段，尚未開始實作，待專案負責人確認後進入 Phase 0
+文件狀態：Phase 0 驗證已完成（含 exception／取消樣態），准備進入 Phase 1
 
 ## 一、背景與範圍
 
@@ -35,39 +35,50 @@ range.type 為 endDate 或 numbered 時，額外檢查候選日期是否超出 r
 
 此策略把「展開循環系列」問題，簡化成「固定約 15 個候選日期各自判斷是否命中」的固定次數迴圈，可用 Power Automate 既有的 Apply to each + 條件判斷／運算式實作，不需要額外連接器、Premium 授權或自訂程式碼元件。
 
+**（2026-09-08 更新）此節邏輯建議視為備援方案**：見第三節 Phase 0 驗證結果第 5 點，`events/{id}/instances` 端點已證實可由 Graph API 伺服器端直接完成完整展開（含例外覆蓋），Phase 1 應優先評估直接採用該端點，本節手動比對邏輯僅在該端點因故不可用時才需要實作。
+
 ## 三、單日例外（修改／取消）處理
 
-Graph 對循環系列的單日修改／取消，是以獨立的 `type = exception` 事件物件呈現，並帶有 `seriesMasterId` 指回原系列。這類物件理論上會與 seriesMaster 一併被現行 `/events?$filter=...` 查詢撈到（因為其自身 start/end 落在查詢時間窗內）。
+Graph 對循環系列的單日修改／取消，是以獨立的 `type = exception` 事件物件呈現。這類物件理論上會與 seriesMaster 一併被現行 `/events?$filter=...` 查詢撈到（因為其自身 start/end 落在查詢時間窗內）。
 
 規劃邏輯：
 
 1. 先將本次查詢結果依 `type` 分三類：`singleInstance`（一般單次借用，沿用現行邏輯不變）、`seriesMaster`（循環系列定義）、`exception`（單日例外）。
 2. 對每個 `seriesMaster`，先用第二節的視窗限定展開法算出候選命中日期清單。
-3. 用 `exception` 物件的 `seriesMasterId` 比對回其所屬系列；再比對日期，將該候選日期標記為「已被例外覆蓋」——
+3. 將呼叫 `events/{id}/instances` 時代入的 seriesMasterId，對應回其所屬系列；再比對日期，將該候選日期標記為「已被例外覆蓋」——
    - 若例外為修改（時間、主旨變動），則以例外物件本身的實際時間建檔，取代原本用規則算出的推算時間。
    - 若例外為取消，該天不建檔，或將既有 SharePoint 紀錄標記為已取消（沿用 v0.2.15 既有取消偵測邏輯的寫法）。
 4. 其餘沒有被例外覆蓋的候選日期，才用系列規則推算出的時間建檔。
 
-**本節目前僅為規劃，尚未經真實 Graph API 回應驗證**，需要在正式撰寫流程邏輯前，先建立一個小型測試循環預約（含一天修改、一天取消），實際呼叫 Graph API 檢視回傳 JSON，確認：
-
-- `exception` 物件的實際欄位名稱與結構
-- 「取消單日」的實際回傳行為——是完全從查詢結果消失，還是以 `isCancelled` 等欄位標記出現在結果中
-
-此驗證方式比照專案過去每個階段的既定慣例（例如 v0.2.7～v0.2.11 針對 ATA-9627 事件讀取的實測驗證），先以真實 API 回應為準，不依賴文件推測或記憶中的 API 行為直接編碼。
-
-### Phase 0 驗證結果（2026-09-01 補充，2026-09-01 再更新）
-
-已完成部分驗證，仍有未解決事項：
+### Phase 0 驗證結果（2026-09-01 補充，2026-09-01 再更新，2026-09-08 完成驗證）
 
 1. **connector 限制再次確認**：以獨立測試流程新增「Office 365 Outlook－傳送 HTTP 要求」動作，URI 指向 `.../room_nhb4_car@alp.global/calendarView?startDateTime=...&endDateTime=...`，實際執行後動作失敗，錯誤訊息為：「URI path is not a valid Graph endpoint...Invalid resource,Allowed values: me,users. Invalid Object,Allowed values: messages,mailFolders,events,calendar,calendars,outlook,inferenceClassification.」，證實此連接器的 Object 白名單本身不含 calendarView，與第一節既有結論一致，並非暫時性錯誤或設定錯誤。
-2. **替代路徑已實測確認可行**：將測試流程的 URI 改為 `/users/room_nhb4_car@alp.global/events/{seriesMasterId}/instances?startDateTime=...&endDateTime=...`（Graph 官方取得單一循環系列展開實例的端點），先以假的佔位 ID（非真實系列 ID）執行以驗證連接器路徑層級是否放行。實際執行結果：動作失敗，但錯誤已改為 Graph API 本身回傳的 400 `ErrorInvalidIdMalformed`（「The Id is invalid.」），而非連接器層級的「Invalid Object」白名單錯誤。這證實請求已通過連接器的路徑驗證、確實送達 Graph API，僅因測試用的假 ID 格式不正確才在 Graph 端被拒絕。結論：此端點路徑前綴符合白名單中的 `events`，可作為不依賴 calendarView 取得展開後 occurrence 清單的替代方案，後續只需代入真實的循環系列事件 ID 即可正常運作。
-3. **exception／取消樣態尚未取得真實範例**：原規劃用於驗證的測試循環預約（含一天修改、一天取消）於本次查詢視窗（room_nhb4_car@alp.global，約 2026-08-25～2026-10-05）中未查得，可能已於先前階段被清理，或建立於非預期的信箱／時間範圍。透過現行 `/calendar/events` 端點取得的真實正式資料中，目前僅觀察到 `seriesMaster`／`singleInstance` 兩種型別，尚未取得任何 `exception` 型別物件可供欄位結構比對；`isCancelled` 等取消相關欄位確認存在於既有事件物件結構中，但尚未有真實取消案例可驗證其實際回傳行為（完全消失或以欄位標記呈現）。
-4. **待辦**：需重新建立測試循環預約（含修改與取消其中一天）於明確已知的信箱與時間窗內，取得該系列真實的 `seriesMasterId` 後，改用已驗證可行的 `events/{id}/instances` 端點實際查詢，取得 `exception` 物件真實結構後，再回填本節內容並定案。
+2. **替代路徑已實測確認可行**：將測試流程的 URI 改為 `/users/room_nhb4_car@alp.global/events/{seriesMasterId}/instances?startDateTime=...&endDateTime=...`（Graph 官方取得單一循環系列展開實例的端點），先以假的佔位 ID（非真實系列 ID）執行以驗證連接器路徑層級是否放行。實際執行結果：動作失敗，但錯誤已改為 Graph API 本身回傳的 400 `ErrorInvalidIdMalformed`（「The Id is invalid.」），而非連接器層級的「Invalid Object」白名單錯誤。這證實請求已通過連接器的路徑驗證、確實送達 Graph API，僅因測試用的假 ID 格式不正確才在 Graph 端被拒絕。結論：此端點路徑前綴符合白名單中的 `events`，可作為不依賴 calendarView 取得展開後 occurrence 清單的替代方案。
+3. **真實 seriesMasterId 取得與 instances 端點端到端驗證（2026-09-08）**：於 room_nhb4_car@alp.global 建立新測試循環系列「循環預約Phase0測試v3」（每週六、日，2026-09-19～2026-09-27，共 4 次發生）。註：先前測試（每日、23:00-23:30，2026/9/8-9/12）曾遭資源信箱自動拒絕，經檢視實際拒絕通知信確認為與 Michael Chiu 既有連續多日借用衝突所致，屬正常防呆行為，非連接器或程式問題；改用假日時段後正常被接受，排除此疑慮。透過測試流程呼叫 `/users/room_nhb4_car@alp.global/events?$top=50&$select=id,subject,type,seriesMasterId,start,end`（注意：`$filter` 內含中文字元會導致連接器回傳 `Request headers must contain only ASCII characters`，故改為取前 50 筆後以主旨關鍵字篩選）取得該系列 `seriesMaster` 物件真實 `id`，再以「篩選陣列」＋ `concat`／`first()` 運算式組成第二個 HTTP 要求動作之 URI（避免手動複製貼上長 base64 ID 的操作風險），呼叫 `/users/room_nhb4_car@alp.global/events/{id}/instances?startDateTime=2026-09-01T00:00:00Z&endDateTime=2026-10-15T00:00:00Z&$select=id,type,start,end,subject`，執行成功（HTTP 200）。修改與取消前，回傳 4 筆皆為 `type: "occurrence"`。
+4. **exception／取消真實回傳樣態（2026-09-08）**：將該系列 9/19 該次由 10:00-10:30 修改為 11:00-11:30（僅此活動），並將 9/26 該次直接取消（僅此活動），重新呼叫上述 `/instances` 端點後確認：
+   - **修改（時間異動）**：該筆物件的 `type` 由 `occurrence` 變為 `exception`，`start`／`end` 欄位直接反映異動後的新時間（本例為 `2026-09-19T03:00:00 UTC`／`2026-09-19T03:30:00 UTC`，對應台北時間 11:00-11:30），而非原排程時間；`id`、`subject` 等其餘欄位維持不變。實際回傳範例（`$select` 已限定欄位）：
+     ```json
+     {
+       "id": "AAMkADRjMDYw...(略)",
+       "subject": "Tina Yang 楊婉婷 循環預約Phase0測試v3-請忽略",
+       "type": "exception",
+       "start": { "dateTime": "2026-09-19T03:00:00.0000000", "timeZone": "UTC" },
+       "end": { "dateTime": "2026-09-19T03:30:00.0000000", "timeZone": "UTC" }
+     }
+     ```
+   - **取消**：該筆物件完全從 `/instances` 回傳的 `value` 陣列中消失，不會以 `isCancelled` 或任何欄位標記的方式出現在結果中——確認本節原先列出的兩種可能行為（消失 vs. 欄位標記）中，屬於前者「完全消失」。
+   - 補充：本次 `$select` 僅取 `id,type,start,end,subject`，故未確認 exception 物件是否含其他欄位（例如原始時間 originalStart）；若後續實作需要此類欄位，需另行以完整欄位（不加 `$select`）呼叫驗證。
+5. **結論與對前四節的影響**：
+   - `/events/{id}/instances` 端點由 Graph API 伺服器端完成完整的循環展開（含例外覆蓋），只要先用現行 `/events?$filter=...`（或不帶中文的 `$select` 查詢）撈到 `seriesMaster` 物件取得其 `id`，再用該 `id` 呼叫 `/events/{id}/instances`（帶入與現行同步流程一致的 -24hr～+14天視窗），即可直接取得視窗內所有已展開的 occurrence／exception，**不需要在 Power Automate 中自行解析 `recurrence.pattern`／`recurrence.range` 規則**（第二節手動比對邏輯降級為備援方案，見第二節末段更新）。
+   - 第三節原規劃「用 exception 物件的 seriesMasterId 比對回其所屬系列」需修正：`/events/{id}/instances` 回傳的 exception 物件本身**不含** `seriesMasterId` 欄位（因為呼叫時已針對特定系列查詢，不需要此欄位反查）；比對回系列的邏輯應改為以「呼叫時使用的 seriesMasterId」為準，而非依賴回傳物件自帶欄位（已反映於本節第 3 點文字）。
+   - 取消偵測仍需注意：由於取消的 occurrence 會完全從 `/instances` 結果消失，現有「事件取消偵測」邏輯（比對本次讀取鍵值集合 vs. 既有未取消紀錄）預期可直接沿用；但因為是「整個系列中某一天」消失而非整個系列 ID 消失，第四節複合鍵必須包含 occurrence 日期，否則可能誤判整個系列已取消。
+
+此驗證方式比照專案過去每個階段的既定慣例（例如 v0.2.7～v0.2.11 針對 ATA-9627 事件讀取的實測驗證），以真實 API 回應為準，不依賴文件推測或記憶中的 API 行為直接編碼。測試資料（v3 測試循環系列）已於驗證完成後清理；測試用 Power Automate 流程「公務車功能測試-ATA9627事件讀取」已確認關閉，不會持續排程執行。
 
 ## 四、資料結構變更
 
 - **預約唯一鍵**：現行為「資源信箱 + 行事曆事件 ID」。循環系列所有 occurrence 共用同一個系列事件 ID，若沿用現行鍵值，同一系列的每一天會被視為同一筆、彼此覆蓋寫入。需改為「資源信箱 + 系列事件 ID（或 occurrence／exception 自身 ID）+ occurrence 日期」的組合鍵，確保每天各自是獨立一筆 SharePoint 紀錄。
-- 現行「事件取消偵測」補強邏輯（v0.2.15）是逐鍵值比對「本次讀取到的鍵值集合」與「既有未取消紀錄」，鍵值改為複合鍵後，此邏輯預期可直接沿用、不需重新設計，但需以測試驗證單日取消情境下是否正確觸發。
+- 現行「事件取消偵測」補強邏輯（v0.2.15）是逐鍵值比對「本次讀取到的鍵值集合」與「既有未取消紀錄」，鍵值改為複合鍵後，此邏輯預期可直接沿用、不需重新設計，但需以測試驗證單日取消情境下是否正確觸發（呼應第三節第 5 點）。
 - 新增 SharePoint 欄位（暫定，待確認畫面呈現需求後定案）：
   - 是否為循環預約（是／否）
   - 所屬系列事件 ID（供承辦人後台辨識、追蹤同一系列所有日期）
@@ -82,8 +93,8 @@ Graph 對循環系列的單日修改／取消，是以獨立的 `type = exceptio
 
 | 階段 | 內容 | 產出 |
 |---|---|---|
-| 0 | Graph API 驗證 spike：建立含「一天修改、一天取消」的測試循環預約，實際呼叫 API 確認 exception／取消回傳樣態 | 驗證紀錄文件 |
-| 1 | 視窗限定展開邏輯：以獨立測試流程，針對 daily／weekly／absoluteMonthly 三種規則試算候選命中日期 | 測試流程＋驗證結果 |
+| 0 | Graph API 驗證 spike：建立含「一天修改、一天取消」的測試循環預約，實際呼叫 API 確認 exception／取消回傳樣態 | 驗證紀錄文件（本文件第三節，已完成） |
+| 1 | 展開邏輯：優先評估直接採用 `events/{id}/instances` 端點（見第三節第 5 點）；若不可行才改用視窗限定展開＋手動比對 daily／weekly／absoluteMonthly 規則（第二節） | 測試流程＋驗證結果 |
 | 2 | 例外覆蓋邏輯：整合 Phase 0 驗證結果，處理單日修改／取消 | 測試流程擴充 |
 | 3 | 複合鍵與 SharePoint 欄位調整 | SharePoint schema 變更 |
 | 4 | 整合進正式『公務車行事曆同步至SharePoint』流程（先在關閉排程狀態下開發測試） | 正式流程修改 |
@@ -93,6 +104,7 @@ Graph 對循環系列的單日修改／取消，是以獨立的 `type = exceptio
 ## 七、風險與未決事項
 
 - relativeMonthly（例如「每月第三個星期二」）與 yearly 循環規則不在本次決策範圍內。若真實資料出現此類規則，規劃在解析階段明確標記為「未支援循環類型」並提示承辦人另行人工處理，而非嘗試靜默解析，避免算錯日期造成漏同步或誤同步。
-- dayOfMonth 遇到月份實際天數不足（例如設定 31 號，但當月只有 28～30 天）時，Graph API 的實際對應行為需於 Phase 0 一併驗證，不預先假設。
-- Power Automate 標準連接器沒有程式碼執行元件，所有規則比對都需以巢狀運算式／多個 Compose 動作組成，複雜度較高；規劃拆解為多個具名 Compose 步驟以利除錯與維護，避免單一超長運算式難以排查錯誤（比照專案過去除錯經驗，例如 v0.2.14、v0.3.3 皆因單一複雜運算式或欄位參照錯誤耗費大量除錯時間）。
-- 本文件為規劃階段產出，尚未實際修改任何 Power Automate 流程或 SharePoint 欄位；待專案負責人確認本規劃方向後，再進入 Phase 0 實際驗證工作。
+- dayOfMonth 遇到月份實際天數不足（例如設定 31 號，但當月只有 28～30 天）時，Graph API 的實際對應行為需於 Phase 1 一併驗證，不預先假設（若採用 `events/{id}/instances` 端點，此問題由 Graph 伺服器端處理，風險降低，但仍建議實測確認）。
+- Power Automate 標準連接器沒有程式碼執行元件，若最終仍需採用第二節手動比對邏輯，所有規則比對都需以巢狀運算式／多個 Compose 動作組成，複雜度較高；規劃拆解為多個具名 Compose 步驟以利除錯與維護，避免單一超長運算式難以排查錯誤（比照專案過去除錯經驗，例如 v0.2.14、v0.3.3 皆因單一複雜運算式或欄位參照錯誤耗費大量除錯時間）。
+- Graph API `$filter` 參數若包含中文等非 ASCII 字元，會被 Office 365 Outlook 連接器擋下（`Request headers must contain only ASCII characters`），Phase 1 實作時應避免在 `$filter`／URI 參數中直接使用中文，改以 `$select` 取回較少欄位、或於流程內以「篩選陣列」等動作在取得資料後於本地端進行文字比對。
+- 本文件 Phase 0 驗證已完成；後續 Phase 1 起的實作工作，待專案負責人確認本次驗證結論與 Phase 1 方向後再進行。
