@@ -2,7 +2,7 @@
 
 更新日期：2026-09-08
 對應決策：docs/company-account-and-booking-rules-change-decisions.md 第五節「循環預約功能」
-文件狀態：Phase 0 驗證已完成（含 exception／取消樣態），准備進入 Phase 1
+文件狀態：Phase 1 驗證已完成（動態視窗、daily、absoluteMonthly、分頁限制），准備進入 Phase 2 正式整合實作
 
 ## 一、背景與範圍
 
@@ -75,6 +75,25 @@ Graph 對循環系列的單日修改／取消，是以獨立的 `type = exceptio
 
 此驗證方式比照專案過去每個階段的既定慣例（例如 v0.2.7～v0.2.11 針對 ATA-9627 事件讀取的實測驗證），以真實 API 回應為準，不依賴文件推測或記憶中的 API 行為直接編碼。測試資料（v3 測試循環系列）已於驗證完成後清理；測試用 Power Automate 流程「公務車功能測試-ATA9627事件讀取」已確認關閉，不會持續排程執行。
 
+### Phase 1 驗證結果（2026-09-08）
+
+沿用同一支獨立測試流程「公務車功能測試-ATA9627事件讀取」，改用與現行『公務車行事曆同步至SharePoint』正式流程完全一致的動態視窗（`addHours(utcNow(),-24)` ～ `addDays(utcNow(),14)`，v0.3.7 #133 已定案之範圍）呼叫 `/events/{id}/instances`，針對 Phase 0 尚未驗證的項目逐一實測：
+
+1. **分頁限制（新發現，重要風險，須寫入正式實作）**：`/events/{id}/instances` 端點預設每頁僅回傳 10 筆，超過 10 筆的視窗會在回應中夾帶 `@odata.nextLink` 進行分頁；若未處理，會導致視窗內同一系列超過 10 筆的 occurrence 被靜默截斷、部分日期漏同步。以每日循環系列驗證（2026-09-08～2026-09-20，共 13 次，落在 -24hr～+14天視窗內）：不加 `$top` 參數時僅回傳 10 筆且含 `nextLink`；加上 `$top=100` 後，13 筆全數於單一頁面回傳、無 `nextLink`。**結論：正式流程實作時，`/events/{id}/instances` 呼叫必須加上 `$top=100`（或依實際最大可能 occurrence 數評估更大值），否則單一系列在視窗內 occurrence 數超過 10 筆時會漏同步。**
+2. **daily 循環類型（正式動態視窗）**：每日循環系列（interval=1，range.type=endDate，range.endDate=2026-09-20）於動態視窗下，回傳結果與預期完全相符：13 筆皆為 `type: occurrence`，日期自 9/8 至 9/20 連續無缺漏，最後一筆 start/end 日期正確對應系列的 `range.endDate`。
+3. **absoluteMonthly 循環類型（含月份天數不足案例）**：以 dayOfMonth=31、range.type=numbered、numberOfOccurrences=6 的系列驗證（起始 2026-09-08，涵蓋 2026-09～2027-02），確認 Graph 伺服器端會自動將超出當月天數的 `dayOfMonth` 裁切為當月最後一天，6 筆結果全數為 `type: occurrence`、無分頁：
+   - 2026-09 → 30 日（9月僅30天，裁切）
+   - 2026-10 → 31 日（10月31天，不裁切）
+   - 2026-11 → 30 日（11月僅30天，裁切）
+   - 2026-12 → 31 日（12月31天，不裁切）
+   - 2027-01 → 31 日（1月31天，不裁切）
+   - 2027-02 → 28 日（2027非閏年，2月僅28天，裁切）
+
+   結論：`dayOfMonth` 超出當月天數時，由 Graph API 伺服器端自動裁切至當月最後一天，Power Automate 端不需自行處理此邊界情況，可直接信任 `/instances` 回傳結果（呼應第七節原列風險，該項風險已解除）。
+4. **建立循環預約時 `patternedRecurrence.range` 的必填欄位（實作細節，非 Graph 查詢行為，但實測中發現值得記錄）**：以程式（HTTP 動作直接 POST）建立騬試用循環預約時發現，`range.type` 為 `numbered` 時，即使邏輯上不需要明確的結束日期，Graph API 仍要求 `range` 物件內必須包含 `startDate` 欄位，否則回傳 400 BadRequest（「The recurrence start date is too early.」）。此為建立循環預約時的必填欄位限制，與 Phase 1 展開／查詢邏輯本身無關，先記錄備查。
+
+以上兩組測試資料（daily、absoluteMonthly 測試系列）已於驗證完成後清理；測試流程「公務車功能測試-ATA9627事件讀取」已再次確認關閉排程、暫存的查詢/測試動作已還原或移除。
+
 ## 四、資料結構變更
 
 - **預約唯一鍵**：現行為「資源信箱 + 行事曆事件 ID」。循環系列所有 occurrence 共用同一個系列事件 ID，若沿用現行鍵值，同一系列的每一天會被視為同一筆、彼此覆蓋寫入。需改為「資源信箱 + 系列事件 ID（或 occurrence／exception 自身 ID）+ occurrence 日期」的組合鍵，確保每天各自是獨立一筆 SharePoint 紀錄。
@@ -94,7 +113,7 @@ Graph 對循環系列的單日修改／取消，是以獨立的 `type = exceptio
 | 階段 | 內容 | 產出 |
 |---|---|---|
 | 0 | Graph API 驗證 spike：建立含「一天修改、一天取消」的測試循環預約，實際呼叫 API 確認 exception／取消回傳樣態 | 驗證紀錄文件（本文件第三節，已完成） |
-| 1 | 展開邏輯：優先評估直接採用 `events/{id}/instances` 端點（見第三節第 5 點）；若不可行才改用視窗限定展開＋手動比對 daily／weekly／absoluteMonthly 規則（第二節） | 測試流程＋驗證結果 |
+| 1 | 展開邏輯：直接採用 `events/{id}/instances` 端點（見第三節第 5 點與 Phase 1 驗證結果），確認 daily／absoluteMonthly 皆可正確展開，且已找出分頁必須加 `$top=100` 的實作要點 | 測試流程＋驗證結果（已完成，見第三節 Phase 1 驗證結果） |
 | 2 | 例外覆蓋邏輯：整合 Phase 0 驗證結果，處理單日修改／取消 | 測試流程擴充 |
 | 3 | 複合鍵與 SharePoint 欄位調整 | SharePoint schema 變更 |
 | 4 | 整合進正式『公務車行事曆同步至SharePoint』流程（先在關閉排程狀態下開發測試） | 正式流程修改 |
@@ -104,7 +123,8 @@ Graph 對循環系列的單日修改／取消，是以獨立的 `type = exceptio
 ## 七、風險與未決事項
 
 - relativeMonthly（例如「每月第三個星期二」）與 yearly 循環規則不在本次決策範圍內。若真實資料出現此類規則，規劃在解析階段明確標記為「未支援循環類型」並提示承辦人另行人工處理，而非嘗試靜默解析，避免算錯日期造成漏同步或誤同步。
-- dayOfMonth 遇到月份實際天數不足（例如設定 31 號，但當月只有 28～30 天）時，Graph API 的實際對應行為需於 Phase 1 一併驗證，不預先假設（若採用 `events/{id}/instances` 端點，此問題由 Graph 伺服器端處理，風險降低，但仍建議實測確認）。
+- ~~dayOfMonth 遇到月份實際天數不足（例如設定 31 號，但當月只有 28～30 天）時，Graph API 的實際對應行為需於 Phase 1 一併驗證~~ **（已於 Phase 1 驗證解除，見第三節 Phase 1 驗證結果第 3 點）**：Graph 伺服器端會自動裁切至當月最後一天，Power Automate 端不需額外處理。
+- **（Phase 1 新發現）`/events/{id}/instances` 端點分頁限制**：預設每頁僅回傳 10 筆，若視窗內單一系列 occurrence 數超過 10 筆，未加 `$top` 參數會透過 `@odata.nextLink` 分頁、造成靜默漏同步。Phase 2 正式整合時，所有呼叫此端點的動作皆須加上 `$top=100`（或更保守的更大值），並建議在文件/程式碼註解中明確標註此限制，避免日後有人在別處新增類似呼叫時重蹈覆轍。
 - Power Automate 標準連接器沒有程式碼執行元件，若最終仍需採用第二節手動比對邏輯，所有規則比對都需以巢狀運算式／多個 Compose 動作組成，複雜度較高；規劃拆解為多個具名 Compose 步驟以利除錯與維護，避免單一超長運算式難以排查錯誤（比照專案過去除錯經驗，例如 v0.2.14、v0.3.3 皆因單一複雜運算式或欄位參照錯誤耗費大量除錯時間）。
 - Graph API `$filter` 參數若包含中文等非 ASCII 字元，會被 Office 365 Outlook 連接器擋下（`Request headers must contain only ASCII characters`），Phase 1 實作時應避免在 `$filter`／URI 參數中直接使用中文，改以 `$select` 取回較少欄位、或於流程內以「篩選陣列」等動作在取得資料後於本地端進行文字比對。
-- 本文件 Phase 0 驗證已完成；後續 Phase 1 起的實作工作，待專案負責人確認本次驗證結論與 Phase 1 方向後再進行。
+- 本文件 Phase 0、Phase 1 驗證皆已完成；後續 Phase 2 起（例外覆蓋邏輯整合、複合鍵與 SharePoint 欄位調整、整合進正式同步流程）的實作工作，待專案負責人確認本次驗證結論與 Phase 2 方向後再進行。
