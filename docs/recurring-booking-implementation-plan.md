@@ -1,8 +1,8 @@
 # 循環預約功能完整實作 — 規劃文件（#136）
 
-更新日期：2026-09-08
+更新日期：2026-09-15
 對應決策：docs/company-account-and-booking-rules-change-decisions.md 第五節「循環預約功能」
-文件狀態：Phase 1 驗證已完成（動態視窗、daily、absoluteMonthly、分頁限制），准備進入 Phase 2 正式整合實作
+文件狀態：Phase 1 驗證已完成（動態視窗、daily、absoluteMonthly、分頁限制）；Phase 2 Stage 2（例外覆蓋邏輯）技術設計已完成、Stage 3（SharePoint欄位）已完成，准備進入 Stage 4 正式整合實作
 
 ## 一、背景與範圍
 
@@ -94,6 +94,50 @@ Graph 對循環系列的單日修改／取消，是以獨立的 `type = exceptio
 
 以上兩組測試資料（daily、absoluteMonthly 測試系列）已於驗證完成後清理；測試流程「公務車功能測試-ATA9627事件讀取」已再次確認關閉排程、暫存的查詢/測試動作已還原或移除。
 
+### Stage 2 技術設計：例外覆蓋邏輯與複合鍵組成公式（2026-09-15）
+
+本節先以文字規格記錄 Stage 2（例外覆蓋邏輯整合）的實作設計，供 Stage 4 整合進正式流程時直接採用，避免在一次性測試流程中重複搭建、拆除相同邏輯。設計內容完全基於第三節 Phase 0、Phase 1 已用真實 API 回應驗證過的行為，不新增未經驗證的假設。
+
+1. **判斷是否需要展開**：正式流程逐筆處理 `/events?$filter=...` 回傳結果時，先依 `type` 分流——`singleInstance` 沿用現行邏輯不變（是否為循環預約＝否，所屬系列事件ID留空）；`type = seriesMaster` 才進入以下展開步驟；`type = exception` 若被現行查詢直接撈到，暫不單獨處理（因其必然屬於某個已展開的 seriesMaster，會在該系列展開時一併涵蓋，直接略過以避免重複建檔）。
+
+2. **展開呼叫**：對每個 `seriesMaster`，以其 `id` 呼叫：
+   `GET https://graph.microsoft.com/v1.0/users/{資源信箱}/events/{seriesMasterId}/instances?startDateTime={視窗起始}&endDateTime={視窗結束}&$top=100&$select=id,type,start,end,subject`
+   視窗起始/結束沿用正式流程既有的動態視窗算式（`addHours(utcNow(),-24)` ～ `addDays(utcNow(),14)`，v0.3.7 #133 已定案）。**`$top=100` 為必要參數**，否則超過 10 筆會被分頁截斷（見 Phase 1 驗證結果第 1 點）。
+
+3. **回應結構（剖析 JSON 用 schema）**：
+   ```json
+   {
+     "type": "object",
+     "properties": {
+       "value": {
+         "type": "array",
+         "items": {
+           "type": "object",
+           "properties": {
+             "id": { "type": "string" },
+             "type": { "type": "string" },
+             "start": { "type": "object", "properties": { "dateTime": {"type": "string"}, "timeZone": {"type": "string"} } },
+             "end": { "type": "object", "properties": { "dateTime": {"type": "string"}, "timeZone": {"type": "string"} } },
+             "subject": { "type": "string" }
+           }
+         }
+       }
+     }
+   }
+   ```
+
+4. **逐筆處理（套用至各項，遍歷 `body('剖析_JSON')?['value']`）**：
+   - `occurrence` 與 `exception` 兩種 `type` 皆視為需要建檔的一天，**不需要分支處理不同建檔邏輯**——因為 Graph 伺服器端已經把最終時間算好（`occurrence` 是規則推算時間，`exception` 是異動後實際時間），流程只需直接採用該筆的 `start`／`end`，無需比對或合併兩種來源。
+   - 借用起訖時間＝該筆 `start.dateTime`／`end.dateTime`（**取代** seriesMaster 本身的起訖時間，後者僅代表系列第一天）。
+   - 複合鍵（取代現行「資源信箱＋行事曆事件ID」）：
+     `concat(資源信箱, '|', seriesMasterId, '|', formatDateTime(item()?['start']?['dateTime'], 'yyyy-MM-dd'))`
+     寫入「預約唯一鍵」欄位；`seriesMasterId` 一律使用呼叫 `/instances` 時所用的系列 `id`（即步驟 2 的來源），不依賴回傳物件自帶欄位（Phase 0 已確認 exception 物件本身不含 `seriesMasterId`，見第三節第 5 點）。
+   - 新欄位寫入：「是否為循環預約」＝是；「所屬系列事件ID」＝該 seriesMasterId（供承辦人後台辨識同一系列所有日期，見第四節）。
+
+5. **取消偵測沿用既有邏輯**：某一天被取消時，該筆物件會完全從 `/instances` 回傳的 `value` 陣列中消失（Phase 0 已確認，見第三節第 4 點），不會有 `isCancelled` 之類欄位可判斷。由於複合鍵已把 occurrence 日期包含在內，現行「比對本次讀取鍵值集合 vs 既有未取消紀錄」的取消偵測邏輯（v0.2.15）預期可直接沿用：某一天的複合鍵若本次未出現在讀取結果中，該天會被判定為已取消，而不會誤判整個系列都取消（因為同系列其他日期的複合鍵仍會正常出現在本次讀取結果中）。此點仍需在 Stage 5 端到端測試中以真實情境驗證一次。
+
+6. **與第二節手動比對邏輯的關係**：本設計完全採用 `/events/{id}/instances` 端點展開，第二節「視窗限定展開」的手動規則比對邏輯（自行解析 `recurrence.pattern`／`recurrence.range`）維持第二節末段已註記的「備援方案」定位，正式實作不會使用到，僅在該端點未來若因故不可用時才需要啟用。
+
 ## 四、資料結構變更
 
 - **預約唯一鍵**：現行為「資源信箱 + 行事曆事件 ID」。循環系列所有 occurrence 共用同一個系列事件 ID，若沿用現行鍵值，同一系列的每一天會被視為同一筆、彼此覆蓋寫入。需改為「資源信箱 + 系列事件 ID（或 occurrence／exception 自身 ID）+ occurrence 日期」的組合鍵，確保每天各自是獨立一筆 SharePoint 紀錄。
@@ -114,7 +158,7 @@ Graph 對循環系列的單日修改／取消，是以獨立的 `type = exceptio
 |---|---|---|
 | 0 | Graph API 驗證 spike：建立含「一天修改、一天取消」的測試循環預約，實際呼叫 API 確認 exception／取消回傳樣態 | 驗證紀錄文件（本文件第三節，已完成） |
 | 1 | 展開邏輯：直接採用 `events/{id}/instances` 端點（見第三節第 5 點與 Phase 1 驗證結果），確認 daily／absoluteMonthly 皆可正確展開，且已找出分頁必須加 `$top=100` 的實作要點 | 測試流程＋驗證結果（已完成，見第三節 Phase 1 驗證結果） |
-| 2 | 例外覆蓋邏輯：整合 Phase 0 驗證結果，處理單日修改／取消 | 測試流程擴充 |
+| 2 | 例外覆蓋邏輯：整合 Phase 0 驗證結果，處理單日修改／取消 | 技術設計已完成（已完成，見第三節 Stage 2 技術設計），實作併入 Stage 4 |
 | 3 | 複合鍵與 SharePoint 欄位調整 | SharePoint schema 變更 |
 | 4 | 整合進正式『公務車行事曆同步至SharePoint』流程（先在關閉排程狀態下開發測試） | 正式流程修改 |
 | 5 | 端到端測試：依決策文件第六節，涵蓋系列、Occurrence、單日例外完整情境 | 測試紀錄，更新 test-cases/function-test-plan.md |
