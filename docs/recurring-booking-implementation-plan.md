@@ -138,6 +138,65 @@ Graph 對循環系列的單日修改／取消，是以獨立的 `type = exceptio
 
 6. **與第二節手動比對邏輯的關係**：本設計完全採用 `/events/{id}/instances` 端點展開，第二節「視窗限定展開」的手動規則比對邏輯（自行解析 `recurrence.pattern`／`recurrence.range`）維持第二節末段已註記的「備援方案」定位，正式實作不會使用到，僅在該端點未來若因故不可用時才需要啟用。
 
+### Stage 4 實作筆記：正式流程現況逐動作記錄與修改對照（2026-09-15）
+
+為避免在正式流程副本（`複本 - 公務車行事曆同步至SharePoint`，flow id `2780d22d-d33c-42f4-9db7-60a12c1f2b6d`，狀態關閉，已於本次工作階段建立）中反覆重新探索既有邏輯，本節逐一記錄目前每個相關動作的實際運算式（透過「預覽程式碼」逐一確認，非猜測），以及 Stage 4 需要的精確修改點。
+
+**目前巢狀結構**（`套用至各項` = 逐車輛，`套用至各項_1` = 逐事件）：
+
+```
+套用至各項（車輛，item()=車輛紀錄）
+  設定變數 → 傳送 HTTP 要求（呼叫 /calendar/events?$filter=...，見下方 URI）→ 剖析 JSON
+  套用至各項_1（事件，item()=單一事件，可能是 singleInstance/seriesMaster/exception）
+    編輯（組合鍵）→ 附加至陣列變數 → 編輯_1（通知時間）
+    → 取得多個項目（比對既有紀錄）→ 取得多個項目_2（同車其他未取消紀錄）
+    → 篩選陣列（時段重疊）→ 條件（既有紀錄長度>0？是→更新項目／否→建立項目）
+    → 條件_2（重疊筆數>1？是→套用至各項_3／否→無動作）
+  取得多個項目_1 → 套用至各項_2（略，與 Stage 2 無關）
+取得多個項目_3 → 套用至各項_4（取消偵測，比對本次讀取鍵值集合，與 Stage 2 無關、預期不需修改）
+```
+
+**現有精確運算式**（`套用至各項` 層級 item() = 車輛紀錄）：
+
+- 「傳送 HTTP 要求」URI：
+  `concat('https://graph.microsoft.com/v1.0/users/', item()?['mailbox'], '/calendar/events?$filter=start/dateTime ge ''', formatDateTime(addHours(utcNow(),-24),'yyyy-MM-ddTHH:mm:ss'), ''' and start/dateTime le ''', formatDateTime(addDays(utcNow(),14),'yyyy-MM-ddTHH:mm:ss'), '''')`
+
+**現有精確運算式**（`套用至各項_1` 層級，item() = 單一事件，即目前的 seriesMaster/singleInstance 物件本身）：
+
+- 「編輯」（組合鍵）：`concat(items('套用至各項')?['mailbox'], '|', item()?['id'])`
+- 「編輯_1」（預計通知時間）：以 `item()?['isAllDay']`、`item()?['start']?['dateTime']` 計算整天／非整天通知時間
+- 「取得多個項目」：SharePoint GetItems，`$filter: OData__x9810...('預約唯一鍵') eq '@{outputs('編輯')}'`
+- 「取得多個項目_2」：`$filter: 資源信箱 eq items('套用至各項')?['mailbox'] and 已取消 eq 0 and 預約唯一鍵 ne outputs('編輯')`
+- 「篩選陣列」：`from = body('取得多個項目_2')?['value']`，`where = and(less(其他紀錄借用起始, formatDateTime(convertTimeZone(items('套用至各項_1')?['end']?['dateTime'],...))), greater(其他紀錄借用結束, formatDateTime(convertTimeZone(items('套用至各項_1')?['start']?['dateTime'],...))))`
+- 「條件」：`length(body('取得多個項目')?['value']) 大於 0` → 是=更新項目，否=建立項目
+- 「建立項目」／「更新項目」欄位對照（皆已含「是否為循環預約」「所屬系列事件ID」欄位但目前留空未寫值）：
+  - 沿用 `items('套用至各項_1')`（事件層級固定資訊，不隨 occurrence 變動）：Title/使用事由（subject）、借用人姓名／Email（organizer.emailAddress）、是否整天（isAllDay）、iCalUId、事件最後修改時間（lastModifiedDateTime）
+  - 目前用 `items('套用至各項_1')?['start'/'end']`、將於 Stage 4 改為使用 occurrence 層級時間：借用日期／起始／結束時間、原始開始／結束時間UTC、同車時段重疊檢查結果（經篩選陣列）、預計通知時間（經編輯_1）
+  - 行事曆事件 ID：`items('套用至各項_1')?['id']`
+  - 預約唯一鍵：`outputs('編輯')`
+  - 資源信箱：`items('套用至各項')?['mailbox']`；車輛名稱：`items('套用至各項')?['name']`
+
+**Stage 4 修改方案**（尚未實作，供下次工作階段依此直接施工）：
+
+1. 在 `套用至各項_1` 最前面新增一個 Switch 動作，切換依據 `item()?['type']`：
+   - case `singleInstance`：移入現有「編輯…條件_2」整條動作鏈（不需重寫，僅搬移），並在「建立項目」「更新項目」補上兩個新欄位：是否為循環預約＝否、所屬系列事件ID＝留空。
+   - case `seriesMaster`：新建動作鏈（見下方第 2 點）。
+   - default（含 `exception`，理由見第三節第 1 點）：不執行任何動作。
+2. `seriesMaster` case 內新建：
+   - 「傳送 HTTP 要求」新動作，URI：
+     `concat('https://graph.microsoft.com/v1.0/users/', items('套用至各項')?['mailbox'], '/events/', item()?['id'], '/instances?startDateTime=', formatDateTime(addHours(utcNow(),-24),'yyyy-MM-ddTHH:mm:ss'), '&endDateTime=', formatDateTime(addDays(utcNow(),14),'yyyy-MM-ddTHH:mm:ss'), '&$top=100&$select=id,type,start,end,subject')`
+   - 「剖析 JSON」，schema 見第三節 Stage 2 技術設計第 3 點。
+   - 新的巢狀「套用至各項」（命名待定，下稱套用至各項_seriesInstances），來源 `body(新剖析JSON)?['value']`，此層級 item() = 單一 occurrence/exception。
+   - 於此新迴圈內，使用 Power Automate「複製到我的剪貼簿」功能複製既有「編輯…條件_2」整條動作鏈並貼上，然後只需修改以下 6 處運算式（其餘欄位維持原樣即可，因為 items('套用至各項_1') 在此巢狀層級仍有效、可正確取回原始 seriesMaster 事件的固定資訊）：
+     - 編輯（組合鍵）改為：`concat(items('套用至各項')?['mailbox'], '|', items('套用至各項_1')?['id'], '|', formatDateTime(item()?['start']?['dateTime'],'yyyy-MM-dd'))`
+     - 編輯_1（通知時間）內的 `item()?['isAllDay']` 改為 `items('套用至各項_1')?['isAllDay']`（occurrence 物件無此欄位，沿用系列本身設定）；`item()?['start']?['dateTime']` 維持不變（此時已正確指向 occurrence）
+     - 篩選陣列的 `items('套用至各項_1')?['start'/'end']` 改為 `item()?['start'/'end']`（改用 occurrence 本身時間，而非系列第一天）
+     - 建立項目／更新項目：借用日期／起始／結束時間、原始開始／結束時間UTC 改為讀取 `item()?['start'/'end']?['dateTime']`；行事曆事件ID 改為 `item()?['id']`（occurrence 自身 id，而非系列 id）
+     - 建立項目／更新項目新增：是否為循環預約＝是、所屬系列事件ID＝`items('套用至各項_1')?['id']`
+     - 其餘欄位（Title/使用事由/借用人姓名/Email/是否整天來源/iCalUId/事件最後修改時間/資源信箱/車輛名稱）維持指向 `items('套用至各項_1')` 或 `items('套用至各項')`，不需更動。
+3. 貼上後務必逐一用「預覽程式碼」確認 Power Automate 是否已自動把內部動作參照（如 `outputs('編輯')`、`body('取得多個項目')`）正確改指向複製後的新動作名稱，不可只憑畫面顯示判斷（比照本次除錯經驗，畫面顯示可能與實際值不一致）。
+4. 條件_2／套用至各項_3（同車重疊>1筆的額外處理）預期隨複製動作一併帶入，不需特別修改，但仍需在 Stage 5 端到端測試中針對循環情境驗證一次。
+
 ## 四、資料結構變更
 
 - **預約唯一鍵**：現行為「資源信箱 + 行事曆事件 ID」。循環系列所有 occurrence 共用同一個系列事件 ID，若沿用現行鍵值，同一系列的每一天會被視為同一筆、彼此覆蓋寫入。需改為「資源信箱 + 系列事件 ID（或 occurrence／exception 自身 ID）+ occurrence 日期」的組合鍵，確保每天各自是獨立一筆 SharePoint 紀錄。
